@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest 
+    android:versionCode="1" 
+    android:versionName="1.0" 
+    package="dev.baalmart.prim"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="19" />
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    
+    <uses-feature 
+        android:glEsVersion="0x20000" 
+        android:required="true" />
+    
+    <application 
+        android:theme="@style/AppTheme" 
+        android:label="@string/app_name" 
+        android:icon="@drawable/car_icon" 
+        android:allowBackup="true">
+        
+        <meta-data 
+            android:name="com.google.android.maps.v2.API_KEY" 
+            android:value="AIzaSyBOZjBVVeuvCF4QdJpe3RmcTb3RQQaArzI" />
+        
+        <meta-data 
+            android:name="com.google.android.gms.version" 
+            android:value="@integer/google_play_services_version" />
+        
+        <activity 
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar" 
+            android:label="@string/app_name" 
+            android:name="com.prim.SplashScreen" 
+            android:screenOrientation="portrait">            
+            <intent-filter>
+                <action 
+                    android:name="android.intent.action.MAIN" />
+                <category 
+                    android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity 
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar" 
+            android:name="com.prim.Login" 
+            android:screenOrientation="portrait" />
+        
+        <activity 
+            android:name="com.prim.MainActivity" 
+            android:screenOrientation="portrait" />
+        
+        <activity 
+            android:name="com.prim.PlaceList" 
+            android:screenOrientation="portrait" />
+        
+        <activity 
+            android:name="com.prim.PlaceDetail" 
+            android:screenOrientation="portrait" />
+    </application>
+</manifest>
