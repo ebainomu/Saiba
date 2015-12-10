@@ -10,8 +10,7 @@ import android.preference.PreferenceManager;
 
 
 /**
- * Various application wide constants
- * 
+ * Various application wide constants * 
  * @version $Id$
  * * @author baalmart
 
@@ -166,7 +165,7 @@ public class Constants
 
    
    /**
-    * Based on preference return the SD-Card directory in which Open GPS Tracker creates and stores files
+    * Based on preference return the SD-Card directory in which PRIM GPS creates and stores files
     * shared tracks,
     * 
     * @param ctx
@@ -175,6 +174,7 @@ public class Constants
    
    //This is where the SD card details are stored.
    public static String getSdCardDirectory( Context ctx )
+   
    {
       // Read preference and ensure start and end with '/' symbol
       String dir = PreferenceManager.getDefaultSharedPreferences(ctx).getString(SDDIR_DIR, DEFAULT_EXTERNAL_DIR);
@@ -182,10 +182,12 @@ public class Constants
       {
          dir = "/" + dir;
       }
+      
       if( !dir.endsWith("/") )
       {
          dir = dir + "/" ;
       }
+      
       dir = Environment.getExternalStorageDirectory().getAbsolutePath() + dir;
       
       // If neither exists or can be created fall back to default

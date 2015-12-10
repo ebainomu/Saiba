@@ -39,6 +39,8 @@ import android.view.Window;
  * 
  *
  * @author baalmart
+ * 
+ * This will be used to create 
  *
  */
 
@@ -47,7 +49,6 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
    private String TAG = "OGT.XmlCreator";
    private String mExportDirectoryPath;
    private boolean mNeedsBundling;
-
    String mChosenName;
    private ProgressListener mProgressListener;
    protected Context mContext;
