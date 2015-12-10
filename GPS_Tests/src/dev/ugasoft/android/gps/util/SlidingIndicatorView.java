@@ -8,12 +8,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-/**
- * ????
- *
- * @version $Id:$
- * @author rene (c) Mar 10, 2012, Sogeti B.V.
- */
 public class SlidingIndicatorView extends View
 {
    private static final String TAG = "OGT.SlidingIndicatorView";

@@ -7,9 +7,7 @@ import android.content.Context;
 import android.net.Uri;
 
 /**
- * ????
- *
- * @version $Id:$
+ 
  * @author rene (c) Jul 9, 2011, Sogeti B.V.
  */
 public class GpxSharing extends GpxCreator

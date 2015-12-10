@@ -26,8 +26,7 @@ import android.widget.EditText;
 /**
  * Empty Activity that pops up the dialog to name the track
  *
- * @version $Id$
- * @author rene (c) Jul 27, 2010, Sogeti B.V.
+ 
  */
 public class NameTrack extends Activity
 {

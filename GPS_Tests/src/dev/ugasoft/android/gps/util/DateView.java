@@ -10,9 +10,7 @@ import android.widget.TextView;
 /**
  * An implementation for the XML element DateView that alters the textview in the 
  * formating of the text when displaying a date in ms from 1970.
- *
- * @version $Id$
- * @author rene (c) Jan 22, 2009, Sogeti B.V.
+
  */
 public class DateView extends TextView
 {

@@ -32,11 +32,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
- * Empty Activity that pops up the dialog to add a note to the most current
- * point in the logger service
- * 
- * @version $Id$
- * @author rene (c) Jul 27, 2010, Sogeti B.V.
+
  */
 public class InsertNote extends Activity
 {

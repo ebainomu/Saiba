@@ -16,9 +16,7 @@ import android.widget.ListAdapter;
 
 /**
  * Combines multiple Adapters into a sectioned ListAdapter 
- * 
- * @version $Id:$
- * @author rene (c) Apr 24, 2011, Sogeti B.V.
+
  */
 public class SectionedListAdapter extends BaseAdapter
 {

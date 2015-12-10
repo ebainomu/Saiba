@@ -215,8 +215,11 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
     * 
     * @throws IOException
     */
+   
+ // verify the availability of the media/ sd card... 
    protected void verifySdCardAvailibility() throws IOException
    {
+      /* Checks if external storage is available for read and write */
       String state = Environment.getExternalStorageState();
       if (!Environment.MEDIA_MOUNTED.equals(state))
       {

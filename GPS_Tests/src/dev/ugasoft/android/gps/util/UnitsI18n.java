@@ -14,9 +14,7 @@ import android.util.TypedValue;
 /**
  * Collection of methods to provide metric and imperial data based on locale or
  * overridden by configuration
- * 
- * @version $Id$
- * @author rene (c) Feb 2, 2010, Sogeti B.V.
+
  */
 public class UnitsI18n
 {
