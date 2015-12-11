@@ -328,5 +328,6 @@ Enter number of feet for acres/hour or meters for use in hectares/hour.\n </stri
     <string name="about_license">License</string>
     <string name="about_contributions">Contributions</string>
     <string name="about_notices">Notices</string>
+    <string name="about_copyright">copyright</string>
     
 </resources>

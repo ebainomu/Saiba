@@ -25,9 +25,9 @@ import android.provider.BaseColumns;
 
 public final class Prim
 {
-   /** The authority of this provider: nl.sogeti.android.gpstracker */
-   public static final String AUTHORITY = "nl.sogeti.android.gpstracker";
-   /** The content:// style Uri for this provider, content://nl.sogeti.android.gpstracker */
+   /** The authority of this provider: dev.baalmart.prim */
+   public static final String AUTHORITY = "dev.baalmart.prim";
+   /** The content:// style Uri for this provider, content://dev.baalmart.prim */
    public static final Uri CONTENT_URI = Uri.parse( "content://" + Prim.AUTHORITY );
    /** The name of the database file */
    static final String DATABASE_NAME = "PRIMLOG.db";
@@ -44,6 +44,7 @@ public final class Prim
 
     */
    public static final class Tracks extends TracksColumns implements android.provider.BaseColumns
+   
    {
       /** The MIME type of a CONTENT_URI subdirectory of a single track. */
       public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.nl.sogeti.android.track";
@@ -69,7 +70,7 @@ public final class Prim
       /** The MIME type of CONTENT_URI providing a directory of tracks. */
       public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.nl.sogeti.android.track";
       /** The content:// style URL for this provider, content://nl.sogeti.android.gpstracker/tracks */
-      public static final Uri CONTENT_URI = Uri.parse( "content://" + Prim.AUTHORITY + "/" + Tracks.TABLE );
+      public static final Uri CONTENT_URI = Uri.parse( "content://" + Prim.AUTHORITY + "/" + xyz.TABLE );
 
       /** The name of this table */
       public static final String TABLE = "xyz";
@@ -180,30 +181,30 @@ public final class Prim
       "," + " " + Location.ACCURACY  + " " + Location.ACCURACY_TYPE +      
       ");";
       
+      //making alterations......
       static final String[] UPGRADE_STATEMENT_7_TO_8 = 
          {
-            "ALTER TABLE " + Waypoints.TABLE + " ADD COLUMN " + WaypointsColumns.ACCURACY + " " + WaypointsColumns.ACCURACY_TYPE +";",
-            "ALTER TABLE " + Waypoints.TABLE + " ADD COLUMN " + WaypointsColumns.ALTITUDE + " " + WaypointsColumns.ALTITUDE_TYPE +";",
-            "ALTER TABLE " + Waypoints.TABLE + " ADD COLUMN " + WaypointsColumns.BEARING  + " " + WaypointsColumns.BEARING_TYPE +";"
+            "ALTER TABLE " + Location.TABLE + " ADD COLUMN " + LocationColumns.ACCURACY + " " + LocationColumns.ACCURACY_TYPE +";",
          };
 
       /**
-       * Build a waypoint Uri like:
+       * Build a location Uri like:
        * 
-       * @param trackId
+       * @param xyzId
        * @param segmentId
-       * @param waypointId
+       * @param locationId
        * 
        * @return
        */
-      public static Uri buildUri(long trackId, long segmentId, long waypointId)
+      
+      public static Uri buildUri(long xyzId, long segmentId, long locationId)
       {
-         Builder builder = Tracks.CONTENT_URI.buildUpon();
-         ContentUris.appendId(builder, trackId);
+         Builder builder = xyz.CONTENT_URI.buildUpon();
+         ContentUris.appendId(builder, xyzId);
          builder.appendPath(Segments.TABLE);
          ContentUris.appendId(builder, segmentId);
-         builder.appendPath(Waypoints.TABLE);
-         ContentUris.appendId(builder, waypointId);
+         builder.appendPath(Location.TABLE);
+         ContentUris.appendId(builder, locationId);
          
          return builder.build();
       }
@@ -254,7 +255,8 @@ public final class Prim
       "," + " " + MetaDataColumns.SEGMENT  + " " + MetaDataColumns.SEGMENT_TYPE + 
       "," + " " + MetaDataColumns.WAYPOINT + " " + MetaDataColumns.WAYPOINT_TYPE + 
       "," + " " + MetaDataColumns.KEY      + " " + MetaDataColumns.KEY_TYPE + 
-      "," + " " + MetaDataColumns.VALUE    + " " + MetaDataColumns.VALUE_TYPE + 
+      "," + " " + MetaDataColumns.VALUE    + " " + MetaDataColumns.VALUE_TYPE +
+      "," + " " + MetaDataColumns.LOCATION    + " " + MetaDataColumns.LOCATION_TYPE +
       ");";
      
       public static final Uri CONTENT_URI = Uri.parse( "content://" + Prim.AUTHORITY + "/" + MetaData.TABLE );
@@ -380,9 +382,8 @@ public final class Prim
    }
    
    /**
-    * Columns from the media table.
+    * Columns from the metadata table.
     * 
-
     */
    public static class MetaDataColumns
    {
@@ -398,5 +399,7 @@ public final class Prim
       public static final String VALUE    = "value";        
       static final String VALUE_TYPE      = "TEXT NOT NULL";
       static final String _ID_TYPE        = "INTEGER PRIMARY KEY AUTOINCREMENT";
+      public static final String LOCATION = "location";
+      static final String LOCATION_TYPE = "INTEGER";
    }
 }

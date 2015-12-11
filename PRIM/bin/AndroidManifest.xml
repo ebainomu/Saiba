@@ -245,9 +245,10 @@
         </service>
         <service android:name="dev.ugasoft.android.gps.breadcrumbs.BreadcrumbsService" />
 
+     <!--    this is the provider for the application -->
         <provider
-            android:name="dev.ugasoft.android.gps.db.GPStrackingProvider"
-            android:authorities="nl.sogeti.android.gpstracker"
+            android:name="com.prim.db.PrimProvider"
+            android:authorities="dev.baalmart.prim"
             android:enabled="true"
             android:permission="android.permission.ACCESS_FINE_LOCATION" >
             <grant-uri-permission android:pathPrefix="/tracks/" />

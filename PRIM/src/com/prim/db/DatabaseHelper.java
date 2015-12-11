@@ -33,7 +33,7 @@ import android.util.Log;
 public class DatabaseHelper extends SQLiteOpenHelper
 {
    private Context mContext;
-   private final static String TAG = "OGT.DatabaseHelper";
+   private final static String TAG = "PRIM.DatabaseHelper";
 
    public DatabaseHelper(Context context)
    {

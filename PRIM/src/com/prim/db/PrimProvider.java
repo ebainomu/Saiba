@@ -33,64 +33,68 @@ import android.util.Log;
  * collected are waypoints. Waypoints taken in sequence without loss of GPS-signal
  * are considered connected and are grouped in segments. A route is build up out of
  * 1 or more segments.
+ * 
+ * xyz are the accelerometer values in each scenario. Locations are the GPS locations collected
+ * and taken in sequence without loss of signal are called segments
+ * 
  * <p>
  * For example:<br>
- * <code>content://nl.sogeti.android.gpstracker/tracks</code>
+ * <code>content://dev.baalmart.prim/tracks</code>
  * is the URI that returns all the stored tracks or starts a new track on insert 
  * <p>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2</code>
+ * <code>content://dev.baalmart.prim/tracks/2</code>
  * is the URI string that would return a single result row, the track with ID = 23. 
  * <p>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments</code> is the URI that returns 
+ * <code>content://dev.baalmart.prim/tracks/2/segments</code> is the URI that returns 
  * all the stored segments of a track with ID = 2 or starts a new segment on insert 
  * <p>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/waypoints</code> is the URI that returns 
+ * <code>content://dev.baalmart.prim/tracks/2/waypoints</code> is the URI that returns 
  * all the stored waypoints of a track with ID = 2
  * <p>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments</code> is the URI that returns 
+ * <code>content://dev.baalmart.prim/tracks/2/segments</code> is the URI that returns 
  * all the stored segments of a track with ID = 2 
  * <p>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments/3</code> is
+ * <code>content://dev.baalmart.prim/tracks/2/segments/3</code> is
  * the URI string that would return a single result row, the segment with ID = 3 of a track with ID = 2 . 
  * <p>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments/1/waypoints</code> is the URI that 
+ * <code>content://dev.baalmart.prim/tracks/2/segments/1/waypoints</code> is the URI that 
  * returns all the waypoints of a segment 1 of track 2.
  * <p>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments/1/waypoints/52</code> is the URI string that 
+ * <code>content://dev.baalmart.prim/tracks/2/segments/1/waypoints/52</code> is the URI string that 
  * would return a single result row, the waypoint with ID = 52
  * <p>
  * Media is stored under a waypoint and may be queried as:<br>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments/3/waypoints/22/media</code>
+ * <code>content://dev.baalmart.prim/tracks/2/segments/3/waypoints/22/media</code>
  * <p>
  * 
  * 
  * All media for a segment can be queried with:<br>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments/3/media</code>
+ * <code>content://dev.baalmart.prim/tracks/2/segments/3/media</code>
  * <p>
  * All media for a track can be queried with:<br>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/media</code>
+ * <code>content://dev.baalmart.prim/tracks/2/media</code>
  * 
  * <p>
  * The whole set of collected media may be queried as:<br>
- * <code>content://nl.sogeti.android.gpstracker/media</code>
+ * <code>content://dev.baalmart.prim/media</code>
  * <p>
  * A single media is stored with an ID, for instance ID = 12:<br>
- * <code>content://nl.sogeti.android.gpstracker/media/12</code>
+ * <code>content://dev.baalmart.prim/media/12</code>
  * <p>
  * The whole set of collected media may be queried as:<br>
- * <code>content://nl.sogeti.android.gpstracker/media</code>
+ * <code>content://dev.baalmart.prim/media</code>
  * <p>
  * 
  * 
  * Meta-data regarding a single waypoint may be queried as:<br>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments/3/waypoints/22/metadata</code>
+ * <code>content://dev.baalmart.prim/tracks/2/segments/3/waypoints/22/metadata</code>
  * <p>
  * Meta-data regarding a single segment as whole may be queried as:<br>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/segments/3/metadata</code>
+ * <code>content://dev.baalmart.prim/tracks/2/segments/3/metadata</code>
  * Note: This does not include meta-data of waypoints.
  * <p>
  * Meta-data regarding a single track as a whole may be queried as:<br>
- * <code>content://nl.sogeti.android.gpstracker/tracks/2/metadata</code>
+ * <code>content://dev.baalmart.prim/tracks/2/metadata</code>
  * Note: This does not include meta-data of waypoints or segments.
  * 
  * @author baalmart
@@ -99,7 +103,7 @@ import android.util.Log;
 public class PrimProvider extends ContentProvider
 {
 
-   private static final String TAG = "OGT.GPStrackingProvider";
+   private static final String TAG = "PRIM.PrimProvider";
 
    /* Action types as numbers for using the UriMatcher */
    private static final int TRACKS            = 1;
