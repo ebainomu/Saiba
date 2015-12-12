@@ -2,8 +2,9 @@ package com.prim.actions;
 
 import java.util.Calendar;
 
-import dev.baalmart.gps.R;
-import dev.ugasoft.android.gps.db.GPStracking.Tracks;
+import com.prim.db.Prim.Tracks;
+
+import dev.baalmart.prim.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;

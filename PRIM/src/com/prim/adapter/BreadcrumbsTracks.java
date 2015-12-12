@@ -18,10 +18,11 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.Vector;
 
-import dev.baalmart.gps.R;
-import dev.ugasoft.android.gps.db.GPStracking.MetaData;
-import dev.ugasoft.android.gps.util.Constants;
-import dev.ugasoft.android.gps.util.Pair;
+import com.prim.db.Prim.MetaData;
+import com.prim.utils.Constants;
+import com.prim.utils.Pair;
+
+import dev.baalmart.prim.R;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;

@@ -1,10 +1,9 @@
 package com.prim.viewer;
 
 import java.util.regex.Pattern;
-
-import dev.baalmart.gps.R;
-import dev.ugasoft.android.gps.util.Constants;
-import dev.ugasoft.android.gps.util.UnitsI18n;
+import com.prim.utils.Constants;
+import com.prim.utils.UnitsI18n;
+import dev.baalmart.prim.R;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -35,7 +34,7 @@ public class ApplicationPreferenceActivity extends PreferenceActivity
    {
       super.onCreate(savedInstanceState);
 
-      addPreferencesFromResource(R.layout.settings);
+      addPreferencesFromResource(R.layout.settings_gps);
 
       ListPreference precision = (ListPreference) findPreference(PRECISION_PREFERENCE);
       time = (EditTextPreference) findPreference(CUSTOMPRECISIONTIME_PREFERENCE);
@@ -54,6 +53,7 @@ public class ApplicationPreferenceActivity extends PreferenceActivity
             return true;
          }
       });
+      
       implentWidth.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
       {
          @Override

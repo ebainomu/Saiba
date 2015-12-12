@@ -1,7 +1,9 @@
 package com.prim.viewer;
 
+import com.prim.MainActivity;
 import com.prim.actions.DescribeTrack;
-import com.prim.actions.Statistics;
+import com.prim.actions.tasks.GpxParser;
+//import com.prim.actions.Statistics;
 //import dev.ugasoft.android.gps.actions.tasks.GpxParser;
 import com.prim.actions.utils.ProgressListener;
 import com.prim.adapter.BreadcrumbsAdapter;
@@ -257,6 +259,7 @@ public class TrackList extends ListActivity implements ProgressListener
 
    @Override
    protected void onListItemClick(ListView listView, View view, int position, long id)
+   
    {
       super.onListItemClick(listView, view, position, id);
 
@@ -287,6 +290,7 @@ public class TrackList extends ListActivity implements ProgressListener
             showDialog(DIALOG_IMPORT);
          }
       }
+      
       else
       {
          Intent intent = new Intent();
@@ -300,7 +304,8 @@ public class TrackList extends ListActivity implements ProgressListener
          }
          else
          {
-            intent.setClass(this, CommonLoggerMap.class);
+            //intent.setClass(this, CommonLoggerMap.class);
+        	 intent.setClass(this, MainActivity.class);
             startActivity(intent);
          }
       }
@@ -376,11 +381,11 @@ public class TrackList extends ListActivity implements ProgressListener
             }
             case MENU_STATS:
             {
-               Intent actionIntent = new Intent(this, Statistics.class);
+               /*Intent actionIntent = new Intent(this, Statistics.class);
                actionIntent.setData(mDialogTrackUri);
                startActivity(actionIntent);
                handled = true;
-               break;
+               break;*/
             }
             default:
                handled = super.onContextItemSelected(item);
@@ -532,14 +537,17 @@ public class TrackList extends ListActivity implements ProgressListener
       }
       else if (Intent.ACTION_VIEW.equals(queryAction))
       {
+    	  
+    	  // ****************getting data for a single track****************************
          final Uri uri = intent.getData();
-         if ("content".equals(uri.getScheme()) && GPStracking.AUTHORITY.equals(uri.getAuthority()))
+         if ("content".equals(uri.getScheme()) && Prim.AUTHORITY.equals(uri.getAuthority()))
          {
             // Got to VIEW a single track, instead hand it of to the LoggerMap
-            Intent notificationIntent = new Intent(this, LoggerMap.class);
+        	         	 
+         /*   Intent notificationIntent = new Intent(this, LoggerMap.class);
             notificationIntent.setData(uri);
             startActivity(notificationIntent);
-            finish();
+            finish();*/
          }
          else if (uri.getScheme().equals("file") || uri.getScheme().equals("content"))
          {

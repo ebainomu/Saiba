@@ -1,9 +1,11 @@
 package com.prim.actions;
 
 
-import com.prim.db.GPStracking.Tracks;
+import com.prim.db.Prim.Tracks;
 import com.prim.logger.GPSLoggerServiceManager;
-import com.prim.util.Constants;
+import com.prim.utils.Constants;
+
+import dev.baalmart.prim.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;

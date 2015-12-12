@@ -3,8 +3,9 @@ package com.prim.adapter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import dev.baalmart.gps.R;
-import dev.ugasoft.android.gps.util.Constants;
+import com.prim.utils.Constants;
+
+import dev.baalmart.prim.R;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.view.View;
@@ -98,7 +99,6 @@ public class SectionedListAdapter extends BaseAdapter
       }
       return null;
    }
-
    /*
     * (non-Javadoc)
     * @see android.widget.Adapter#getItemId(int)

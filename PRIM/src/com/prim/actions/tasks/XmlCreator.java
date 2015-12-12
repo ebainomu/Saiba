@@ -24,7 +24,7 @@ import com.prim.actions.utils.ProgressListener;
 import com.prim.db.Prim.Media;
 import com.prim.db.Prim.Tracks;
 import com.prim.db.Prim.Waypoints;
-import com.prim.util.Constants;
+import com.prim.utils.Constants;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -40,7 +40,7 @@ import android.view.Window;
  *
  * @author baalmart
  * 
- * This will be used to create 
+ * This will be used to create the xml which will be collecting data from the sqlite database
  *
  */
 

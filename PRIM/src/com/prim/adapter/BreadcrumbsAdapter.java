@@ -3,12 +3,16 @@ package com.prim.adapter;
 import java.util.LinkedList;
 import java.util.List;
 
-import dev.baalmart.gps.R;
-import dev.ugasoft.android.gps.actions.tasks.GpxParser;
-import dev.ugasoft.android.gps.breadcrumbs.BreadcrumbsService;
-import dev.ugasoft.android.gps.breadcrumbs.BreadcrumbsTracks;
-import dev.ugasoft.android.gps.util.Constants;
-import dev.ugasoft.android.gps.util.Pair;
+
+
+import com.prim.actions.tasks.GpxParser;
+//import com.prim.actions.tasks.GpxParser;
+import com.prim.breadcrumbs.BreadcrumbsService;
+import com.prim.breadcrumbs.BreadcrumbsTracks;
+import com.prim.utils.Constants;
+import com.prim.utils.Pair;
+
+import dev.baalmart.prim.R;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +26,7 @@ import android.widget.TextView;
  */
 public class BreadcrumbsAdapter extends BaseAdapter
 {
-   private static final String TAG = "OGT.BreadcrumbsAdapter";
+   private static final String TAG = "PRIM.BreadcrumbsAdapter";
 
    public static final boolean DEBUG = false;
 

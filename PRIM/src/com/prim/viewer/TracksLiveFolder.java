@@ -1,7 +1,7 @@
 package com.prim.viewer;
 
-import dev.baalmart.gps.R;
-import dev.ugasoft.android.gps.db.GPStracking;
+import com.prim.db.Prim;
+import dev.baalmart.prim.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,9 +21,9 @@ public class TracksLiveFolder extends Activity
 
       if( LiveFolders.ACTION_CREATE_LIVE_FOLDER.equals( action ) )
       {
-         final Intent baseAction = new Intent( Intent.ACTION_VIEW, GPStracking.Tracks.CONTENT_URI );
+         final Intent baseAction = new Intent( Intent.ACTION_VIEW, Prim.Tracks.CONTENT_URI );
          
-         Uri liveData = Uri.withAppendedPath( GPStracking.CONTENT_URI, "live_folders/tracks" );
+         Uri liveData = Uri.withAppendedPath( Prim.CONTENT_URI, "live_folders/tracks" );
          final Intent createLiveFolder = new Intent();
          createLiveFolder.setData( liveData );
          createLiveFolder.putExtra( LiveFolders.EXTRA_LIVE_FOLDER_NAME, getString(R.string.track_list) );

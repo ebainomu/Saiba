@@ -2,13 +2,14 @@ package com.prim.actions;
 
 import java.util.List;
 
-import dev.baalmart.gps.R;
-import dev.ugasoft.android.gps.breadcrumbs.BreadcrumbsService;
-import dev.ugasoft.android.gps.breadcrumbs.BreadcrumbsTracks;
-import dev.ugasoft.android.gps.breadcrumbs.BreadcrumbsService.LocalBinder;
-import dev.ugasoft.android.gps.db.GPStracking.MetaData;
-import dev.ugasoft.android.gps.util.Constants;
-import dev.ugasoft.android.gps.util.Pair;
+import com.prim.breadcrumbs.BreadcrumbsService;
+import com.prim.breadcrumbs.BreadcrumbsTracks;
+import com.prim.breadcrumbs.BreadcrumbsService.LocalBinder;
+import com.prim.db.Prim.MetaData;
+import com.prim.utils.Constants;
+import com.prim.utils.Pair;
+
+import dev.baalmart.prim.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -40,6 +41,7 @@ import android.widget.SpinnerAdapter;
 /**
 
  */
+
 public class DescribeTrack extends Activity
 {
    private static final int DIALOG_TRACKDESCRIPTION = 42;

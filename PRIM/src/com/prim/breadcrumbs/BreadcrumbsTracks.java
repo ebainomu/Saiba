@@ -18,10 +18,10 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
-import dev.ugasoft.android.gps.adapter.BreadcrumbsAdapter;
-import dev.ugasoft.android.gps.db.GPStracking.MetaData;
-import dev.ugasoft.android.gps.util.Constants;
-import dev.ugasoft.android.gps.util.Pair;
+import com.prim.adapter.BreadcrumbsAdapter;
+import com.prim.db.Prim.MetaData;
+import com.prim.utils.Constants;
+import com.prim.utils.Pair;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;

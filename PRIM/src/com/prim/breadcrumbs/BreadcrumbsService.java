@@ -7,9 +7,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import dev.baalmart.gps.R;
 import com.prim.actions.utils.ProgressListener;
-import dev.ugasoft.android.gps.oauth.PrepareRequestTokenActivity;
+import com.prim.oauth.PrepareRequestTokenActivity;
 import com.prim.utils.Constants;
 import com.prim.utils.Pair;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
