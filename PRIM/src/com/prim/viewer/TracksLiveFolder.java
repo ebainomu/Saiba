@@ -27,7 +27,7 @@ public class TracksLiveFolder extends Activity
          final Intent createLiveFolder = new Intent();
          createLiveFolder.setData( liveData );
          createLiveFolder.putExtra( LiveFolders.EXTRA_LIVE_FOLDER_NAME, getString(R.string.track_list) );
-         createLiveFolder.putExtra( LiveFolders.EXTRA_LIVE_FOLDER_ICON, Intent.ShortcutIconResource.fromContext( this, R.drawable.live ) );
+         createLiveFolder.putExtra( LiveFolders.EXTRA_LIVE_FOLDER_ICON, Intent.ShortcutIconResource.fromContext( this, R.drawable.ic_action_folder ) );
          createLiveFolder.putExtra( LiveFolders.EXTRA_LIVE_FOLDER_DISPLAY_MODE, LiveFolders.DISPLAY_MODE_LIST );
          createLiveFolder.putExtra( LiveFolders.EXTRA_LIVE_FOLDER_BASE_INTENT, baseAction );
          setResult( RESULT_OK, createLiveFolder );

@@ -2,7 +2,7 @@ package com.prim.breadcrumbs;
 
 import java.util.concurrent.Executor;
 
-import dev.ugasoft.android.gps.actions.utils.ProgressListener;
+import com.prim.actions.utils.ProgressListener;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
