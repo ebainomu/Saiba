@@ -1,6 +1,6 @@
 package com.prim.widget;
 
-import com.prim.actions.ControlTracking;
+import com.prim.actions.ControlLogging;
 /*import com.prim.actions.InsertNote;*/
 import com.prim.utils.Constants;
 
@@ -159,7 +159,7 @@ public class ControlWidgetProvider extends AppWidgetProvider
          int buttonId = Integer.parseInt(data.getSchemeSpecificPart());
          if (buttonId == BUTTON_TRACKINGCONTROL)
          {
-            Intent controlIntent = new Intent( context, ControlTracking.class );
+            Intent controlIntent = new Intent( context, ControlLogging.class );
             controlIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(controlIntent);
          }
