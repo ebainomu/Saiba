@@ -25,9 +25,8 @@ import com.prim.ui.LeftNavAdapter;
 import com.prim.ui.MainFragment;
 import com.prim.ui.Profile;
 import com.prim.ui.Settings;
-
+import android.location.Location;
 import dev.baalmart.prim.R;
-
 import java.util.ArrayList;
 
 public class MainActivity extends CustomActivity
@@ -35,7 +34,9 @@ public class MainActivity extends CustomActivity
   private DrawerLayout drawerLayout;
   private ListView drawerLeft;
   @SuppressWarnings("deprecation")
-private ActionBarDrawerToggle drawerToggle;
+  private ActionBarDrawerToggle drawerToggle;
+  
+  //private FixedMyLocationOverlay mMylocation;
 
   private void setupContainer(int paramInt)
   {
@@ -66,7 +67,7 @@ private ActionBarDrawerToggle drawerToggle;
       //favorite
       else if (paramInt == 2)
       {
-        startActivity(new Intent(this, PlaceList.class).putExtra("title", "Favorites"));
+        startActivity(new Intent(this, IssueList.class).putExtra("title", "Favorites"));
         localObject = null;
       }      
       

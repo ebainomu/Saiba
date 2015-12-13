@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.prim.PlaceDetail;
+import com.prim.IssueDetail;
 import com.prim.model.Place;
 import dev.baalmart.prim.R;
 
@@ -92,7 +92,7 @@ public class Places extends Fragment
     {
       public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, int paramAnonymousInt, long paramAnonymousLong)
       {
-        startActivity(new Intent(getActivity(), PlaceDetail.class));
+        startActivity(new Intent(getActivity(), IssueDetail.class));
       }
     });
   }

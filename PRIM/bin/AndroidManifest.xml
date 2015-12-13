@@ -46,7 +46,7 @@
         android:description="@string/app_name"
         android:hardwareAccelerated="true"
       >
-        <uses-library android:name="com.google.android.maps"></uses-library>        
+        <uses-library android:name="com.google.android.maps"/>        
 
         <meta-data 
             android:name="com.google.android.maps.v2.API_KEY" 
@@ -87,11 +87,11 @@
             android:screenOrientation="portrait" />
         
         <activity 
-            android:name="com.prim.PlaceList" 
+            android:name="com.prim.IssueList" 
             android:screenOrientation="portrait" />
         
         <activity 
-            android:name="com.prim.PlaceDetail" 
+            android:name="com.prim.IssueDetail" 
             android:screenOrientation="portrait" />
         
         
@@ -156,6 +156,16 @@
         <!-- <activity
             android:name="com.prim.actions.InsertNote"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" /> -->
+            
+            
+        <activity
+            android:name="com.prim.actions.GetMyLocationValues"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        
+        <activity
+            android:name="com.prim.actions.GetAccelerometerValues"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+             
         <activity
             android:name="com.prim.viewer.RouteList"
             android:label="@string/track_list"

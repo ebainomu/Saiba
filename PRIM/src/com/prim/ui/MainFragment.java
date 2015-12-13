@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.prim.Others;
-import com.prim.PlaceList;
+import com.prim.IssueList;
 import com.prim.custom.CustomFragment;
 import com.prim.model.Data;
 
@@ -125,7 +125,7 @@ private ArrayList<Data> iList;
   {
     super.onClick(paramView);
     if (paramView.getId() == R.id.nearby)
-      startActivity(new Intent(getActivity(), PlaceList.class).putExtra("title", getString(R.string.nearby)));
+      startActivity(new Intent(getActivity(), IssueList.class).putExtra("title", getString(R.string.nearby)));
   }
 
   @SuppressLint({"InflateParams"})

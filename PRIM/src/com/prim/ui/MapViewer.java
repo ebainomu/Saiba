@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.prim.PlaceDetail;
+import com.prim.IssueDetail;
 import com.prim.custom.CustomFragment;
 import com.prim.model.Place;
 
@@ -169,7 +169,7 @@ public class MapViewer extends CustomFragment
       {
         public void onInfoWindowClick(Marker paramAnonymousMarker)
         {
-          startActivity(new Intent(getActivity(), PlaceDetail.class));
+          startActivity(new Intent(getActivity(), IssueDetail.class));
         }
       });
     }
