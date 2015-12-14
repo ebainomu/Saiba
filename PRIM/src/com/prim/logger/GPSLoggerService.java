@@ -20,6 +20,7 @@ import com.prim.db.Prim.Waypoints;
 import com.prim.db.Prim.Xyz;
 import com.prim.logger.IGPSLoggerServiceRemote;
 import com.prim.streaming.StreamUtils;
+import com.prim.ui.MainFragment;
 //import dev.ugasoft.android.gps.streaming.StreamUtils;
 import com.prim.utils.Constants;
 
@@ -83,6 +84,8 @@ public class GPSLoggerService extends Service implements LocationListener
    private static final float GLOBAL_DISTANCE = 500F;
    private static final long  GLOBAL_INTERVAL = 300000l;
    private static final float GLOBAL_ACCURACY = 1000f;
+   
+   
 
    /**
     * <code>MAX_REASONABLE_SPEED</code> is about 324 kilometer per hour or 201
@@ -132,6 +135,8 @@ public class GPSLoggerService extends Service implements LocationListener
    private NotificationManager mNoticationManager;
    private PowerManager.WakeLock mWakeLock;
    private Handler mHandler;
+   
+   private AccelerometerReadings acc;
 
    /**
     * If speeds should be checked to sane values
@@ -1396,12 +1401,13 @@ public class GPSLoggerService extends Service implements LocationListener
       {
          Log.e(TAG, String.format("Not logging but storing location %s, prepare to fail", location.toString()));
       }
+      
       ContentValues args = new ContentValues();
-
       args.put(Waypoints.LATITUDE, Double.valueOf(location.getLatitude()));
       args.put(Waypoints.LONGITUDE, Double.valueOf(location.getLongitude()));
       args.put(Waypoints.SPEED, Float.valueOf(location.getSpeed()));
       args.put(Waypoints.TIME, Long.valueOf(System.currentTimeMillis()));
+      
       if (location.hasAccuracy())
       {
          args.put(Waypoints.ACCURACY, Float.valueOf(location.getAccuracy()));
@@ -1409,7 +1415,6 @@ public class GPSLoggerService extends Service implements LocationListener
       if (location.hasAltitude())
       {
          args.put(Waypoints.ALTITUDE, Double.valueOf(location.getAltitude()));
-
       }
       if (location.hasBearing())
       {
@@ -1422,18 +1427,20 @@ public class GPSLoggerService extends Service implements LocationListener
    }
 
    public void StoreLatLongTimeSpeed(Location location)
-   {
-	   
+   {	   
 	   if (!isLogging())
 	      {
 	         Log.e(TAG, String.format("Not logging but storing location %s, prepare to fail", location.toString()));
 	      }
-	      ContentValues args = new ContentValues();
-	      
+	   
+	      MainFragment mFrag = new MainFragment();
+	      ContentValues args = new ContentValues();	      
 	      args.put(Locations.LATITUDE, Double.valueOf(location.getLatitude()));
 	      args.put(Locations.LONGITUDE, Double.valueOf(location.getLongitude()));
 	      args.put(Locations.SPEED, Float.valueOf(location.getSpeed()));
+	      //args.put(Locations.LABEL, String.valueOf(mFrag.);
 	      args.put(Locations.TIME, Long.valueOf(System.currentTimeMillis()));
+	      
 	      if (location.hasAccuracy())
 	      {
 	         args.put(Waypoints.ACCURACY, Float.valueOf(location.getAccuracy()));

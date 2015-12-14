@@ -17,7 +17,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.prim.MainActivity;
 import com.prim.Others;
 import com.prim.IssueList;
@@ -26,9 +25,7 @@ import com.prim.logger.GPSLoggerService;
 import com.prim.logger.GPSLoggerServiceManager;
 import com.prim.logger.IGPSLoggerServiceRemote;
 import com.prim.model.Data;
-
 import dev.baalmart.prim.R;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -115,17 +112,16 @@ private GPSLoggerService mLoggerService;
 		  //mLoggerService.storeLocation(location);
 		try
 		{
-
-	     	 /* in this section
+			/* in this section
 	     	  * the logging has to momentarily stop
 	     	  * then the x,y,z,longitude and latitude values are all stored with respect to the time
 	     	  * that data is changed to XML using the XML creator class
 	     	  * And then stored in a file on the SD card     	
 	     	  * 
-	     	  * */ 
+	     	  * */ 			
 			mLoggerService.stopLogging();
 			mLoggerService.StoreLatLongTimeSpeed(location);
-						
+			mLoggerService.startLogging();			
 			
 		 /* Intent intent = new Intent();
 		  intent.setClass(getActivity(), IssueList.class);

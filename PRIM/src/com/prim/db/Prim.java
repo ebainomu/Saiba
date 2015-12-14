@@ -66,10 +66,10 @@ public final class Prim
    public static final class Xyz extends XYZColumns implements android.provider.BaseColumns
    {
       /** The MIME type of a CONTENT_URI subdirectory of a single track. */
-      public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.nl.sogeti.android.track";
-      /** The MIME type of CONTENT_URI providing a directory of tracks. */
-      public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.nl.sogeti.android.track";
-      /** The content:// style URL for this provider, content://nl.sogeti.android.gpstracker/tracks */
+      public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.com.prim.xyz";
+      /** The MIME type of CONTENT_URI providing a directory of xyz. */
+      public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.com.prim.xyz";
+      /** The content:// style URL for this provider, content://com.prim/xyz */
       public static final Uri CONTENT_URI = Uri.parse( "content://" + Prim.AUTHORITY + "/" + Xyz.TABLE );
 
       /** The name of this table */
@@ -80,6 +80,9 @@ public final class Prim
                                           "," + " " + Xyz.CREATION_TIME + " " + Xyz.CREATION_TIME_TYPE + 
                                           "," + " " + Xyz.TIME + " "  + Xyz.TIME_TYPE + 
                                           "," + " " + Xyz.SPEED + " " + Xyz.SPEED_TYPE +
+                                          "," + " " + Xyz.X + " " + Xyz.X_TYPE +
+                                          "," + " " + Xyz.Y + " " + Xyz.Z_TYPE +
+                                          "," + " " + Xyz.Z + " " + Xyz.Z_TYPE +
                                           ");";
    }
    
@@ -282,6 +285,10 @@ public final class Prim
    {
 	   public static final String LABEL ="label";
 	   public static final String SPEED = "speed";
+	   public static final String X = "x";
+	   public static final String Y = "y";
+	   public static final String Z = "z";
+	   
 	   public static final String CREATION_TIME = "creationtime";
 	   static final String CREATION_TIME_TYPE = "INTEGER NOT NULL";
 	   static final String LABEL_TYPE = "TEXT";
@@ -289,7 +296,10 @@ public final class Prim
 	   /** The recorded time */
 	   public static final String TIME = "time";
 	   static final String TIME_TYPE      = "INTEGER NOT NULL";
-	   static final String SPEED_TYPE     = "REAL NOT NULL";	
+	   static final String SPEED_TYPE     = "REAL NOT NULL";
+	   static final String X_TYPE      = "INTEGER NOT NULL";
+	   static final String Y_TYPE      = "INTEGER NOT NULL";
+	   static final String Z_TYPE      = "INTEGER NOT NULL";
 
    }   
    
@@ -305,6 +315,7 @@ public final class Prim
 	      public static final String SPEED = "speed";
 	      	      /** The segment _id to which this segment belongs */
 	      public static final String SEGMENT = "tracksegment";
+	      public static final String LABEL ="label";	      
 	      /** The accuracy of the fix */
 	      public static final String ACCURACY = "accuracy";
 	      static final String LATITUDE_TYPE  = "REAL NOT NULL";
@@ -314,6 +325,7 @@ public final class Prim
 	      static final String SEGMENT_TYPE   = "INTEGER NOT NULL";
 	      static final String ACCURACY_TYPE  = "REAL";
 	      static final String _ID_TYPE       = "INTEGER PRIMARY KEY AUTOINCREMENT";
+	      static final String LABEL_TYPE = "TEXT";
    }
    
    /**
