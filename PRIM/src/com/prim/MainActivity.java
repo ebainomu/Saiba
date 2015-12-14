@@ -6,27 +6,34 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.prim.custom.CustomActivity;
+import com.prim.logger.GPSLoggerServiceManager;
+import com.prim.logger.IGPSLoggerServiceRemote;
 import com.prim.model.Data;
 import com.prim.ui.LeftNavAdapter;
 import com.prim.ui.MainFragment;
 import com.prim.ui.Profile;
 import com.prim.ui.Settings;
+
 import android.location.Location;
 import dev.baalmart.prim.R;
+
 import java.util.ArrayList;
 
 public class MainActivity extends CustomActivity
@@ -36,58 +43,58 @@ public class MainActivity extends CustomActivity
   @SuppressWarnings("deprecation")
   private ActionBarDrawerToggle drawerToggle;
   
+  //private GPSLoggerServiceManager mLoggerServiceManager;
+  private IGPSLoggerServiceRemote mGPSLoggerRemote;
+  protected static final String TAG = "Main Activity";
+  
   //private FixedMyLocationOverlay mMylocation;
 
-  private void setupContainer(int paramInt)
+  private void setupContainer(int pos)
   {
-	  //Logout
-    if (paramInt == 4)
+	    String str = getString(R.string.app_name);
+	    //Object localObject = null;
+	    Fragment fragment = null;
+	  
+	  //******************Logout********************************
+    if (pos == 4)
     {
       startActivity(new Intent(this, Login.class));
       finish();
-    }
-    
-    String str = getString(R.string.app_name);
-    Object localObject = null;
-    if (paramInt == 0)
+    }    
+   
+    if (pos == 0)
     {
-      localObject = new Profile();
+    	fragment = new Profile();
       str = "Martin Bbaale";
     }
     
-    while (localObject == null)
+    while (fragment == null)
     {
-      //return;
-    	
-    	//find
-      if (paramInt == 1)
+      if (pos == 1)
       {
-        localObject = new MainFragment();
+    	  fragment = new MainFragment();
       }
-      //favorite
-      else if (paramInt == 2)
+      //*********************favorite***********************
+      else if (pos == 2)
       {
         startActivity(new Intent(this, IssueList.class).putExtra("title", "Favorites"));
-        localObject = null;
+        fragment = null;
       }      
       
       else
       {
-        localObject = null;
-        
-        //settings
-        if (paramInt == 3)
+        //**********************settings*****************
+        if (pos == 3)
         {
-          localObject = new Settings();
+        	fragment = new Settings();
           str = "Settings";
         }
       }
-    }
-    
+    }    
     //setting the details of each item on the nav bar....
     getActionBar().setTitle(str);
     getSupportFragmentManager().beginTransaction().
-    replace(R.id.content_frame, (Fragment)localObject).commit();
+    replace(R.id.content_frame, (Fragment)fragment).commit();
   }
 
   private void setupDrawer()
@@ -117,7 +124,7 @@ public class MainActivity extends CustomActivity
     drawerLeft = ((ListView)findViewById(R.id.left_drawer));
     View localView = getLayoutInflater().inflate(R.layout.left_nav_header, null);
     drawerLeft.addHeaderView(localView);
-    ArrayList localArrayList = new ArrayList();
+    ArrayList<Data> localArrayList = new ArrayList<Data>();
     localArrayList.add(new Data(new String[] { "Find" }, new int[] { R.drawable.ic_nav1, R.drawable.ic_nav1_sel }));
     localArrayList.add(new Data(new String[] { "Favorite" }, new int[] { R.drawable.ic_nav2, R.drawable.ic_nav2_sel }));
     localArrayList.add(new Data(new String[] { "Settings" }, new int[] { R.drawable.ic_nav3, R.drawable.ic_nav3_sel }));
@@ -129,10 +136,37 @@ public class MainActivity extends CustomActivity
     {
       public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, int paramAnonymousInt, long paramAnonymousLong)
       {
+    	 int position = paramAnonymousAdapterView.getSelectedItemPosition();
+    	 //int position = paramAnonymousView.getId();
+    	 
+    	    	  
         /*if (paramAnonymousInt != 2)
           localLeftNavAdapter.setSelection(paramAnonymousInt - 1);
-        drawerLayout.closeDrawers();
-        MainActivity.this.setupContainer(paramAnonymousInt);*/
+          drawerLayout.closeDrawers();
+          MainActivity.this.setupContainer(paramAnonymousInt);
+    	  */
+    	  
+    	 /* if (paramAnonymousInt != 2) 
+    	  {
+    		  drawerLayout.closeDrawers();*/
+    	  switch(position)
+    	  {
+    	  case 0:
+    		  //drawerLayout.closeDrawers();
+    		  setupContainer(0);
+    	  case 1:
+    		 //drawerLayout.closeDrawers();
+    		  setupContainer(1);
+    	  
+    	  case 3:
+    		// drawerLayout.closeDrawers();
+    		  setupContainer(3);
+    		  
+    	  case 4:
+    		  setupContainer(4);
+    	 		  
+    	  } 
+    	 // }
       }
     });
   }
@@ -171,10 +205,7 @@ public class MainActivity extends CustomActivity
   @Override
 	protected void onPause() {
 	  super.onPause();
-	 /* Intent  i = new Intent(this, MainActivity.class);
-	  startActivity(i);*/
-	  /*Intent  i = new Intent(this, MainActivity.class);
-	  startActivity(i);*/
+	  setupContainer(1);
   }
   
   @Override
@@ -183,13 +214,22 @@ public class MainActivity extends CustomActivity
 	  super.onResume();
 	 /* Intent  i = new Intent(this, MainActivity.class);
 	  startActivity(i);*/
+	  setupContainer(1);
   }
   
   @Override
 	protected void onStop() {
 	  super.onStop();
-	/*  Intent  i = new Intent(this, MainActivity.class);
-	  startActivity(i);*/
+	  try
+      {
+         this.mGPSLoggerRemote.stopLogging();
+      }
+      catch (RemoteException e)
+      {
+         Log.e( TAG, "Could not stop GPSLoggerService.", e );
+      }
+	  finish();
+	
   }
   
   

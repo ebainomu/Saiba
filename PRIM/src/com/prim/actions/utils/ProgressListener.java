@@ -6,9 +6,7 @@ import android.net.Uri;
 /**
  * Interface to which a Activity / Context can conform to receive progress
  * updates from async tasks
- * 
- * @version $Id:$
- * @author rene (c) May 29, 2011, Sogeti B.V.
+
  */
 public interface ProgressListener
 {

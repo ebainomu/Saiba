@@ -12,10 +12,12 @@ import java.util.Vector;
 import java.util.concurrent.Semaphore;
 
 import com.prim.MainActivity;
+import com.prim.db.Prim.Locations;
 import com.prim.db.Prim.Media;
 import com.prim.db.Prim.MetaData;
 import com.prim.db.Prim.Tracks;
 import com.prim.db.Prim.Waypoints;
+import com.prim.db.Prim.Xyz;
 import com.prim.logger.IGPSLoggerServiceRemote;
 import com.prim.streaming.StreamUtils;
 //import dev.ugasoft.android.gps.streaming.StreamUtils;
@@ -120,7 +122,7 @@ public class GPSLoggerService extends Service implements LocationListener
     */
    private static final int START_STICKY = 1;
 
-   public static final String COMMAND = "nl.sogeti.android.gpstracker.extra.COMMAND";
+   public static final String COMMAND = "com.prim.extra.COMMAND";
    public static final int EXTRA_COMMAND_START = 0;
    public static final int EXTRA_COMMAND_PAUSE = 1;
    public static final int EXTRA_COMMAND_RESUME = 2;
@@ -142,8 +144,10 @@ public class GPSLoggerService extends Service implements LocationListener
    private boolean mStreamBroadcast;
 
    private long mTrackId = -1;
+   private long mXyz = -1;
    private long mSegmentId = -1;
    private long mWaypointId = -1;
+   private long mLocationId = -1;
    private int mPrecision;
    private int mLoggingState = Constants.STOPPED;
    private boolean mStartNextSegment;
@@ -713,7 +717,7 @@ public class GPSLoggerService extends Service implements LocationListener
    /**
     * (non-Javadoc)
     * 
-    * @see nl.sogeti.android.gpstracker.IGPSLoggerService#getLoggingState()
+    *
     */
    protected boolean isLogging()
    {
@@ -824,8 +828,7 @@ public class GPSLoggerService extends Service implements LocationListener
 
    /**
     * (non-Javadoc)
-    * 
-    * @see nl.sogeti.android.gpstracker.IGPSLoggerService#stopLogging()
+ 
     */
    public synchronized void stopLogging()
    {
@@ -1107,7 +1110,7 @@ public class GPSLoggerService extends Service implements LocationListener
     * 
     * @param msg
     */
-   private void _handleMessage(Message msg)
+   public void _handleMessage(Message msg) //changed the visibity to public...
    {
       if (DEBUG)
       {
@@ -1384,6 +1387,8 @@ public class GPSLoggerService extends Service implements LocationListener
     * Use the ContentResolver mechanism to store a received location
     * 
     * @param location
+    * 
+    * 
     */
    public void storeLocation(Location location)
    {
@@ -1416,6 +1421,30 @@ public class GPSLoggerService extends Service implements LocationListener
       mWaypointId = Long.parseLong(inserted.getLastPathSegment());
    }
 
+   public void StoreLatLongTimeSpeed(Location location)
+   {
+	   
+	   if (!isLogging())
+	      {
+	         Log.e(TAG, String.format("Not logging but storing location %s, prepare to fail", location.toString()));
+	      }
+	      ContentValues args = new ContentValues();
+	      
+	      args.put(Locations.LATITUDE, Double.valueOf(location.getLatitude()));
+	      args.put(Locations.LONGITUDE, Double.valueOf(location.getLongitude()));
+	      args.put(Locations.SPEED, Float.valueOf(location.getSpeed()));
+	      args.put(Locations.TIME, Long.valueOf(System.currentTimeMillis()));
+	      if (location.hasAccuracy())
+	      {
+	         args.put(Waypoints.ACCURACY, Float.valueOf(location.getAccuracy()));
+	      }
+	      
+	      Uri locationInsertUri = Uri.withAppendedPath(Xyz.CONTENT_URI, mXyz + "/segments/" + mSegmentId + "/locations");
+	      Uri inserted = this.getContentResolver().insert(locationInsertUri, args);
+	      mLocationId = Long.parseLong(inserted.getLastPathSegment());
+	   
+   }
+   
    /**
     * Consult broadcast options and execute broadcast if necessary
     * 
@@ -1469,7 +1498,7 @@ public class GPSLoggerService extends Service implements LocationListener
       return (info != null && info.isConnected());
    }
 
-   private void soundGpsSignalAlarm()
+   public void soundGpsSignalAlarm() //from private to public....
    {
       Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
       if (alert == null)
@@ -1481,6 +1510,7 @@ public class GPSLoggerService extends Service implements LocationListener
          }
       }
       MediaPlayer mMediaPlayer = new MediaPlayer();
+      
       try
       {
          mMediaPlayer.setDataSource(GPSLoggerService.this, alert);

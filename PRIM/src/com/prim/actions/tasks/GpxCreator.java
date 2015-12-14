@@ -36,7 +36,7 @@ public class GpxCreator extends XmlCreator
    public static final String NS_SCHEMA = "http://www.w3.org/2001/XMLSchema-instance";
    public static final String NS_GPX_11 = "http://www.topografix.com/GPX/1/1";
    public static final String NS_GPX_10 = "http://www.topografix.com/GPX/1/0";
-   public static final String NS_OGT_10 = "http://gpstracker.android.sogeti.nl/GPX/1/0";
+   public static final String NS_OGT_10 = "http://com.prim/GPX/1/0";
    public static final SimpleDateFormat ZULU_DATE_FORMATER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
    static
    {
@@ -44,7 +44,7 @@ public class GpxCreator extends XmlCreator
       ZULU_DATE_FORMATER.setTimeZone(utc); // ZULU_DATE_FORMAT format ends with Z for UTC so make that true
    }
 
-   private String TAG = "OGT.GpxCreator";
+   private String TAG = "PRIM.GpxCreator";
    private boolean includeAttachments;
    protected String mName;
 
@@ -176,7 +176,7 @@ public class GpxCreator extends XmlCreator
       serializer.text("\n");
       serializer.startTag("", "gpx");
       serializer.attribute(null, "version", "1.1");
-      serializer.attribute(null, "creator", "nl.sogeti.android.gpstracker");
+      serializer.attribute(null, "creator", "com.prim");
       serializer.attribute(NS_SCHEMA, "schemaLocation", NS_GPX_11 + " http://www.topografix.com/gpx/1/1/gpx.xsd");
       serializer.attribute(null, "xmlns", NS_GPX_11);
 

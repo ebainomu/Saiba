@@ -41,12 +41,14 @@ import android.view.Window;
  * @author baalmart
  * 
  * This will be used to create the xml which will be collecting data from the sqlite database
+ * 
+ * this ones is used by the Gpx creator class while generating the XML data
  *
  */
 
 public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
 {
-   private String TAG = "OGT.XmlCreator";
+   private String TAG = "PRIM.XmlCreator";
    private String mExportDirectoryPath;
    private boolean mNeedsBundling;
    String mChosenName;

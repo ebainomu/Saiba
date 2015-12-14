@@ -49,7 +49,7 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
    public static final SimpleDateFormat ZULU_DATE_FORMAT_MS = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
    public static final SimpleDateFormat ZULU_DATE_FORMAT_BC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'UTC'");
    protected static final int DEFAULT_UNKNOWN_FILESIZE = 1024 * 1024 * 10;
-   private static final String TAG = "OGT.GpxParser";
+   private static final String TAG = "PRIM.GpxParser";
    static
    {
       TimeZone utc = TimeZone.getTimeZone("UTC");

@@ -63,23 +63,23 @@ public final class Prim
    }
    
    
-   public static final class xyz extends XYZColumns implements android.provider.BaseColumns
+   public static final class Xyz extends XYZColumns implements android.provider.BaseColumns
    {
       /** The MIME type of a CONTENT_URI subdirectory of a single track. */
       public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.nl.sogeti.android.track";
       /** The MIME type of CONTENT_URI providing a directory of tracks. */
       public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.nl.sogeti.android.track";
       /** The content:// style URL for this provider, content://nl.sogeti.android.gpstracker/tracks */
-      public static final Uri CONTENT_URI = Uri.parse( "content://" + Prim.AUTHORITY + "/" + xyz.TABLE );
+      public static final Uri CONTENT_URI = Uri.parse( "content://" + Prim.AUTHORITY + "/" + Xyz.TABLE );
 
       /** The name of this table */
       public static final String TABLE = "xyz";
       static final String CREATE_STATEMENT = 
-         "CREATE TABLE " + xyz.TABLE + "(" + " " + xyz._ID           + " " + xyz._ID_TYPE + 
-                                          "," + " " + xyz.LABEL          + " " + xyz.LABEL_TYPE + 
-                                          "," + " " + xyz.CREATION_TIME + " " + xyz.CREATION_TIME_TYPE + 
-                                          "," + " " + xyz.TIME + " "  + xyz.TIME_TYPE + 
-                                          "," + " " + xyz.SPEED + " " + xyz.SPEED_TYPE +
+         "CREATE TABLE " + Xyz.TABLE + "(" + " " + Xyz._ID           + " " + Xyz._ID_TYPE + 
+                                          "," + " " + Xyz.LABEL          + " " + Xyz.LABEL_TYPE + 
+                                          "," + " " + Xyz.CREATION_TIME + " " + Xyz.CREATION_TIME_TYPE + 
+                                          "," + " " + Xyz.TIME + " "  + Xyz.TIME_TYPE + 
+                                          "," + " " + Xyz.SPEED + " " + Xyz.SPEED_TYPE +
                                           ");";
    }
    
@@ -161,7 +161,7 @@ public final class Prim
    
   /* the location parameters*/
    
-   public static final class Location extends LocationColumns implements android.provider.BaseColumns
+   public static final class Locations extends LocationColumns implements android.provider.BaseColumns
    {
 
       /** The MIME type of a CONTENT_URI subdirectory of a single waypoint. */
@@ -170,21 +170,21 @@ public final class Prim
       public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.nl.sogeti.android.waypoint";
       
       /** The name of this table, Location */
-      public static final String TABLE = "location";
+      public static final String TABLE = "locations";
       static final String CREATE_STATEMENT = "CREATE TABLE " + Waypoints.TABLE + 
-      "(" + " " + BaseColumns._ID + " " + Location._ID_TYPE + 
-      "," + " " + Location.LATITUDE  + " " + Location.LATITUDE_TYPE + 
-      "," + " " +Location.LONGITUDE + " " + Location.LONGITUDE_TYPE + 
-      "," + " " + Location.TIME      + " " + Location.TIME_TYPE + 
-      "," + " " + Location.SPEED     + " " + Location.SPEED + 
-      "," + " " + Location.SEGMENT   + " " + Location.SEGMENT_TYPE + 
-      "," + " " + Location.ACCURACY  + " " + Location.ACCURACY_TYPE +      
+      "(" + " " + BaseColumns._ID + " " + Locations._ID_TYPE + 
+      "," + " " + Locations.LATITUDE  + " " + Locations.LATITUDE_TYPE + 
+      "," + " " +Locations.LONGITUDE + " " + Locations.LONGITUDE_TYPE + 
+      "," + " " + Locations.TIME      + " " + Locations.TIME_TYPE + 
+      "," + " " + Locations.SPEED     + " " + Locations.SPEED + 
+      "," + " " + Locations.SEGMENT   + " " + Locations.SEGMENT_TYPE + 
+      "," + " " + Locations.ACCURACY  + " " + Locations.ACCURACY_TYPE +      
       ");";
       
       //making alterations......
       static final String[] UPGRADE_STATEMENT_7_TO_8 = 
          {
-            "ALTER TABLE " + Location.TABLE + " ADD COLUMN " + LocationColumns.ACCURACY + " " + LocationColumns.ACCURACY_TYPE +";",
+            "ALTER TABLE " + Locations.TABLE + " ADD COLUMN " + LocationColumns.ACCURACY + " " + LocationColumns.ACCURACY_TYPE +";",
          };
 
       /**
@@ -199,11 +199,11 @@ public final class Prim
       
       public static Uri buildUri(long xyzId, long segmentId, long locationId)
       {
-         Builder builder = xyz.CONTENT_URI.buildUpon();
+         Builder builder = Xyz.CONTENT_URI.buildUpon();
          ContentUris.appendId(builder, xyzId);
          builder.appendPath(Segments.TABLE);
          ContentUris.appendId(builder, segmentId);
-         builder.appendPath(Location.TABLE);
+         builder.appendPath(Locations.TABLE);
          ContentUris.appendId(builder, locationId);
          
          return builder.build();

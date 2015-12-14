@@ -81,6 +81,7 @@ public class ControlLogging extends Activity
             finish();
          }
       };
+      
    private OnClickListener mDialogClickListener = new OnClickListener()
       {
          @Override

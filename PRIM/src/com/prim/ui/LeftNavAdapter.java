@@ -20,10 +20,11 @@ public class LeftNavAdapter extends BaseAdapter
   private ArrayList<Data> items;
   private int selection;
 
+  //instantiates a new left navigation adapter
   public LeftNavAdapter(Context paramContext, ArrayList<Data> paramArrayList)
   {
-    context = paramContext;
-    items = paramArrayList;
+    context = paramContext; //context of this application
+    items = paramArrayList; //items displayed in the nav
   }
 
   public int getCount()

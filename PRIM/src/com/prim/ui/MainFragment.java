@@ -2,7 +2,10 @@ package com.prim.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,19 +18,28 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.prim.MainActivity;
 import com.prim.Others;
 import com.prim.IssueList;
 import com.prim.custom.CustomFragment;
+import com.prim.logger.GPSLoggerService;
+import com.prim.logger.GPSLoggerServiceManager;
+import com.prim.logger.IGPSLoggerServiceRemote;
 import com.prim.model.Data;
 
 import dev.baalmart.prim.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainFragment extends CustomFragment
 {
   protected static final String TAG = null;
 private ArrayList<Data> iList;
+
+private GPSLoggerServiceManager mLoggerServiceManager;
+private IGPSLoggerServiceRemote mGPSLoggerRemote;
+private GPSLoggerService mLoggerService;
 
   private void loadDummyData()
   {
@@ -68,7 +80,7 @@ private ArrayList<Data> iList;
     iList.add(new Data(new String[] { "sudden breaking" }, 
     		new int[] { R.drawable.sudden_breaking, 
     		R.drawable.sudden_breaking, 
-    		R.drawable.sudden_breaking }));    
+    		R.drawable.sudden_breaking }));   
     
    //gravel
    // ArrayList localArrayList2 = iList;   
@@ -95,23 +107,68 @@ private ArrayList<Data> iList;
     ///handling item click events
     localGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
     {
-      public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, 
+      private Location location;
+
+	public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, 
     		  int paramAnonymousInt, long paramAnonymousLong)
       {
+		  //mLoggerService.storeLocation(location);
+		try
+		{
+
+	     	 /* in this section
+	     	  * the logging has to momentarily stop
+	     	  * then the x,y,z,longitude and latitude values are all stored with respect to the time
+	     	  * that data is changed to XML using the XML creator class
+	     	  * And then stored in a file on the SD card     	
+	     	  * 
+	     	  * */ 
+			mLoggerService.stopLogging();
+			mLoggerService.StoreLatLongTimeSpeed(location);
+						
+			
+		 /* Intent intent = new Intent();
+		  intent.setClass(getActivity(), IssueList.class);
+		  intent.putExtra("title", ((Data)iList.get(paramAnonymousInt)).getTexts()[0]).
+ 		  putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
+ 		  putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]);*/		  
+		     	  
+	    
+	   /*     startActivity(new Intent(getActivity(), IssueList.class).putExtra
+	        		("title", ((Data)iList.get(paramAnonymousInt)).getTexts()[0]).
+	        		putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
+	        		putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]));} 
+	   */	  
+		  
+		}
+		
+    	catch (IllegalArgumentException e)
+        {
+           Log.e(TAG, "Could not start GPSLoggerService.", e);
+       	Intent intent = new Intent();
+		intent.setClass(getActivity(), MainActivity.class);
+        }
+        catch (SecurityException e)
+        {
+           Log.e(TAG, "Could not start GPSLoggerService.", e);
+       	Intent intent = new Intent();
+		intent.setClass(getActivity(), MainActivity.class);
+        }
+        catch (IllegalStateException e)
+        {
+           Log.e(TAG, "Could not start GPSLoggerService.", e);
+       	Intent intent = new Intent();
+		intent.setClass(getActivity(), MainActivity.class);
+        }
     	
-    	       /* startActivity(new Intent(getActivity(), Others.class).putExtra
-          		*/
-    	 /* 
-    	  try{
-              startActivity(new Intent(getActivity(), PlaceList.class).putExtra
-        		("title", ((Data)iList.get(paramAnonymousInt)).getTexts()[0]).
-        		putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
-        		putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]));} 
-    	  catch( Exception e){
-    		
-    	  }*/
-    	  
-    	  
+    	catch (NullPointerException e)
+        {
+           Log.e(TAG, "Could not start GPSLoggerService.", e);
+       	Intent intent = new Intent();
+		intent.setClass(getActivity(), MainActivity.class);
+        }
+	
+   
       }
     });    
     
@@ -120,12 +177,54 @@ private ArrayList<Data> iList;
       
   }
 
+  
+  //the click listener for the upper section of the main fragment....the sign for location image....
   @Override
   public void onClick(View paramView)
   {
     super.onClick(paramView);
-    if (paramView.getId() == R.id.nearby)
-      startActivity(new Intent(getActivity(), IssueList.class).putExtra("title", getString(R.string.nearby)));
+    if (paramView.getId() == R.id.nearby) 
+    {
+    	//planning to use this particular one to start and stop the logging
+      	
+         Message msg = null;
+	
+    	try 
+    	{
+    	 //mLoggerService._handleMessage(msg);
+    		
+    	mLoggerService. soundGpsSignalAlarm();	
+    	mLoggerService.startLogging();	
+    	
+		} 
+    	catch (IllegalArgumentException e)
+        {
+           Log.e(TAG, "Could not start GPSLoggerService.", e);
+       	Intent intent = new Intent();
+		intent.setClass(getActivity(), MainActivity.class);
+        }
+        catch (SecurityException e)
+        {
+           Log.e(TAG, "Could not start GPSLoggerService.", e);
+       	Intent intent = new Intent();
+		intent.setClass(getActivity(), MainActivity.class);
+        }
+        catch (IllegalStateException e)
+        {
+           Log.e(TAG, "Could not start GPSLoggerService.", e);
+       	Intent intent = new Intent();
+		intent.setClass(getActivity(), MainActivity.class);
+        }
+    	
+    	catch (NullPointerException e)
+        {
+           Log.e(TAG, "Could not start GPSLoggerService.", e);
+       	Intent intent = new Intent();
+		intent.setClass(getActivity(), MainActivity.class);
+        }
+    
+    }
+      //startActivity(new Intent(getActivity(), IssueList.class).putExtra("title", getString(R.string.nearby)));
   }
 
   @SuppressLint({"InflateParams"})
