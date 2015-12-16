@@ -26,10 +26,10 @@ import android.util.Log;
 
 /**
  * Goal of this Content Provider is to make the GPS Tracking information uniformly 
- * available to this application and even other applications. The GPS-tracking 
- * database can hold, tracks, segments or waypoints 
+ * available to this application and even other applications. The PRIM 
+ * database can hold, routes, segments or waypoints or locations. 
  * <p>
- * A track is an actual route taken from start to finish. All the GPS locations
+ * A route taken from start to finish. All the GPS locations
  * collected are waypoints. Waypoints taken in sequence without loss of GPS-signal
  * are considered connected and are grouped in segments. A route is build up out of
  * 1 or more segments.
@@ -124,7 +124,9 @@ public class PrimProvider extends ContentProvider
    private static final int SEGMENT_METADATA  = 16;
    private static final int WAYPOINT_METADATA = 17;
    private static final int METADATA          = 18;
-   private static final int METADATA_ID       = 19; 
+   private static final int METADATA_ID       = 19;
+   private static final int LOCATIONS         = 20;
+   private static final int LOCATION_ID       = 21;
    
    private static final String[] SUGGEST_PROJECTION = 
       new String[] 

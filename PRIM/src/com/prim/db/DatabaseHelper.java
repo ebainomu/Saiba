@@ -2,6 +2,9 @@ package com.prim.db;
 
 import java.util.Date;
 
+import com.prim.db.Prim.Labels;
+import com.prim.db.Prim.LocationColumns;
+import com.prim.db.Prim.Locations;
 import com.prim.db.Prim.Media;
 import com.prim.db.Prim.MediaColumns;
 import com.prim.db.Prim.MetaData;
@@ -10,6 +13,8 @@ import com.prim.db.Prim.Tracks;
 import com.prim.db.Prim.TracksColumns;
 import com.prim.db.Prim.Waypoints;
 import com.prim.db.Prim.WaypointsColumns;
+import com.prim.db.Prim.Xyz;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -26,6 +31,17 @@ import android.util.Log;
  * To be used by database adapters, like a content provider, that implement a
  * required functionality set
  * 
+ * To create and upgrade the prim database, I have created a subclass 
+ * of the SQLiteOpenHelper class
+ * 
+ * 
+ * The SQLiteOpenHelper class provides the getReadableDatabase() 
+ * and getWriteableDatabase() methods to get access to an 
+ * SQLiteDatabase object; either in read or write mode.
+
+    The database tables should use the identifier _id for the 
+    primary key of the table. Several Android functions rely on this standard.
+ * 
  * @version $Id$
  * * @author baalmart
 
@@ -35,6 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
    private Context mContext;
    private final static String TAG = "PRIM.DatabaseHelper";
 
+   //a constructor for calling the super class to call the database name and the version
    public DatabaseHelper(Context context)
    {
       super(context, Prim.DATABASE_NAME, null, Prim.DATABASE_VERSION);
@@ -46,7 +63,35 @@ public class DatabaseHelper extends SQLiteOpenHelper
     * @see
     * android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite
     * .SQLiteDatabase)
+    * 
+    * the onCreate is called by the framework if the database but not yet created
+    * 
+    * SQLiteDatabase is the base class for working with a SQLite database 
+    *  and provides methods to open, query, update and close the database.
+
+       More specifically SQLiteDatabase provides the insert(), update() and 
+       delete() methods.
+
+       In addition it provides the execSQL() method, which allows to execute an
+        SQL statement directly.
+
+       The object ContentValues allows to define key/values. The key represents the table 
+       column identifier and the value represents the content for the table record in 
+       this column. ContentValues can be used for inserts and updates of database entries.
+
+       Queries can be created via the rawQuery() and query() methods or via 
+       the SQLiteQueryBuilder class .
+
+       rawQuery() directly accepts an SQL select statement as input.
+
+       query() provides a structured interface for specifying the SQL query.
+
+       SQLiteQueryBuilder is a convenience class that helps to build SQL queries.
+    * 
+    * 
+    * 
     */
+   
    @Override
    public void onCreate(SQLiteDatabase db)
    {
@@ -55,6 +100,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
       db.execSQL(Tracks.CREATE_STATEMENT);
       db.execSQL(Media.CREATE_STATEMENT);
       db.execSQL(MetaData.CREATE_STATEMENT);
+      db.execSQL(Locations.CREATE_STATEMENT);
+      db.execSQL(Xyz.CREATE_STATEMENT);
    }
 
    /**
@@ -63,6 +110,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
     * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase,
     *      int, int)
     * @see Prim.DATABASE_VERSION
+    * 
+    * called, if the database version is increased in your application code. 
+    * This method allows you to update an existing database schema or to drop the 
+    * existing database and recreate it via the onCreate() method    * 
+    * 
     */
    @Override
    public void onUpgrade(SQLiteDatabase db, int current, int targetVersion)
@@ -84,6 +136,16 @@ public class DatabaseHelper extends SQLiteOpenHelper
          }
          current = 8;
       }
+      
+      if (current == 7) // From 7 to 8 ( more locations data ) 
+      {
+         for (String statement : Locations.UPGRADE_STATEMENT_7_TO_8)
+         {
+            db.execSQL(statement);
+         }
+         current = 8;
+      }
+      
       if (current == 8) // From 8 to 9 ( media Uri data ) 
       {
          db.execSQL(Media.CREATE_STATEMENT);
@@ -110,12 +172,22 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
    }
 
+   /*inserting waypoints/locations
+   * The object ContentValues allows to define key/values. 
+   * The key represents the table column identifier and the 
+   * value represents the content for 
+   * the table record in this column. ContentValues can 
+   * be used for inserts and updates of database entries. 
+   * 
+   * */   
+   
    int bulkInsertWaypoint(long trackId, long segmentId, ContentValues[] valuesArray)
    {
       if (trackId < 0 || segmentId < 0)
       {
-         throw new IllegalArgumentException("Track and segments may not the less then 0.");
+         throw new IllegalArgumentException("Track and segments may not be the less then 0.");
       }
+      
       int inserted = 0;
 
       SQLiteDatabase sqldb = getWritableDatabase();
@@ -145,6 +217,91 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
       return inserted;
    }
+   
+      /*  same for the locations*/
+   
+   int bulkInsertLocations(long labelId, long segmentId, ContentValues[] valuesArray)
+   {
+	   
+	   //lets make some rules in our locations tables
+      if (labelId < 0)
+      {
+         throw new IllegalArgumentException("xyz may not be the less then 0.");
+      }
+      
+      int inserted = 0;
+      SQLiteDatabase sqldb = getWritableDatabase();
+      sqldb.beginTransaction();
+      
+      try
+      {
+         for (ContentValues args : valuesArray)
+         {
+            args.put(Locations.SEGMENT, segmentId);
+
+            long id = sqldb.insert(Locations.TABLE, null, args);
+            if (id >= 0)
+            {
+               inserted++;																																									
+            }
+         }
+         sqldb.setTransactionSuccessful();
+
+      }
+      finally
+      {
+         if (sqldb.inTransaction())
+         {
+            sqldb.endTransaction();
+         }
+      }
+
+      return inserted;
+   }
+   
+   
+   /**
+    * Creates a location under the current label with the current time
+    * on which the location is reached
+    * 
+    * @param label label
+    * @param segment segment
+    * @param latitude latitude
+    * @param longitude longitude
+    * @param time time
+    * @param speed the measured speed
+    * @return
+    */
+   long insertLocation(long labelId, long segmentId, Location location)
+   {
+      if (labelId < 0 || segmentId < 0)
+      {
+         throw new IllegalArgumentException("label and segments may not be less than 0.");
+      }
+
+      SQLiteDatabase sqldb = getWritableDatabase();
+
+      ContentValues args = new ContentValues();
+      args.put(LocationColumns.SEGMENT, segmentId);
+      args.put(LocationColumns.TIME, location.getTime());
+      args.put(LocationColumns.LATITUDE, location.getLatitude());
+      args.put(LocationColumns.LONGITUDE, location.getLongitude());
+      args.put(LocationColumns.SPEED, location.getSpeed());
+      args.put(LocationColumns.ACCURACY, location.getAccuracy());
+   
+
+      long locationId = sqldb.insert(Locations.TABLE, null, args);
+
+      ContentResolver resolver = this.mContext.getContentResolver();
+      Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/segments/" + segmentId + "/locations");
+      resolver.notifyChange(notifyUri, null);
+
+      //      Log.d( TAG, "Location stored: "+notifyUri);
+      return locationId;
+   }
+   
+   
+   
 
    /**
     * Creates a waypoint under the current track segment with the current time

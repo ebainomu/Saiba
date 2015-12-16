@@ -1431,6 +1431,7 @@ public class GPSLoggerService extends Service implements LocationListener
 	      ContentValues args = new ContentValues();
 	      
 	      args.put(Locations.LATITUDE, Double.valueOf(location.getLatitude()));
+	      
 	      args.put(Locations.LONGITUDE, Double.valueOf(location.getLongitude()));
 	      args.put(Locations.SPEED, Float.valueOf(location.getSpeed()));
 	      args.put(Locations.TIME, Long.valueOf(System.currentTimeMillis()));
@@ -1456,8 +1457,10 @@ public class GPSLoggerService extends Service implements LocationListener
 
       if (mStreamBroadcast)
       {
-         final long minDistance = (long) PreferenceManager.getDefaultSharedPreferences(this).getFloat("streambroadcast_distance_meter", 5000F);
-         final long minTime = 60000 * Long.parseLong(PreferenceManager.getDefaultSharedPreferences(this).getString("streambroadcast_time", "1"));
+         final long minDistance = (long) PreferenceManager.getDefaultSharedPreferences(this).
+        		 getFloat("streambroadcast_distance_meter", 5000F);
+         final long minTime = 60000 * Long.parseLong(PreferenceManager.
+        		 getDefaultSharedPreferences(this).getString("streambroadcast_time", "1"));
          final long nowTime = location.getTime();
          if (mPreviousLocation != null)
          {
