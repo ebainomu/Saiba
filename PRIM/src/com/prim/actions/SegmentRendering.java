@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Vector;
 
 import com.prim.db.Prim;
-import com.prim.db.Prim.Media;
-import com.prim.db.Prim.Waypoints;
+import com.prim.db.Prim.Locations;
 import com.prim.utils.UnitsI18n;
 import com.prim.viewer.map.LoggerMap;
+
 
 
 //import com.prim.viewer.map.LoggerMap;
@@ -127,7 +127,7 @@ public class SegmentRendering
       @Override
       public void run()
       {
-         SegmentRendering.this.calculateMediaAsync();
+        // SegmentRendering.this.calculateMediaAsync();
       }
    };
 
@@ -330,8 +330,8 @@ public class SegmentRendering
 
       if (mWaypointsCursor == null)
       {
-         mWaypointsCursor = this.mResolver.query(this.mWaypointsUri, new String[] { Waypoints.LATITUDE, Waypoints.LONGITUDE, Waypoints.SPEED, Waypoints.TIME,
-               Waypoints.ACCURACY, Waypoints.ALTITUDE }, null, null, null);
+         mWaypointsCursor = this.mResolver.query(this.mWaypointsUri, new String[] { Locations.LATITUDE, Locations.LONGITUDE, Locations.SPEED, Locations.TIME,
+               Locations.ACCURACY}, null, null, null);
          mRequeryFlag = false;
       }
       if (mRequeryFlag)
@@ -408,8 +408,9 @@ public class SegmentRendering
 
       if (mWaypointsCursor == null)
       {
-         mWaypointsCursor = this.mResolver.query(this.mWaypointsUri, new String[] { Waypoints.LATITUDE, Waypoints.LONGITUDE, Waypoints.SPEED, Waypoints.TIME,
-               Waypoints.ACCURACY }, null, null, null);
+         mWaypointsCursor = this.mResolver.query(this.mWaypointsUri, new String[] {
+        		 Locations.LATITUDE, Locations.LONGITUDE, Locations.SPEED, Locations.TIME,
+        		 Locations.ACCURACY }, null, null, null);
       }
       if (mRequeryFlag)
       {
@@ -467,7 +468,7 @@ public class SegmentRendering
       mHandler.post(mMediaCalculator);
    }
 
-   public synchronized void calculateMediaAsync()
+  /* public synchronized void calculateMediaAsync()
    {
       mMediaPathCalculation.clear();
       if (mMediaCursor == null)
@@ -543,7 +544,7 @@ public class SegmentRendering
       {
          //mAsyncOverlay.onDateOverlayChanged();
       }
-   }
+   }*/
 
    private void calculateStartStopCircles()
    {
@@ -958,7 +959,7 @@ public class SegmentRendering
       {
          try
          {
-            waypointsCursor = this.mResolver.query(this.mWaypointsUri, new String[] { Waypoints._ID }, null, null, null);
+            waypointsCursor = this.mResolver.query(this.mWaypointsUri, new String[] { Locations._ID }, null, null, null);
             mWaypointCount = waypointsCursor.getCount();
          }
          finally

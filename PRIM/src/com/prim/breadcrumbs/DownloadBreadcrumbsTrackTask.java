@@ -9,8 +9,8 @@ import com.prim.actions.tasks.GpxParser;
 import com.prim.actions.tasks.XmlCreator;
 import com.prim.actions.utils.ProgressListener;
 import com.prim.adapter.BreadcrumbsAdapter;
+import com.prim.db.Prim.Labels;
 import com.prim.db.Prim.MetaData;
-import com.prim.db.Prim.Tracks;
 import com.prim.utils.Pair;
 
 import dev.baalmart.prim.R;
@@ -147,7 +147,7 @@ public class DownloadBreadcrumbsTrackTask extends GpxParser
       super.onPostExecute(result);
 
       long ogtTrackId = Long.parseLong(result.getLastPathSegment());
-      Uri metadataUri = Uri.withAppendedPath(ContentUris.withAppendedId(Tracks.CONTENT_URI, ogtTrackId), "metadata");
+      Uri metadataUri = Uri.withAppendedPath(ContentUris.withAppendedId(Labels.CONTENT_URI, ogtTrackId), "metadata");
 
       BreadcrumbsTracks tracks = mAdapter.getBreadcrumbsTracks();
       Integer bcTrackId = mTrack.second;

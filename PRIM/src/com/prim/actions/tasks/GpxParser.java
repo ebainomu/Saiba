@@ -13,8 +13,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executor;
 
 import com.prim.actions.utils.ProgressListener;
-import com.prim.db.Prim.Tracks;
-import com.prim.db.Prim.Waypoints;
+import com.prim.db.Prim.Labels;
+import com.prim.db.Prim.Locations;
 import com.prim.utils.ProgressFilterInputStream;
 import com.prim.utils.UnicodeReader;
 
@@ -167,7 +167,7 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
                else
                {
                   ContentValues trackContent = new ContentValues();
-                  trackContent.put(Tracks.NAME, trackName);
+                  trackContent.put(Labels.NAME, trackName);
                   if (xmlParser.getName().equals("trk") && trackUri == null)
                   {
                      trackUri = startTrack(trackContent);
@@ -184,11 +184,11 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
                         attributeName = xmlParser.getAttributeName(i);
                         if (attributeName.equals(LATITUDE_ATRIBUTE))
                         {
-                           lastPosition.put(Waypoints.LATITUDE, Double.valueOf(xmlParser.getAttributeValue(i)));
+                           lastPosition.put(Locations.LATITUDE, Double.valueOf(xmlParser.getAttributeValue(i)));
                         }
                         else if (attributeName.equals(LONGITUDE_ATTRIBUTE))
                         {
-                           lastPosition.put(Waypoints.LONGITUDE, Double.valueOf(xmlParser.getAttributeValue(i)));
+                           lastPosition.put(Locations.LONGITUDE, Double.valueOf(xmlParser.getAttributeValue(i)));
                         }
                      }
                   }
@@ -251,13 +251,13 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
                }
                else if (xmlParser.getName().equals(TRACK_ELEMENT))
                {
-                  if (!lastPosition.containsKey(Waypoints.TIME))
+                  if (!lastPosition.containsKey(Locations.TIME))
                   {
-                     lastPosition.put(Waypoints.TIME, importDate);
+                     lastPosition.put(Locations.TIME, importDate);
                   }
-                  if (!lastPosition.containsKey(Waypoints.SPEED))
+                  if (!lastPosition.containsKey(Locations.SPEED))
                   {
-                     lastPosition.put(Waypoints.SPEED, 0);
+                     lastPosition.put(Locations.SPEED, 0);
                   }
                   bulk.add(lastPosition);
                   lastPosition = null;
@@ -269,7 +269,7 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
                if (name)
                {
                   ContentValues nameValues = new ContentValues();
-                  nameValues.put(Tracks.NAME, text);
+                  nameValues.put(Labels.NAME, text);
                   if (trackUri == null)
                   {
                      trackUri = startTrack(new ContentValues());
@@ -278,23 +278,16 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
                }
                else if (lastPosition != null && speed)
                {
-                  lastPosition.put(Waypoints.SPEED, Double.parseDouble(text));
+                  lastPosition.put(Locations.SPEED, Double.parseDouble(text));
                }
                else if (lastPosition != null && accuracy)
                {
-                  lastPosition.put(Waypoints.ACCURACY, Double.parseDouble(text));
+                  lastPosition.put(Locations.ACCURACY, Double.parseDouble(text));
                }
-               else if (lastPosition != null && bearing)
-               {
-                  lastPosition.put(Waypoints.BEARING, Double.parseDouble(text));
-               }
-               else if (lastPosition != null && elevation)
-               {
-                  lastPosition.put(Waypoints.ALTITUDE, Double.parseDouble(text));
-               }
+              
                else if (lastPosition != null && time)
                {
-                  lastPosition.put(Waypoints.TIME, parseXmlDateTime(text));
+                  lastPosition.put(Locations.TIME, parseXmlDateTime(text));
                }
             }
             eventType = xmlParser.next();
@@ -333,7 +326,7 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
 
    private Uri startTrack(ContentValues trackContent)
    {
-      return mContentResolver.insert(Tracks.CONTENT_URI, trackContent);
+      return mContentResolver.insert(Labels.CONTENT_URI, trackContent);
    }
 
    public static Long parseXmlDateTime(String text)
