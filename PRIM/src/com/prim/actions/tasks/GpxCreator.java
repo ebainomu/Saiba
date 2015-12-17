@@ -13,10 +13,9 @@ import java.util.TimeZone;
 
 import com.prim.actions.utils.ProgressListener;
 import com.prim.db.Prim;
-import com.prim.db.Prim.Media;
+import com.prim.db.Prim.Labels;
+import com.prim.db.Prim.Locations;
 import com.prim.db.Prim.Segments;
-import com.prim.db.Prim.Tracks;
-import com.prim.db.Prim.Waypoints;
 import com.prim.utils.Constants;
 
 import dev.baalmart.prim.R;
@@ -186,7 +185,7 @@ public class GpxCreator extends XmlCreator
       // <wpt/> [0...] Waypoints 
       if (includeAttachments)
       {
-         serializeWaypoints(mContext, serializer, Uri.withAppendedPath(trackUri, "/media"));
+         //serializeWaypoints(mContext, serializer, Uri.withAppendedPath(trackUri, "/media"));
       }
 
       // <trk/> [0...] Track 
@@ -218,7 +217,7 @@ public class GpxCreator extends XmlCreator
       String databaseName = null;
       try
       {
-         trackCursor = resolver.query(trackUri, new String[] { Tracks._ID, Tracks.NAME, Tracks.CREATION_TIME }, null, null, null);
+         trackCursor = resolver.query(trackUri, new String[] { Labels._ID, Labels.NAME, Labels.DETECTION_TIME }, null, null, null);
          if (trackCursor.moveToFirst())
          {
             databaseName = trackCursor.getString(1);
@@ -301,8 +300,8 @@ public class GpxCreator extends XmlCreator
       ContentResolver resolver = mContext.getContentResolver();
       try
       {
-         waypointsCursor = resolver.query(waypoints, new String[] { Waypoints.LONGITUDE, Waypoints.LATITUDE, Waypoints.TIME, Waypoints.ALTITUDE, Waypoints._ID, Waypoints.SPEED, Waypoints.ACCURACY,
-               Waypoints.BEARING }, null, null, null);
+         waypointsCursor = resolver.query(waypoints, new String[] { Locations.LONGITUDE, Locations.LATITUDE,Locations.TIME, Locations._ID, Locations.SPEED, Locations.ACCURACY,
+        		}, null, null, null);
          if (waypointsCursor.moveToFirst())
          {
             do
@@ -360,7 +359,7 @@ public class GpxCreator extends XmlCreator
 
    }
 
-   private void serializeWaypoints(Context context, XmlSerializer serializer, Uri media) throws IOException
+  /* private void serializeWaypoints(Context context, XmlSerializer serializer, Uri media) throws IOException
    {
       if (isCancelled())
       {
@@ -377,8 +376,8 @@ public class GpxCreator extends XmlCreator
          {
             do
             {
-               Uri waypointUri = Waypoints.buildUri(mediaCursor.getLong(1), mediaCursor.getLong(2), mediaCursor.getLong(3));
-               waypointCursor = resolver.query(waypointUri, new String[] { Waypoints.LATITUDE, Waypoints.LONGITUDE, Waypoints.ALTITUDE, Waypoints.TIME }, null, null, null);
+               Uri waypointUri = Locations.buildUri(mediaCursor.getLong(1), mediaCursor.getLong(2), mediaCursor.getLong(3));
+               waypointCursor = resolver.query(waypointUri, new String[] { Locations.LATITUDE, Locations.LONGITUDE, Waypoints.ALTITUDE, Waypoints.TIME }, null, null, null);
                serializer.text("\n");
                serializer.startTag("", "wpt");
                if (waypointCursor != null && waypointCursor.moveToFirst())
@@ -495,7 +494,7 @@ public class GpxCreator extends XmlCreator
          if (buf != null)
             buf.close();
       }
-   }
+   }*/
 
    @Override
    protected String getContentType()

@@ -21,10 +21,10 @@ import java.util.zip.ZipOutputStream;
 import org.xmlpull.v1.XmlSerializer;
 
 import com.prim.actions.utils.ProgressListener;
-import com.prim.db.Prim.Media;
-import com.prim.db.Prim.Tracks;
-import com.prim.db.Prim.Waypoints;
+import com.prim.db.Prim.Labels;
+import com.prim.db.Prim.Locations;
 import com.prim.utils.Constants;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -36,8 +36,7 @@ import android.util.Log;
 import android.view.Window;
 
 /**
- * 
- *
+ *  *
  * @author baalmart
  * 
  * This will be used to create the xml which will be collecting data from the sqlite database
@@ -92,7 +91,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       String trackName = "Untitled";
       try
       {
-         trackCursor = resolver.query(mTrackUri, new String[] { Tracks.NAME }, null, null, null);
+         trackCursor = resolver.query(mTrackUri, new String[] { Labels.NAME }, null, null, null);
          if (trackCursor.moveToLast())
          {
             trackName = cleanFilename(trackCursor.getString(0), trackName);
@@ -123,20 +122,20 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
          ContentResolver resolver = mContext.getContentResolver();
          try
          {
-            cursor = resolver.query(allWaypointsUri, new String[] { "count(" + Waypoints.TABLE + "." + Waypoints._ID + ")" }, null, null, null);
+            cursor = resolver.query(allWaypointsUri, new String[] { "count(" + Locations.TABLE + "." + Locations._ID + ")" }, null, null, null);
             if (cursor.moveToLast())
             {
                mProgressAdmin.setWaypointCount(cursor.getInt(0));
             }
             cursor.close();
-            cursor = resolver.query(allMediaUri, new String[] { "count(" + Media.TABLE + "." + Media._ID + ")" }, null, null, null);
+           /* cursor = resolver.query(allMediaUri, new String[] { "count(" + Media.TABLE + "." + Media._ID + ")" }, null, null, null);
             if (cursor.moveToLast())
             {
                 mProgressAdmin.setMediaCount(cursor.getInt(0));
             }
             cursor.close();
             cursor = resolver.query(allMediaUri, new String[] { "count(" + Tracks._ID + ")" }, Media.URI + " LIKE ? and " + Media.URI + " NOT LIKE ?",
-                  new String[] { "file://%", "%txt" }, null);
+                  new String[] { "file://%", "%txt" }, null);*/
             if (cursor.moveToLast())
             {
                mProgressAdmin.setCompress( cursor.getInt(0) > 0 ); 

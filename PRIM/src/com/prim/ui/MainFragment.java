@@ -1,8 +1,11 @@
 package com.prim.ui;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
@@ -21,7 +24,9 @@ import android.widget.Toast;
 import com.prim.MainActivity;
 import com.prim.Others;
 import com.prim.IssueList;
+import com.prim.actions.NameRoute;
 import com.prim.custom.CustomFragment;
+import com.prim.db.Prim.Labels;
 import com.prim.logger.GPSLoggerService;
 import com.prim.logger.GPSLoggerServiceManager;
 import com.prim.logger.IGPSLoggerServiceRemote;
@@ -40,6 +45,9 @@ private ArrayList<Data> iList;
 private GPSLoggerServiceManager mLoggerServiceManager;
 private IGPSLoggerServiceRemote mGPSLoggerRemote;
 private GPSLoggerService mLoggerService;
+private NameRoute nameRoute;
+
+Uri mLabelUri;
 
   private void loadDummyData()
   {
@@ -64,7 +72,7 @@ private GPSLoggerService mLoggerService;
     
     //pavements
     iList.add(new Data(new String[] { "pavements" }, 
-    		new int[] { R.drawable.pavements, 
+    		new int[] {R.drawable.pavements, 
     		R.drawable.pavements, 
     		R.drawable.pavements }));    
     
@@ -113,32 +121,41 @@ private GPSLoggerService mLoggerService;
     		  int paramAnonymousInt, long paramAnonymousLong)
       {
 		  //mLoggerService.storeLocation(location);
-		try
-		{
-
-	     	 /* in this section
-	     	  * the logging has to momentarily stop
-	     	  * then the x,y,z,longitude and latitude values are all stored with respect to the time
-	     	  * that data is changed to XML using the XML creator class
-	     	  * And then stored in a file on the SD card     	
-	     	  * 
-	     	  * */ 
-			mLoggerService.stopLogging();
-			mLoggerService.StoreLatLongTimeSpeed(location);
-						
-			
 		 /* Intent intent = new Intent();
 		  intent.setClass(getActivity(), IssueList.class);
 		  intent.putExtra("title", ((Data)iList.get(paramAnonymousInt)).getTexts()[0]).
- 		  putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
- 		  putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]);*/		  
+		  putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
+		  putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]);*/		  
 		     	  
 	    
 	   /*     startActivity(new Intent(getActivity(), IssueList.class).putExtra
 	        		("title", ((Data)iList.get(paramAnonymousInt)).getTexts()[0]).
 	        		putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
-	        		putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]));} 
+	        		putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]));}         		
+	        		
 	   */	  
+		
+		String labelName = null;
+		Context context = null;
+		try
+		{	
+	     	 /* in this section
+	     	  * the logging has to momentarily stop
+	     	  * then the x,y,z,longitude and latitude values are all stored with respect to the time
+	     	  * that data is changed to XML using the XML creator class
+	     	  * And then stored in a file on the SD card     
+	     	  * 
+	     	  * store the label name, 	
+	     	  * 
+	     	  * */ 			
+		
+			//labelName = mTrackNameView.getText().toString();   
+			labelName = iList.get(paramAnonymousInt).getTexts().toString();
+            ContentValues values = new ContentValues();
+            values.put( Labels.NAME, labelName );
+            context.getContentResolver().update( mLabelUri, values, null, null );
+            nameRoute.clearNotification();
+        	mLoggerService.StoreLatLongTimeSpeed(location);      	
 		  
 		}
 		
@@ -166,15 +183,12 @@ private GPSLoggerService mLoggerService;
            Log.e(TAG, "Could not start GPSLoggerService.", e);
        	Intent intent = new Intent();
 		intent.setClass(getActivity(), MainActivity.class);
-        }
-	
+        }	
    
       }
     });    
     
-    //from online sources:    
-/*    public void onItemClick(AdapterView<?> parent, View v, int position, long id)*/ 
-      
+ 
   }
 
   
@@ -185,18 +199,17 @@ private GPSLoggerService mLoggerService;
     super.onClick(paramView);
     if (paramView.getId() == R.id.nearby) 
     {
-    	//planning to use this particular one to start and stop the logging
+    	//using this one to start and stop the logging
       	
          Message msg = null;
 	
     	try 
     	{
-    	 //mLoggerService._handleMessage(msg);
-    		
+    	 //mLoggerService._handleMessage(msg);    		
     	mLoggerService. soundGpsSignalAlarm();	
-    	mLoggerService.startLogging();	
+    	mLoggerService.startLogging();
+    	} 
     	
-		} 
     	catch (IllegalArgumentException e)
         {
            Log.e(TAG, "Could not start GPSLoggerService.", e);

@@ -3,6 +3,7 @@ package com.prim;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import com.prim.ui.Settings;
 import android.location.Location;
 import dev.baalmart.prim.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends CustomActivity
@@ -113,6 +115,7 @@ public class MainActivity extends CustomActivity
       {
       }
     };
+    
     drawerLayout.setDrawerListener(drawerToggle);
     drawerLayout.closeDrawers();
     setupLeftNavDrawer();
@@ -136,37 +139,48 @@ public class MainActivity extends CustomActivity
     {
       public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, int paramAnonymousInt, long paramAnonymousLong)
       {
-    	 int position = paramAnonymousAdapterView.getSelectedItemPosition();
-    	 //int position = paramAnonymousView.getId();
-    	 
-    	    	  
-        /*if (paramAnonymousInt != 2)
+    	  	 
+    	try
+    	   { 
+    		
+         if (paramAnonymousInt != 2)
+         {
           localLeftNavAdapter.setSelection(paramAnonymousInt - 1);
           drawerLayout.closeDrawers();
           MainActivity.this.setupContainer(paramAnonymousInt);
-    	  */
-    	  
-    	 /* if (paramAnonymousInt != 2) 
-    	  {
-    		  drawerLayout.closeDrawers();*/
-    	  switch(position)
-    	  {
-    	  case 0:
-    		  //drawerLayout.closeDrawers();
-    		  setupContainer(0);
-    	  case 1:
-    		 //drawerLayout.closeDrawers();
-    		  setupContainer(1);
-    	  
-    	  case 3:
-    		// drawerLayout.closeDrawers();
-    		  setupContainer(3);
-    		  
-    	  case 4:
-    		  setupContainer(4);
-    	 		  
-    	  } 
-    	 // }
+         }
+      	   }
+    	   
+    	  catch (IllegalArgumentException e)
+          {
+    		  //Context 
+             Log.e(TAG, " IllegalArgumentException", e);
+            Intent intent = new Intent();
+     		Context packageContext = null;
+			intent.setClass(packageContext, MainActivity.class);
+          }
+          catch (SecurityException e)
+          {
+             Log.e(TAG, "SecurityException", e);
+             Intent intent = new Intent();
+      		Context packageContext = null;
+ 			intent.setClass(packageContext, MainActivity.class);
+          }
+          catch (IllegalStateException e)
+          {
+             Log.e(TAG, "IllegalStateException", e);
+             Intent intent = new Intent();
+      		Context packageContext = null;
+ 			intent.setClass(packageContext, MainActivity.class);
+          }
+          catch (NullPointerException e)
+          {
+             Log.e(TAG, "NullPointerException", e);
+             Intent intent = new Intent();
+      		Context packageContext = null;
+ 			intent.setClass(packageContext, MainActivity.class);
+          }
+    	 
       }
     });
   }

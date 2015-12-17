@@ -2,7 +2,7 @@ package com.prim.actions;
 
 import java.util.Calendar;
 
-import com.prim.db.Prim.Tracks;
+import com.prim.db.Prim.Labels;
 
 import dev.baalmart.prim.R;
 import android.app.Activity;
@@ -37,21 +37,23 @@ public class NameRoute extends Activity
 
    private EditText mTrackNameView;
    private boolean paused;
-   Uri mTrackUri;
+   Uri mLabelUri;
 
    private final DialogInterface.OnClickListener mTrackNameDialogListener = new DialogInterface.OnClickListener()
    {
       @Override
       public void onClick( DialogInterface dialog, int which )
       {
-         String trackName = null;
+         String labelName = null;
          switch( which )
          {
             case DialogInterface.BUTTON_POSITIVE:
-               trackName = mTrackNameView.getText().toString();        
+            	
+            	//getting the label name
+               labelName = mTrackNameView.getText().toString();        
                ContentValues values = new ContentValues();
-               values.put( Tracks.NAME, trackName );
-               getContentResolver().update( mTrackUri, values, null, null );
+               values.put( Labels.NAME, labelName );
+               getContentResolver().update( mLabelUri, values, null, null );
                clearNotification();
                break;
             case DialogInterface.BUTTON_NEUTRAL:
@@ -71,7 +73,7 @@ public class NameRoute extends Activity
    };
    
    
-   private void clearNotification()
+   public void clearNotification() //changed the visibility of this method
    {
 
       NotificationManager noticationManager = (NotificationManager) this.getSystemService( Context.NOTIFICATION_SERVICE );;
@@ -92,7 +94,7 @@ public class NameRoute extends Activity
       CharSequence contentText = getResources().getString( resId );
       
       Intent notificationIntent = new Intent( this, NameRoute.class );
-      notificationIntent.setData( mTrackUri );
+      notificationIntent.setData( mLabelUri );
       
       PendingIntent contentIntent = PendingIntent.getActivity( this, 0, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK );
       nameNotification.setLatestEventInfo( this, contentTitle, contentText, contentIntent );
@@ -107,7 +109,7 @@ public class NameRoute extends Activity
       super.onCreate( savedInstanceState );
       this.setVisible( false );
       paused = false;
-      mTrackUri = this.getIntent().getData();
+      mLabelUri = this.getIntent().getData();
    }
    
    @Override
@@ -125,7 +127,7 @@ public class NameRoute extends Activity
    protected void onResume()
    {
       super.onResume();
-      if(  mTrackUri != null )
+      if(  mLabelUri != null )
       {
          showDialog( DIALOG_TRACKNAME );
       }

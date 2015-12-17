@@ -3,9 +3,16 @@ package com.prim.actions;
 /*import com.example.accelerometer_nextactivity.MainActivity;
 import com.example.accelerometer_nextactivity.NextPage;*/
 
+import com.prim.MainActivity;
+import com.prim.db.Prim.Labels;
+import com.prim.db.Prim.Locations;
+import com.prim.db.Prim.Xyz;
+
 import dev.baalmart.prim.R;
 import android.support.v7.app.ActionBarActivity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.hardware.Sensor;
@@ -15,6 +22,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.text.Html;
 import android.view.Menu;
@@ -32,6 +40,8 @@ public class GetAccelerometerValues extends Activity implements SensorEventListe
     private float lastY = 0;
     private float lastZ = 0;
     private float force = 0;
+    Uri mXyzUri;
+    protected static final String TAG = "Accelerometer Values";
     
 	private SensorManager sensorManager;
 	
@@ -114,37 +124,59 @@ private void getAccelerometer(SensorEvent event)
 				/ (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
 		
 		long actualTime = System.currentTimeMillis();
+		
+		float xValue;
+		float yValue;
+		float zValue;
 		//long timeNow = System.nanoTime();
 		
 		//I have changed the value from 1.2...initiall was at 2.
 		//if(accelationSquareRoot > SensorManager.GRAVITY_EARTH)
+		
+		try{
 		if(accelationSquareRoot >= 1.2) 
 		    {			
 			if(actualTime-lastTime < 2000000000) 
 			{				
-				//return;
 				sx = "X Value : <font color = '#800080'> " + xVal + "</font>";
 				sy = "Y Value : <font color = '#800080'> " + yVal + "</font>";
 				sz = "Z Value : <font color = '#800080'> " + zVal + "</font>";			
 				x.setText(Html.fromHtml(sx));
 				y.setText(Html.fromHtml(sy));
 				z.setText(Html.fromHtml(sz));
-			}			
+				
+				xValue = xVal;
+	            ContentValues x_value = new ContentValues();
+	            x_value.put( Xyz.X, xValue);
+	            x_value.put(Xyz.TIME, Long.valueOf(System.currentTimeMillis()));
+	            getContentResolver().update( mXyzUri, x_value, null, null );	
+	            
+	            yValue = yVal;
+	            ContentValues y_value = new ContentValues();
+	            y_value.put( Xyz.X, yValue);
+	            y_value.put(Xyz.TIME,Long.valueOf(System.currentTimeMillis()));
+	            getContentResolver().update( mXyzUri, y_value, null, null );
+	            
+	            zValue = zVal;
+	            ContentValues z_value = new ContentValues();
+	            y_value.put( Xyz.X, zValue);
+	            z_value.put(Xyz.TIME,Long.valueOf(System.currentTimeMillis()));
+	            getContentResolver().update( mXyzUri, z_value, null, null );				
+			}
+					
 			lastTime = actualTime;
 			
-			// just to start another activity from here...
-			
-			/*Intent i = new Intent(MainActivity.this, NextPage.class);
-			startActivity(i);
-			*/
-			/*Toast.makeText(this, "Your Next Activity is successfully called",
-					Toast.LENGTH_SHORT).show();*/
-			
-			/*Toast.makeText(this, "the values are +x,+y,+z " ,
-					Toast.LENGTH_SHORT).show();*/
-			
-			//finish();
+		
 		}
+		}
+		catch (Exception e)
+        {
+        Log.e(TAG, "general exception", e);
+      
+        }
+		
+	
+   
 	}
            @Override
            protected void onPause() 
