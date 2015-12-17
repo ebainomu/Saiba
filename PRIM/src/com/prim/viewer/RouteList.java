@@ -10,7 +10,7 @@ import com.prim.adapter.BreadcrumbsAdapter;
 import com.prim.adapter.SectionedListAdapter;
 import com.prim.db.DatabaseHelper;
 import com.prim.db.Prim;
-import com.prim.db.Prim.Tracks;
+import com.prim.db.Prim.Labels;
 import com.prim.utils.Constants;
 import com.prim.utils.Pair;
 import com.prim.breadcrumbs.BreadcrumbsService;
@@ -56,10 +56,12 @@ import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+//this class is just used to name the different labels 
+
 public class RouteList extends ListActivity implements ProgressListener
 {
 
-   private static final String TAG = "OGT.TrackList";
+   private static final String TAG = "OGT.LabelList";
    private static final int MENU_DETELE = Menu.FIRST + 0;
    private static final int MENU_SHARE = Menu.FIRST + 1;
    private static final int MENU_RENAME = Menu.FIRST + 2;
@@ -257,6 +259,8 @@ public class RouteList extends ListActivity implements ProgressListener
       return handled;
    }
 
+   
+   //the onlist item click event for an item
    @Override
    protected void onListItemClick(ListView listView, View view, int position, long id)
    
@@ -293,8 +297,10 @@ public class RouteList extends ListActivity implements ProgressListener
       
       else
       {
+    	  
+    	  //where the database is called
          Intent intent = new Intent();
-         Uri trackUri = ContentUris.withAppendedId(Tracks.CONTENT_URI, id);
+         Uri trackUri = ContentUris.withAppendedId(Labels.CONTENT_URI, id);
          intent.setData(trackUri);
          ComponentName caller = this.getCallingActivity();
          if (caller != null)
@@ -353,7 +359,7 @@ public class RouteList extends ListActivity implements ProgressListener
       if (listItem instanceof Cursor)
       {
          Cursor cursor = (Cursor) listItem;
-         mDialogTrackUri = ContentUris.withAppendedId(Tracks.CONTENT_URI, cursor.getLong(0));
+         mDialogTrackUri = ContentUris.withAppendedId(Labels.CONTENT_URI, cursor.getLong(0));
          mDialogCurrentName = cursor.getString(1);
          mDialogCurrentName = mDialogCurrentName != null ? mDialogCurrentName : "";
          switch (item.getItemId())
@@ -367,7 +373,7 @@ public class RouteList extends ListActivity implements ProgressListener
             case MENU_SHARE:
             {
                Intent actionIntent = new Intent(Intent.ACTION_RUN);
-               actionIntent.setDataAndType(mDialogTrackUri, Tracks.CONTENT_ITEM_TYPE);
+               actionIntent.setDataAndType(mDialogTrackUri, Labels.CONTENT_ITEM_TYPE);
                actionIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                startActivity(Intent.createChooser(actionIntent, getString(R.string.share_track)));
                handled = true;
@@ -528,7 +534,7 @@ public class RouteList extends ListActivity implements ProgressListener
    private void displayIntent(Intent intent)
    {
       final String queryAction = intent.getAction();
-      final String orderby = Tracks.CREATION_TIME + " DESC";
+      final String orderby = Labels.DETECTION_TIME + " DESC";
       Cursor tracksCursor = null;
       if (Intent.ACTION_SEARCH.equals(queryAction))
       {
@@ -563,7 +569,8 @@ public class RouteList extends ListActivity implements ProgressListener
                   }
                };
             showDialog(DIALOG_IMPORT);
-            tracksCursor = managedQuery(Tracks.CONTENT_URI, new String[] { Tracks._ID, Tracks.NAME, Tracks.CREATION_TIME }, null, null, orderby);
+            tracksCursor = managedQuery(Labels.CONTENT_URI, new String[] { Labels._ID, Labels.NAME,
+            		Labels.DETECTION_TIME }, null, null, orderby);
          }
          else
          {
@@ -573,7 +580,7 @@ public class RouteList extends ListActivity implements ProgressListener
       else
       {
          // Got to nothing, make a list of everything
-         tracksCursor = managedQuery(Tracks.CONTENT_URI, new String[] { Tracks._ID, Tracks.NAME, Tracks.CREATION_TIME }, null, null, orderby);
+         tracksCursor = managedQuery(Labels.CONTENT_URI, new String[] { Labels._ID, Labels.NAME, Labels.DETECTION_TIME }, null, null, orderby);
       }
       displayCursor(tracksCursor);
 
@@ -583,7 +590,7 @@ public class RouteList extends ListActivity implements ProgressListener
    {
       SectionedListAdapter sectionedAdapter = new SectionedListAdapter(this);
 
-      String[] fromColumns = new String[] { Tracks.NAME, Tracks.CREATION_TIME, Tracks._ID };
+      String[] fromColumns = new String[] { Labels.NAME, Labels.DETECTION_TIME, Labels._ID };
       int[] toItems = new int[] { R.id.listitem_name, R.id.listitem_from, R.id.bcSyncedCheckBox };
       SimpleCursorAdapter trackAdapter = new SimpleCursorAdapter(this, R.layout.trackitem, tracksCursor, fromColumns, toItems);
 
@@ -625,7 +632,7 @@ public class RouteList extends ListActivity implements ProgressListener
                               {
                                  // Start a description of the track
                                  Intent namingIntent = new Intent(RouteList.this, DescribeRoute.class);
-                                 namingIntent.setData(ContentUris.withAppendedId(Tracks.CONTENT_URI, trackId));
+                                 namingIntent.setData(ContentUris.withAppendedId(Labels.CONTENT_URI, trackId));
                                  namingIntent.putExtra(Constants.NAME, trackName);
                                  mExportListener = new ProgressListener()
                                     {
@@ -684,7 +691,8 @@ public class RouteList extends ListActivity implements ProgressListener
    private Cursor doSearchWithIntent(final Intent queryIntent)
    {
       final String queryString = queryIntent.getStringExtra(SearchManager.QUERY);
-      Cursor cursor = managedQuery(Tracks.CONTENT_URI, new String[] { Tracks._ID, Tracks.NAME, Tracks.CREATION_TIME }, "name LIKE ?", new String[] { "%" + queryString + "%" }, null);
+      Cursor cursor = managedQuery(Labels.CONTENT_URI, new String[] { Labels._ID, Labels.NAME, 
+    		  Labels.DETECTION_TIME }, "name LIKE ?", new String[] { "%" + queryString + "%" }, null);
       return cursor;
    }
 
@@ -763,7 +771,7 @@ public class RouteList extends ListActivity implements ProgressListener
 
             String trackName = mTrackNameView.getText().toString();
             ContentValues values = new ContentValues();
-            values.put(Tracks.NAME, trackName);
+            values.put(Labels.NAME, trackName);
             RouteList.this.getContentResolver().update(mDialogTrackUri, values, null, null);
          }
       };

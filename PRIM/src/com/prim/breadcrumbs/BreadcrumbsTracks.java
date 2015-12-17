@@ -304,7 +304,7 @@ public class BreadcrumbsTracks extends Observable
       setChanged();
       notifyObservers();
 
-      mResolver.delete(MetaData.CONTENT_URI, MetaData.TRACK + " = ? AND " + MetaData.KEY + " = ? ", new String[] { trackId.toString(), TRACK_ID });
+      mResolver.delete(MetaData.CONTENT_URI, MetaData.LABEL + " = ? AND " + MetaData.KEY + " = ? ", new String[] { trackId.toString(), TRACK_ID });
       if (mSyncedTracks != null && mSyncedTracks.containsKey(trackId))
       {
          mSyncedTracks.remove(trackId);
@@ -424,7 +424,7 @@ public class BreadcrumbsTracks extends Observable
          Cursor cursor = null;
          try
          {
-            cursor = mResolver.query(MetaData.CONTENT_URI, new String[] { MetaData.TRACK, MetaData.VALUE }, MetaData.KEY + " = ? ", new String[] { TRACK_ID }, null);
+            cursor = mResolver.query(MetaData.CONTENT_URI, new String[] { MetaData.LABEL, MetaData.VALUE }, MetaData.KEY + " = ? ", new String[] { TRACK_ID }, null);
             if (cursor.moveToFirst())
             {
                do

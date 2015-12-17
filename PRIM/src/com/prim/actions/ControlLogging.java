@@ -1,7 +1,7 @@
 package com.prim.actions;
 
 
-import com.prim.db.Prim.Tracks;
+import com.prim.db.Prim.Labels;
 import com.prim.logger.GPSLoggerServiceManager;
 import com.prim.utils.Constants;
 
@@ -51,14 +51,14 @@ public class ControlLogging extends Activity
                   
                   // Start a naming of the track
                   Intent namingIntent = new Intent( ControlLogging.this, NameRoute.class );
-                  namingIntent.setData( ContentUris.withAppendedId( Tracks.CONTENT_URI, loggerTrackId ) );
+                  namingIntent.setData( ContentUris.withAppendedId( Labels.CONTENT_URI, loggerTrackId ) );
                   startActivity( namingIntent );
                   
                   // Create data for the caller that a new track has been started
                   ComponentName caller = ControlLogging.this.getCallingActivity();
                   if( caller != null )
                   {
-                     intent.setData( ContentUris.withAppendedId( Tracks.CONTENT_URI, loggerTrackId ) );
+                     intent.setData( ContentUris.withAppendedId( Labels.CONTENT_URI, loggerTrackId ) );
                      setResult( RESULT_OK, intent );
                   }                  
                   break;

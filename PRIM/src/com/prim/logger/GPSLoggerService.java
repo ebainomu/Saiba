@@ -12,11 +12,9 @@ import java.util.Vector;
 import java.util.concurrent.Semaphore;
 
 import com.prim.MainActivity;
+import com.prim.db.Prim.Labels;
 import com.prim.db.Prim.Locations;
-import com.prim.db.Prim.Media;
 import com.prim.db.Prim.MetaData;
-import com.prim.db.Prim.Tracks;
-import com.prim.db.Prim.Waypoints;
 import com.prim.db.Prim.Xyz;
 import com.prim.logger.IGPSLoggerServiceRemote;
 import com.prim.streaming.StreamUtils;
@@ -558,8 +556,9 @@ public class GPSLoggerService extends Service implements LocationListener
       {
          startLogging();
          ContentValues values = new ContentValues();
-         values.put(Tracks.NAME, "Recorded at startup");
-         getContentResolver().update(ContentUris.withAppendedId(Tracks.CONTENT_URI, mTrackId), values, null, null);
+         values.put(Labels.NAME, "Recorded at startup");
+         getContentResolver().update(ContentUris.withAppendedId(Labels.CONTENT_URI, mTrackId), 
+        		 values, null, null);
       }
       else
       {
@@ -882,7 +881,7 @@ public class GPSLoggerService extends Service implements LocationListener
     */
    public void storeDerivedDataSource(String sourceName)
    {
-      Uri trackMetaDataUri = Uri.withAppendedPath(Tracks.CONTENT_URI, mTrackId + "/metadata");
+      Uri trackMetaDataUri = Uri.withAppendedPath(Labels.CONTENT_URI, mTrackId + "/metadata");
 
       if (mTrackId >= 0)
       {
@@ -979,7 +978,7 @@ public class GPSLoggerService extends Service implements LocationListener
       }
     // Intent notificationIntent = new Intent(this, CommonLoggerMap.class);
      Intent notificationIntent = new Intent(this, MainActivity.class);
-     notificationIntent.setData(ContentUris.withAppendedId(Tracks.CONTENT_URI, mTrackId));
+     notificationIntent.setData(ContentUris.withAppendedId(Labels.CONTENT_URI, mTrackId));
      mNotification.contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
       mNotification.setLatestEventInfo(this, contentTitle, contentText, mNotification.contentIntent);
       //mNoticationManager.notify(R.layout.map_widgets, mNotification);
@@ -1034,7 +1033,7 @@ public class GPSLoggerService extends Service implements LocationListener
       CharSequence contentText = getResources().getString(resId);
       //Intent notificationIntent = new Intent(this, CommonLoggerMap.class);
       Intent notificationIntent = new Intent(this, MainActivity.class);
-      notificationIntent.setData(ContentUris.withAppendedId(Tracks.CONTENT_URI, mTrackId));
+      notificationIntent.setData(ContentUris.withAppendedId(Labels.CONTENT_URI, mTrackId));
       PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 
     		  Intent.FLAG_ACTIVITY_NEW_TASK);
       gpsNotification.setLatestEventInfo(this, contentTitle, contentText, contentIntent);
@@ -1352,7 +1351,7 @@ public class GPSLoggerService extends Service implements LocationListener
    private void startNewTrack()
    {
       mDistance = 0;
-      Uri newTrack = this.getContentResolver().insert(Tracks.CONTENT_URI, new ContentValues(0));
+      Uri newTrack = this.getContentResolver().insert(Labels.CONTENT_URI, new ContentValues(0));
       mTrackId = Long.valueOf(newTrack.getLastPathSegment()).longValue();
       startNewSegment();
    }
@@ -1363,7 +1362,7 @@ public class GPSLoggerService extends Service implements LocationListener
    private void startNewSegment()
    {
       this.mPreviousLocation = null;
-      Uri newSegment = this.getContentResolver().insert(Uri.withAppendedPath(Tracks.CONTENT_URI, mTrackId + "/segments"), new ContentValues(0));
+      Uri newSegment = this.getContentResolver().insert(Uri.withAppendedPath(Labels.CONTENT_URI, mTrackId + "/segments"), new ContentValues(0));
       mSegmentId = Long.valueOf(newSegment.getLastPathSegment()).longValue();
       crashProtectState();
    }
@@ -1372,9 +1371,9 @@ public class GPSLoggerService extends Service implements LocationListener
    {
       if (isMediaPrepared())
       {
-         Uri mediaInsertUri = Uri.withAppendedPath(Tracks.CONTENT_URI, mTrackId + "/segments/" + mSegmentId + "/waypoints/" + mWaypointId + "/media");
+         Uri mediaInsertUri = Uri.withAppendedPath(Labels.CONTENT_URI, mTrackId + "/segments/" + mSegmentId + "/waypoints/" + mWaypointId + "/media");
          ContentValues args = new ContentValues();
-         args.put(Media.URI, mediaUri.toString());
+        // args.put(Media.URI, mediaUri.toString());
          this.getContentResolver().insert(mediaInsertUri, args);
       }
       else
@@ -1398,25 +1397,17 @@ public class GPSLoggerService extends Service implements LocationListener
       }
       ContentValues args = new ContentValues();
 
-      args.put(Waypoints.LATITUDE, Double.valueOf(location.getLatitude()));
-      args.put(Waypoints.LONGITUDE, Double.valueOf(location.getLongitude()));
-      args.put(Waypoints.SPEED, Float.valueOf(location.getSpeed()));
-      args.put(Waypoints.TIME, Long.valueOf(System.currentTimeMillis()));
+      args.put(Locations.LATITUDE, Double.valueOf(location.getLatitude()));
+      args.put(Locations.LONGITUDE, Double.valueOf(location.getLongitude()));
+      args.put(Locations.SPEED, Float.valueOf(location.getSpeed()));
+      args.put(Locations.TIME, Long.valueOf(System.currentTimeMillis()));
       if (location.hasAccuracy())
       {
-         args.put(Waypoints.ACCURACY, Float.valueOf(location.getAccuracy()));
+         args.put(Locations.ACCURACY, Float.valueOf(location.getAccuracy()));
       }
-      if (location.hasAltitude())
-      {
-         args.put(Waypoints.ALTITUDE, Double.valueOf(location.getAltitude()));
+      
 
-      }
-      if (location.hasBearing())
-      {
-         args.put(Waypoints.BEARING, Float.valueOf(location.getBearing()));
-      }
-
-      Uri waypointInsertUri = Uri.withAppendedPath(Tracks.CONTENT_URI, mTrackId + "/segments/" + mSegmentId + "/waypoints");
+      Uri waypointInsertUri = Uri.withAppendedPath(Labels.CONTENT_URI, mTrackId + "/segments/" + mSegmentId + "/waypoints");
       Uri inserted = this.getContentResolver().insert(waypointInsertUri, args);
       mWaypointId = Long.parseLong(inserted.getLastPathSegment());
    }
@@ -1431,12 +1422,13 @@ public class GPSLoggerService extends Service implements LocationListener
 	      ContentValues args = new ContentValues();
 	      
 	      args.put(Locations.LATITUDE, Double.valueOf(location.getLatitude()));
+	      
 	      args.put(Locations.LONGITUDE, Double.valueOf(location.getLongitude()));
 	      args.put(Locations.SPEED, Float.valueOf(location.getSpeed()));
 	      args.put(Locations.TIME, Long.valueOf(System.currentTimeMillis()));
 	      if (location.hasAccuracy())
 	      {
-	         args.put(Waypoints.ACCURACY, Float.valueOf(location.getAccuracy()));
+	         args.put(Locations.ACCURACY, Float.valueOf(location.getAccuracy()));
 	      }
 	      
 	      Uri locationInsertUri = Uri.withAppendedPath(Xyz.CONTENT_URI, mXyz + "/segments/" + mSegmentId + "/locations");
@@ -1456,8 +1448,10 @@ public class GPSLoggerService extends Service implements LocationListener
 
       if (mStreamBroadcast)
       {
-         final long minDistance = (long) PreferenceManager.getDefaultSharedPreferences(this).getFloat("streambroadcast_distance_meter", 5000F);
-         final long minTime = 60000 * Long.parseLong(PreferenceManager.getDefaultSharedPreferences(this).getString("streambroadcast_time", "1"));
+         final long minDistance = (long) PreferenceManager.getDefaultSharedPreferences(this).
+        		 getFloat("streambroadcast_distance_meter", 5000F);
+         final long minTime = 60000 * Long.parseLong(PreferenceManager.
+        		 getDefaultSharedPreferences(this).getString("streambroadcast_time", "1"));
          final long nowTime = location.getTime();
          if (mPreviousLocation != null)
          {
@@ -1471,7 +1465,7 @@ public class GPSLoggerService extends Service implements LocationListener
          intent.putExtra(Constants.EXTRA_DISTANCE, (int) mBroadcastDistance);
          intent.putExtra(Constants.EXTRA_TIME, (int) passedTime/60000);
          intent.putExtra(Constants.EXTRA_LOCATION, location);
-         intent.putExtra(Constants.EXTRA_TRACK, ContentUris.withAppendedId(Tracks.CONTENT_URI, mTrackId));
+         intent.putExtra(Constants.EXTRA_TRACK, ContentUris.withAppendedId(Labels.CONTENT_URI, mTrackId));
 
          boolean distanceBroadcast = minDistance > 0 && mBroadcastDistance >= minDistance;
          boolean timeBroadcast = minTime > 0 && passedTime >= minTime;

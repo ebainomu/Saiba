@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/baalmart/workspace_gitRoads/Saiba/PRIM/src/com/prim/logger/IGPSLoggerServiceRemote.aidl
+ * Original file: /home/baalmart/workspace_saiba/PRIM/src/com/prim/logger/IGPSLoggerServiceRemote.aidl
  */
 package com.prim.logger;
 public interface IGPSLoggerServiceRemote extends android.os.IInterface

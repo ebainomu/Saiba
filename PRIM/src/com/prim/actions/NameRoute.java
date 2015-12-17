@@ -2,7 +2,7 @@ package com.prim.actions;
 
 import java.util.Calendar;
 
-import com.prim.db.Prim.Tracks;
+import com.prim.db.Prim.Labels;
 
 import dev.baalmart.prim.R;
 import android.app.Activity;
@@ -50,7 +50,7 @@ public class NameRoute extends Activity
             case DialogInterface.BUTTON_POSITIVE:
                trackName = mTrackNameView.getText().toString();        
                ContentValues values = new ContentValues();
-               values.put( Tracks.NAME, trackName );
+               values.put( Labels.NAME, trackName );
                getContentResolver().update( mTrackUri, values, null, null );
                clearNotification();
                break;
