@@ -12,7 +12,8 @@ import com.prim.custom.CustomFragment;
 @SuppressLint({"InflateParams"})
 public class Profile extends CustomFragment
 {
-  public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle)
+  public View onCreateView(LayoutInflater paramLayoutInflater, 
+		  ViewGroup paramViewGroup, Bundle paramBundle)
   {
     return paramLayoutInflater.inflate(R.layout.profile, null);
   }

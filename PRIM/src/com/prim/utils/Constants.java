@@ -34,8 +34,8 @@ public class Constants
    public static final String STARTUPATBOOT = "startupatboot";
    public static final String LOGATDOCK = "logatdock";
    public static final String STOPATUNDOCK = "stopatundock";
-   public static final String SERVICENAME = "nl.sogeti.android.gpstracker.intent.action.GPSLoggerService";
-   public static final String STREAMBROADCAST = "nl.sogeti.android.gpstracker.intent.action.STREAMBROADCAST";
+   public static final String SERVICENAME = "dev.baalmart.prim.intent.action.GPSLoggerService";
+   public static final String STREAMBROADCAST = "dev.baalmart.prim.intent.action.STREAMBROADCAST";
    public static final String UNITS = "units";
    public static final int UNITS_DEFAULT      = 0;
    public static final int UNITS_IMPERIAL     = 1;
@@ -46,7 +46,7 @@ public class Constants
    public static final int UNITS_IMPERIALSURFACE = 6;
    public static final int UNITS_METRICSURFACE = 7;
    public static final String SDDIR_DIR             = "SDDIR_DIR";
-   public static final String DEFAULT_EXTERNAL_DIR  = "/PRIM_GPS/";
+   public static final String DEFAULT_EXTERNAL_DIR  = "/PRIM/";
    public static final String TMPICTUREFILE_SUBPATH = "media_tmp.tmp";
    public static final Uri NAME_URI = Uri.parse( "content://" + Prim.AUTHORITY+".string" );
    public static final int GOOGLE = 0;
@@ -80,7 +80,7 @@ public class Constants
     * @see #EXTRA_LOGGING_STATE
     */
 
-   public static final String LOGGING_STATE_CHANGED_ACTION = "nl.sogeti.android.gpstracker.LOGGING_STATE_CHANGED";
+   public static final String LOGGING_STATE_CHANGED_ACTION = "dev.baalmart.prim.LOGGING_STATE_CHANGED";
    
    /**
     * The precision the service is logging on.
@@ -92,7 +92,7 @@ public class Constants
     * @see #LOGGING_CUSTOM
     * 
     */
-   public static final String EXTRA_LOGGING_PRECISION = "nl.sogeti.android.gpstracker.EXTRA_LOGGING_PRECISION";
+   public static final String EXTRA_LOGGING_PRECISION = "dev.baalmart.prim.EXTRA_LOGGING_PRECISION";
    
    /**
     * The state the service is.
@@ -102,7 +102,7 @@ public class Constants
     * @see #PAUSED
     * @see #STOPPED
     */
-   public static final String EXTRA_LOGGING_STATE = "nl.sogeti.android.gpstracker.EXTRA_LOGGING_STATE";
+   public static final String EXTRA_LOGGING_STATE = "dev.baalmart.prim.EXTRA_LOGGING_STATE";
 
    /**
     * The state of the service is unknown
@@ -217,18 +217,18 @@ public class Constants
    /**
     * A distance in meters
     */
-   public static final String EXTRA_DISTANCE = "nl.sogeti.android.gpstracker.EXTRA_DISTANCE";
+   public static final String EXTRA_DISTANCE = "dev.baalmart.prim.EXTRA_DISTANCE";
    /**
     * A time period in minutes
     */
-   public static final String EXTRA_TIME = "nl.sogeti.android.gpstracker.EXTRA_TIME";
+   public static final String EXTRA_TIME = "dev.baalmart.prim.EXTRA_TIME";
    /**
     * The location that pushed beyond the set minimum time or distance 
     */
-   public static final String EXTRA_LOCATION = "nl.sogeti.android.gpstracker.EXTRA_LOCATION";
+   public static final String EXTRA_LOCATION = "dev.baalmart.prim.EXTRA_LOCATION";
    /**
     * The track that is being logged
     */
-   public static final String EXTRA_TRACK =  "nl.sogeti.android.gpstracker.EXTRA_TRACK";
+   public static final String EXTRA_TRACK =  "dev.baalmart.prim.EXTRA_TRACK";
    
 }

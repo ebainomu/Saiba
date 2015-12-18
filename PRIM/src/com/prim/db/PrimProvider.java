@@ -309,7 +309,7 @@ public class PrimProvider extends ContentProvider
                break;
             case LABELS:
                String name = ( values == null ) ? "" : values.getAsString( Labels.NAME );
-               labelId     = this.mDbHelper.toNextTrack( name );
+               labelId     = this.mDbHelper.toNextLabel( name );
                insertedUri = ContentUris.withAppendedId( uri, labelId );
                break;
             case TRACK_METADATA:
@@ -502,7 +502,7 @@ public class PrimProvider extends ContentProvider
          case LABEL_ID:
             trackId = new Long( uri.getLastPathSegment() ).longValue();
             String name = givenValues.getAsString( Labels.NAME );
-            updates = mDbHelper.updateTrack(trackId, name);   
+            updates = mDbHelper.updateLabel(trackId, name);   
             break;
          case TRACK_METADATA:
             pathSegments = uri.getPathSegments();

@@ -39,9 +39,19 @@ import android.view.Window;
  *  *
  * @author baalmart
  * 
- * This will be used to create the xml which will be collecting data from the sqlite database
- * 
+ * This will be used to create the xml which will be collecting data from the sqlite database * 
  * this ones is used by the Gpx creator class while generating the XML data
+ * 
+ * So we are going to have tags like:
+ * 
+ * time
+ * label
+ * speed
+ * latitude
+ * longitude
+ * 
+ * 
+ * time will be the unique ID in this case
  *
  */
 
@@ -53,24 +63,25 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
    String mChosenName;
    private ProgressListener mProgressListener;
    protected Context mContext;
-   protected Uri mTrackUri;
+   protected Uri mLabelUri;
    String mFileName;
    private String mErrorText;
    private Exception mException;
    private String mTask;
    public ProgressAdmin mProgressAdmin;
 
-   XmlCreator(Context context, Uri trackUri, String chosenFileName, ProgressListener listener)
+   XmlCreator(Context context, Uri labelUri, String chosenFileName, ProgressListener listener)
+   
    {
       mChosenName = chosenFileName;
       mContext = context;
-      mTrackUri = trackUri;
+      mLabelUri = labelUri;
       mProgressListener = listener;
-      mProgressAdmin = new ProgressAdmin();
-      
-      String trackName = extractCleanTrackName();
-      mFileName = cleanFilename(mChosenName, trackName);
+      mProgressAdmin = new ProgressAdmin();      
+      String labelName = extractCleanLabelName();
+      mFileName = cleanFilename(mChosenName, labelName);
    }
+   
    
    public void executeOn(Executor executor)
    {
@@ -84,27 +95,27 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       }
    }
 
-   private String extractCleanTrackName()
+   private String extractCleanLabelName()
    {
-      Cursor trackCursor = null;
+      Cursor labelCursor = null;
       ContentResolver resolver = mContext.getContentResolver();
-      String trackName = "Untitled";
+      String labelName = "Untitled";
       try
       {
-         trackCursor = resolver.query(mTrackUri, new String[] { Labels.NAME }, null, null, null);
-         if (trackCursor.moveToLast())
+         labelCursor = resolver.query(mLabelUri, new String[] { Labels.NAME }, null, null, null);
+         if (labelCursor.moveToLast())
          {
-            trackName = cleanFilename(trackCursor.getString(0), trackName);
+            labelName = cleanFilename(labelCursor.getString(0), labelName);
          }
       }
       finally
       {
-         if (trackCursor != null)
+         if (labelCursor != null)
          {
-            trackCursor.close();
+            labelCursor.close();
          }
       }
-      return trackName;
+      return labelName;
    }
 
    /**
@@ -116,13 +127,14 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
    {
       if (mProgressListener != null)
       {
-         Uri allWaypointsUri = Uri.withAppendedPath(mTrackUri, "waypoints");
-         Uri allMediaUri = Uri.withAppendedPath(mTrackUri, "media");
+         Uri allLocationsUri = Uri.withAppendedPath(mLabelUri, "locations"); //changed from waypoints
+         Uri allMediaUri = Uri.withAppendedPath(mLabelUri, "media");
          Cursor cursor = null;
          ContentResolver resolver = mContext.getContentResolver();
          try
          {
-            cursor = resolver.query(allWaypointsUri, new String[] { "count(" + Locations.TABLE + "." + Locations._ID + ")" }, null, null, null);
+            cursor = resolver.query(allLocationsUri, new String[] { "count("
+         + Locations.TABLE + "." + Locations._ID + ")" }, null, null, null);
             if (cursor.moveToLast())
             {
                mProgressAdmin.setWaypointCount(cursor.getInt(0));
@@ -151,7 +163,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       }
       else
       {
-         Log.w(TAG, "Exporting " + mTrackUri + " without progress!");
+         Log.w(TAG, "Exporting " + mLabelUri + " without progress!");
       }
    }
 
@@ -185,7 +197,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
     * @return file path relative to the export dir
     * @throws IOException
     */
-   protected String includeMediaFile(String inputFilePath) throws IOException
+/*   protected String includeMediaFile(String inputFilePath) throws IOException
    {
       mNeedsBundling = true;
       File source = new File(inputFilePath);
@@ -218,7 +230,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
 
       return target.getName();
    }
-
+*/
    /**
     * Just to start failing early
     * 

@@ -154,11 +154,12 @@ public class MainActivity extends CustomActivity
     	  catch (IllegalArgumentException e)
           {
     		  //Context 
-             Log.e(TAG, " IllegalArgumentException", e);
+            Log.e(TAG, " IllegalArgumentException", e);
             Intent intent = new Intent();
      		Context packageContext = null;
 			intent.setClass(packageContext, MainActivity.class);
           }
+    	
           catch (SecurityException e)
           {
              Log.e(TAG, "SecurityException", e);
@@ -203,6 +204,7 @@ public class MainActivity extends CustomActivity
 
   @Override
   public boolean onOptionsItemSelected(MenuItem paramMenuItem)
+  
   {
     if (drawerToggle.onOptionsItemSelected(paramMenuItem))
     return true;

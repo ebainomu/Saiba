@@ -476,7 +476,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
       return affected;
    }
 
-   int updateTrack(long labelId, String name)
+   int updateLabel(long labelId, String name)
    {
       int updates;
       String whereclause = Labels._ID + " = " + labelId;
@@ -500,12 +500,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
     * 
     * @param trackId
     * @param segmentId
-    * @param waypointId
+    * @param locationId
     * @param key
     * @param value
     * @return
     */
-   int updateMetaData(long labelId, long segmentId, long waypointId, long metadataId, String selection, String[] selectionArgs, String value)
+   int updateMetaData(long labelId, long segmentId, long locationId, long metadataId, String selection, String[] selectionArgs, String value)
    {
       {
          if ((metadataId < 0 && labelId < 0))
@@ -516,7 +516,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
          {
             throw new IllegalArgumentException("A where clause selection must be provided to select the correct KEY");
          }
-         if (labelId >= 0 && waypointId >= 0 && segmentId < 0)
+         if (labelId >= 0 && locationId >= 0 && segmentId < 0)
          {
             throw new IllegalArgumentException("Waypoint must have segment");
          }
@@ -533,7 +533,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
          else
          {
             whereclause = MetaData.LABEL + " = ? AND " + MetaData.SEGMENT + " = ? AND " + MetaData.LOCATION + " = ? AND " + MetaData.KEY + " = ? ";
-            whereParams = new String[] { Long.toString(labelId), Long.toString(segmentId), Long.toString(waypointId), selectionArgs[0] };
+            whereParams = new String[] { Long.toString(labelId), Long.toString(segmentId), Long.toString(locationId), selectionArgs[0] };
          }
          ContentValues args = new ContentValues();
          args.put(MetaData.VALUE, value);
@@ -542,9 +542,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
          ContentResolver resolver = this.mContext.getContentResolver();
          Uri notifyUri;
-         if (labelId >= 0 && segmentId >= 0 && waypointId >= 0)
+         if (labelId >= 0 && segmentId >= 0 && locationId >= 0)
          {
-            notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/segments/" + segmentId + "/waypoints/" + waypointId + "/metadata");
+            notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/segments/" + segmentId + "/waypoints/" + locationId + "/metadata");
          }
          else if (labelId >= 0 && segmentId >= 0)
          {
@@ -571,7 +571,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     * 
     * @return
     */
-   long toNextTrack(String name)
+   long toNextLabel(String name)
    {
       long currentTime = new Date().getTime();
       ContentValues args = new ContentValues();

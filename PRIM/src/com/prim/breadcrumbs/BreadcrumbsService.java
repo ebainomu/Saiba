@@ -220,7 +220,7 @@ public class BreadcrumbsService extends Service implements Observer, ProgressLis
 
    public void startUploadTask(Context context, ProgressListener listener, Uri trackUri, String name)
    {
-      new UploadBreadcrumbsTrackTask(context, this, listener, mHttpClient, getOAuthConsumer(), trackUri, name).executeOn(mExecutor);
+      new UploadBreadcrumbsLabelTask(context, this, listener, mHttpClient, getOAuthConsumer(), trackUri, name).executeOn(mExecutor);
    }
 
    public boolean isAuthorized()
