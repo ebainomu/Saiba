@@ -68,7 +68,8 @@ public class GpxCreator extends XmlCreator
       String xmlFilePath;
       if (mFileName.endsWith(".gpx") || mFileName.endsWith(".xml"))
       {
-         setExportDirectoryPath(Constants.getSdCardDirectory(mContext) + mFileName.substring(0, mFileName.length() - 4));
+         setExportDirectoryPath(Constants.getSdCardDirectory(mContext) + 
+        		 mFileName.substring(0, mFileName.length() - 4));
 
          xmlFilePath = getExportDirectoryPath() + "/" + mFileName;
       }

@@ -1,10 +1,18 @@
 package com.prim.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorListener;
+import android.hardware.SensorManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
@@ -24,6 +32,7 @@ import android.widget.Toast;
 import com.prim.MainActivity;
 import com.prim.Others;
 import com.prim.IssueList;
+import com.prim.actions.GetAccelerometerValues;
 import com.prim.actions.NameRoute;
 import com.prim.custom.CustomFragment;
 import com.prim.db.Prim.Labels;
@@ -37,7 +46,8 @@ import dev.baalmart.prim.R;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MainFragment extends CustomFragment
+@SuppressWarnings("deprecation")
+public class MainFragment extends CustomFragment implements LocationListener , SensorEventListener, SensorListener
 {
   protected static final String TAG = null;
 private ArrayList<Data> iList;
@@ -46,8 +56,22 @@ private GPSLoggerServiceManager mLoggerServiceManager;
 private IGPSLoggerServiceRemote mGPSLoggerRemote;
 private GPSLoggerService mLoggerService;
 private NameRoute nameRoute;
+GetAccelerometerValues getAccelerometerValues;
+
+private SensorManager sensorManager;
+long lastTime;
 
 Uri mLabelUri;
+private Activity mActivity;
+
+@Override
+public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mActivity = activity;
+}
+
+
+
 
   private void loadDummyData()
   {
@@ -110,13 +134,15 @@ Uri mLabelUri;
     setTouchNClick(paramView.findViewById(R.id.nearby));
     loadDummyData();
     GridView localGridView = (GridView)paramView.findViewById(R.id.grid);
-    localGridView.setAdapter(new GridAdapter());    
+    localGridView.setAdapter(new GridAdapter());   
+    lastTime = System.currentTimeMillis();
     
     ///handling item click events
     localGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
     {
       private Location location;
 
+	@SuppressWarnings("null")
 	public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, 
     		  int paramAnonymousInt, long paramAnonymousLong)
       {
@@ -135,8 +161,18 @@ Uri mLabelUri;
 	        		
 	   */	  
 		
-		String labelName = null;
-		Context context = null;
+		  String labelName = null;
+		  Context context = null;
+		  Long labelTime = null;
+		  SensorEvent event = null;		  
+		  
+			//You need context object in your view.
+			sensorManager = (SensorManager)getActivity().getSystemService(getActivity().SENSOR_SERVICE);
+			/*sensorManager.registerListener(this, sensorManager.getDefaultSensor
+					(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);*/			
+			sensorManager.registerListener(MainFragment.this, Sensor.TYPE_ACCELEROMETER, SensorManager.SENSOR_DELAY_NORMAL);
+
+			
 		try
 		{	
 	     	 /* in this section
@@ -147,18 +183,56 @@ Uri mLabelUri;
 	     	  * 
 	     	  * store the label name, 	
 	     	  * 
-	     	  * */ 			
+	     	  * */ 	
+			
+			    float[] value = event.values;
+				float xVal = value[0];
+				float yVal = value[1];
+				float zVal = value[2];
+				
+				float accelationSquareRoot = (xVal*xVal + yVal*yVal + zVal*zVal) 
+						/ (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+				
+				long actualTime = System.currentTimeMillis();
+				
+				float xValue;
+				float yValue;
+				float zValue;		
+			
+			
+			
+			if(accelationSquareRoot >= 1.2) 
+		    {			
+			if(actualTime-lastTime < 2000000000) 
+			{
+				
+				//labelName = mTrackNameView.getText().toString();   
+				labelName = iList.get(paramAnonymousInt).getTexts().toString();
+				labelTime = Long.valueOf(System.currentTimeMillis());
+	            ContentValues values = new ContentValues();
+	            values.put( Labels.NAME, labelName );          
+				values.put(Labels.DETECTION_TIME, labelTime);			
+				values.put(Labels.LATITUDE, Double.valueOf(location.getLatitude()));
+				values.put(Labels.LONGITUDE, Double.valueOf(location.getLongitude()));
+				values.put(Labels.X, xVal);
+				values.put(Labels.Y, yVal);
+				values.put(Labels.Z, zVal);
+	            context.getContentResolver().update( mLabelUri, values, null, null );
+	            nameRoute.clearNotification();
+	            
+	        	/*mLoggerService.StoreLatLongTimeSpeed(location); 
+	        	getAccelerometerValues.getAccelerometer(event);*/			
+				
+				
+			}
+			lastTime = actualTime;
+			
+		    }
 		
-			//labelName = mTrackNameView.getText().toString();   
-			labelName = iList.get(paramAnonymousInt).getTexts().toString();
-            ContentValues values = new ContentValues();
-            values.put( Labels.NAME, labelName );
-            context.getContentResolver().update( mLabelUri, values, null, null );
-            nameRoute.clearNotification();
-        	mLoggerService.StoreLatLongTimeSpeed(location);      	
-		  
+
 		}
 		
+		   		
     	catch (IllegalArgumentException e)
         {
            Log.e(TAG, "Could not start GPSLoggerService.", e);
@@ -184,6 +258,7 @@ Uri mLabelUri;
        	Intent intent = new Intent();
 		intent.setClass(getActivity(), MainActivity.class);
         }	
+		
    
       }
     });    
@@ -281,4 +356,58 @@ Uri mLabelUri;
       return paramView;
     }
   }
+
+@Override
+public void onLocationChanged(Location location) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void onStatusChanged(String provider, int status, Bundle extras) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void onProviderEnabled(String provider) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void onProviderDisabled(String provider) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void onSensorChanged(SensorEvent event) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void onAccuracyChanged(Sensor sensor, int accuracy) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+
+
+@Override
+public void onSensorChanged(int sensor, float[] values) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+
+
+@Override
+public void onAccuracyChanged(int sensor, int accuracy) {
+	// TODO Auto-generated method stub
+	
+}
 }

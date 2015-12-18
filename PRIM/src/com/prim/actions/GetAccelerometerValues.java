@@ -138,12 +138,12 @@ private void getAccelerometer(SensorEvent event)
 		    {			
 			if(actualTime-lastTime < 2000000000) 
 			{				
-				sx = "X Value : <font color = '#800080'> " + xVal + "</font>";
+			/*	sx = "X Value : <font color = '#800080'> " + xVal + "</font>";
 				sy = "Y Value : <font color = '#800080'> " + yVal + "</font>";
 				sz = "Z Value : <font color = '#800080'> " + zVal + "</font>";			
 				x.setText(Html.fromHtml(sx));
 				y.setText(Html.fromHtml(sy));
-				z.setText(Html.fromHtml(sz));
+				z.setText(Html.fromHtml(sz));*/
 				
 				xValue = xVal;
 	            ContentValues x_value = new ContentValues();

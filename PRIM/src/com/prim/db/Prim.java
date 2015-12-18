@@ -205,6 +205,16 @@ public final class Prim
       static final String DETECTION_TIME_TYPE   = "INTEGER NOT NULL";
       static final String NAME_TYPE            = "TEXT";
       static final String _ID_TYPE             = "INTEGER PRIMARY KEY AUTOINCREMENT";
+      public static final String LATITUDE = "latitude";
+      public static final String LONGITUDE = "longitude";
+      public static final String X = "x";
+      public static final String Y = "y";
+      public static final String Z = "z";
+      static final String X_TYPE = "REAL NOT NULL";
+	   static final String Y_TYPE = "REAL NOT NULL";
+	   static final String Z_TYPE = "REAL NOT NULL";
+	   static final String LATITUDE_TYPE  = "REAL NOT NULL";
+	      static final String LONGITUDE_TYPE = "REAL NOT NULL";
    }
    
    
