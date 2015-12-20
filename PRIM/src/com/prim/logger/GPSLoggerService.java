@@ -1407,7 +1407,7 @@ public class GPSLoggerService extends Service implements LocationListener
       }
       
 
-      Uri waypointInsertUri = Uri.withAppendedPath(Labels.CONTENT_URI, mLabelId + "/segments/" + mSegmentId + "/waypoints");
+      Uri waypointInsertUri = Uri.withAppendedPath(Labels.CONTENT_URI, mLabelId + "/segments/" + mSegmentId + "/locations");
       Uri inserted = this.getContentResolver().insert(waypointInsertUri, args);
       mWaypointId = Long.parseLong(inserted.getLastPathSegment());
    }

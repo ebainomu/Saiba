@@ -47,9 +47,9 @@ public class GpxCreator extends XmlCreator
    private boolean includeAttachments;
    protected String mName;
 
-   public GpxCreator(Context context, Uri trackUri, String chosenBaseFileName, boolean attachments, ProgressListener listener)
+   public GpxCreator(Context context, Uri labelUri, String chosenBaseFileName, boolean attachments, ProgressListener listener)
    {
-      super(context, trackUri, chosenBaseFileName, listener);
+      super(context, labelUri, chosenBaseFileName, listener);
       includeAttachments = attachments;
    }
 

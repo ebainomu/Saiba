@@ -25,7 +25,7 @@ import android.view.View;
 import android.widget.EditText;
 
 /**
- * Empty Activity that pops up the dialog to name the track
+ * Empty Activity that pops up the dialog to name the route
  *
  
  */
@@ -73,10 +73,10 @@ public class NameRoute extends Activity
    };
    
    
-   public void clearNotification() //changed the visibility of this method
+   private void clearNotification() 
    {
 
-      NotificationManager noticationManager = (NotificationManager) this.getSystemService( Context.NOTIFICATION_SERVICE );;
+      NotificationManager noticationManager = (NotificationManager) this.getSystemService( Context.NOTIFICATION_SERVICE );
       noticationManager.cancel( R.layout.namedialog );
    }
    

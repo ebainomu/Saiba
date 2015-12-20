@@ -329,7 +329,9 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       return mExportDirectoryPath;
    }
 
-   public void quickTag(XmlSerializer serializer, String ns, String tag, String content) throws IllegalArgumentException, IllegalStateException, IOException
+   public void quickTag(XmlSerializer serializer, String ns,
+		   String tag, String content) throws IllegalArgumentException, 
+		   IllegalStateException, IOException
    {
       if( tag == null)
       {
@@ -340,9 +342,20 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
          content = "";
       }
       serializer.text("\n");
+      //start tag with the namespace being a string constant "ns"
       serializer.startTag(ns, tag);
+      //text content
       serializer.text(content);
-      serializer.endTag(ns, tag);
+      //end tag
+       serializer.endTag(ns, tag);
+       
+       /**
+        * below is also possible:*/
+/*       
+       serializer.startTag(ns, tag)
+	    .text(content)
+	    .endTag(ns, tag);*/
+       
    }
 
    public boolean needsBundling()
@@ -532,17 +545,17 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
          waypointCount = waypoint;
          considerPublishProgress();
       }
-      public void setMediaCount(int media)
+     /* public void setMediaCount(int media)
       {
          mediaCount = media;
          considerPublishProgress();
-      }
+      }*/
       public void setCompress( boolean compress)
       {
          compressCount = compress;
          considerPublishProgress();
       }
-      public void setUpload( boolean upload)
+    /*  public void setUpload( boolean upload)
       {
          uploadCount = upload;
          considerPublishProgress();
@@ -551,7 +564,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       {
          photoUploadCount += length;
          considerPublishProgress();
-      }
+      }*/
       public void addWaypointProgress(int i)
       {
          waypointProgress += i;

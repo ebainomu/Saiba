@@ -60,9 +60,19 @@ public final class Prim
          "CREATE TABLE " + Labels.TABLE + "(" + " " + Labels._ID           + " " + Labels._ID_TYPE + 
                                           "," + " " + Labels.NAME          + " " + Labels.NAME_TYPE + 
                                           "," + " " + Labels.DETECTION_TIME + " " + Labels.DETECTION_TIME_TYPE + 
+                                          "," + " " + Labels.LATITUDE + " " + Labels.LATITUDE_TYPE +
+                                          "," + " " + Labels.LONGITUDE + " " + Labels.LONGITUDE_TYPE +
+                                          "," + " " + Labels.X + " " + Labels.X_TYPE +
+                                          "," + " " + Labels.Y + " " + Labels.Y_TYPE +
+                                           "," + " " + Labels.Z + " " + Labels.Z_TYPE + 
+                                           "," + " " + Labels.ACCURACY  + " " + Labels.ACCURACY_TYPE +
                                           ");";
-   }  
-   
+   }     
+   public static final String LATITUDE = "latitude";
+   public static final String LONGITUDE = "longitude";
+   public static final String X = "x";
+   public static final String Y = "y";
+   public static final String Z = "z";
    
    public static final class Xyz extends XYZColumns implements android.provider.BaseColumns
    {
@@ -207,14 +217,16 @@ public final class Prim
       static final String _ID_TYPE             = "INTEGER PRIMARY KEY AUTOINCREMENT";
       public static final String LATITUDE = "latitude";
       public static final String LONGITUDE = "longitude";
+      public static final String ACCURACY = "accuracy";
       public static final String X = "x";
       public static final String Y = "y";
       public static final String Z = "z";
       static final String X_TYPE = "REAL NOT NULL";
-	   static final String Y_TYPE = "REAL NOT NULL";
-	   static final String Z_TYPE = "REAL NOT NULL";
-	   static final String LATITUDE_TYPE  = "REAL NOT NULL";
-	      static final String LONGITUDE_TYPE = "REAL NOT NULL";
+	  static final String Y_TYPE = "REAL NOT NULL";
+	  static final String Z_TYPE = "REAL NOT NULL";
+	  static final String LATITUDE_TYPE  = "REAL NOT NULL";
+	  static final String LONGITUDE_TYPE = "REAL NOT NULL";
+	  static final String ACCURACY_TYPE  = "REAL";
    }
    
    

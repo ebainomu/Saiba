@@ -60,8 +60,8 @@ public class MainActivity extends CustomActivity
 	  //******************Logout********************************
     if (pos == 4)
     {
-      startActivity(new Intent(this, Login.class));
-      finish();
+      /*startActivity(new Intent(this, Login.class));
+      finish();*/
     }    
    
     if (pos == 0)
@@ -79,8 +79,8 @@ public class MainActivity extends CustomActivity
       //*********************favorite***********************
       else if (pos == 2)
       {
-        startActivity(new Intent(this, IssueList.class).putExtra("title", "Favorites"));
-        fragment = null;
+        //startActivity(new Intent(this, IssueList.class).putExtra("title", "Favorites"));
+        //fragment = null;
       }      
       
       else
