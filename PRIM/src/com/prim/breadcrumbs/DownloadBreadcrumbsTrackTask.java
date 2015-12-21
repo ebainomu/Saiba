@@ -106,7 +106,7 @@ public class DownloadBreadcrumbsTrackTask extends GpxParser
          {
             stream = XmlCreator.convertStreamToLoggedStream(TAG, stream);
          }
-         trackUri = importTrack(stream, trackName);
+         trackUri = importLabel(stream, trackName);
       }
       catch (OAuthMessageSignerException e)
       {

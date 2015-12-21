@@ -38,6 +38,8 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
    private static final String LATITUDE_ATRIBUTE = "lat";
    private static final String LONGITUDE_ATTRIBUTE = "lon";
    private static final String TRACK_ELEMENT = "trkpt";
+   
+   
    private static final String SEGMENT_ELEMENT = "trkseg";
    private static final String NAME_ELEMENT = "name";
    private static final String TIME_ELEMENT = "time";
@@ -98,11 +100,11 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
    public Uri importUri(Uri importFileUri) 
    {
       Uri result = null;
-      String trackName = null;
+      String labelName = null;
       InputStream fis = null;
       if (importFileUri.getScheme().equals("file"))
       {
-         trackName = importFileUri.getLastPathSegment();
+         labelName = importFileUri.getLastPathSegment();
       }
       try
       {
@@ -113,21 +115,21 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
          handleError(e, mContext.getString(R.string.error_importgpx_io));
       }
       
-      result = importTrack( fis, trackName);
+      result = importLabel( fis, labelName);
       
       return result;
    }
 
    /**
-    * Read a stream containing GPX XML into the OGT content provider 
+    * Read a stream containing GPX XML into the PRIM content provider 
     * 
     * @param fis opened stream the read from, will be closed after this call
-    * @param trackName
+    * @param labelName
     * @return
     */
-   public Uri importTrack( InputStream fis, String trackName )
+   public Uri importLabel( InputStream fis, String labelName )
    {
-      Uri trackUri = null;
+      Uri labelUri = null;
       int eventType;
       ContentValues lastPosition = null;
       Vector<ContentValues> bulk = new Vector<ContentValues>();
@@ -167,14 +169,14 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
                else
                {
                   ContentValues trackContent = new ContentValues();
-                  trackContent.put(Labels.NAME, trackName);
-                  if (xmlParser.getName().equals("trk") && trackUri == null)
+                  trackContent.put(Labels.NAME, labelName);
+                  if (xmlParser.getName().equals("trk") && labelUri == null)
                   {
-                     trackUri = startTrack(trackContent);
+                     labelUri = startTrack(trackContent);
                   }
                   else if (xmlParser.getName().equals(SEGMENT_ELEMENT))
                   {
-                     segmentUri = startSegment(trackUri);
+                     segmentUri = startSegment(labelUri);
                   }
                   else if (xmlParser.getName().equals(TRACK_ELEMENT))
                   {
@@ -244,7 +246,7 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
                {
                   if (segmentUri == null)
                   {
-                     segmentUri = startSegment( trackUri );
+                     segmentUri = startSegment( labelUri );
                   }
                   mContentResolver.bulkInsert(Uri.withAppendedPath(segmentUri, "waypoints"), bulk.toArray(new ContentValues[bulk.size()]));
                   bulk.clear();
@@ -270,11 +272,11 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
                {
                   ContentValues nameValues = new ContentValues();
                   nameValues.put(Labels.NAME, text);
-                  if (trackUri == null)
+                  if (labelUri == null)
                   {
-                     trackUri = startTrack(new ContentValues());
+                     labelUri = startTrack(new ContentValues());
                   }
-                  mContentResolver.update(trackUri, nameValues, null, null);
+                  mContentResolver.update(labelUri, nameValues, null, null);
                }
                else if (lastPosition != null && speed)
                {
@@ -312,7 +314,7 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
             Log.w( TAG, "Failed closing inputstream");
          }
       }
-      return trackUri;
+      return labelUri;
    }
 
    private Uri startSegment(Uri trackUri)

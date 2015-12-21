@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 
 /**
- * Interface to which a Activity / Context can conform to receive progress
+ * Interface to which an Activity / Context can conform to receive progress
  * updates from async tasks
 
  */

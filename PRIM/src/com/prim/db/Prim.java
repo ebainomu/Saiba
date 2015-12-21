@@ -66,6 +66,7 @@ public final class Prim
                                           "," + " " + Labels.Y + " " + Labels.Y_TYPE +
                                            "," + " " + Labels.Z + " " + Labels.Z_TYPE + 
                                            "," + " " + Labels.ACCURACY  + " " + Labels.ACCURACY_TYPE +
+                                            "," + " " + Locations.SPEED     + " " + Locations.SPEED_TYPE + 
                                           ");";
    }     
    public static final String LATITUDE = "latitude";
@@ -115,7 +116,7 @@ public final class Prim
       "," + " " + Locations.LATITUDE  + " " + Locations.LATITUDE_TYPE + 
       "," + " " +Locations.LONGITUDE + " " + Locations.LONGITUDE_TYPE + 
       "," + " " + Locations.TIME      + " " + Locations.TIME_TYPE + 
-      "," + " " + Locations.SPEED     + " " + Locations.SPEED + 
+      "," + " " + Locations.SPEED     + " " + Locations.SPEED_TYPE + 
       "," + " " + Locations.ACCURACY  + " " + Locations.ACCURACY_TYPE + 
       "," + " " + Locations.LABEL  + " " + Locations.LABEL_TYPE +   
       "," + " " + Locations.SEGMENT   + " " + Locations.SEGMENT_TYPE + 
@@ -211,6 +212,7 @@ public final class Prim
    public static class LabelsColumns
    {
       public static final String NAME          = "name";
+      public static final String SPEED = "speed";
       public static final String DETECTION_TIME = "creationtime";
       static final String DETECTION_TIME_TYPE   = "INTEGER NOT NULL";
       static final String NAME_TYPE            = "TEXT";
@@ -227,6 +229,7 @@ public final class Prim
 	  static final String LATITUDE_TYPE  = "REAL NOT NULL";
 	  static final String LONGITUDE_TYPE = "REAL NOT NULL";
 	  static final String ACCURACY_TYPE  = "REAL";
+	  static final String SPEED_TYPE     = "REAL NOT NULL";
    }
    
    
