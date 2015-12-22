@@ -365,8 +365,8 @@ public void onAttach(Activity activity) {
 			 * */		
 			
 			    assert (event != null);
-			    if (event instanceof SensorEvent){ 
-			    
+			    if (event instanceof SensorEvent)
+			{ 	  
 			    float[] value = event.values; 			    
 				float xVal = value[0];
 				float yVal = value[1];
@@ -375,8 +375,7 @@ public void onAttach(Activity activity) {
 				float accelationSquareRoot = (xVal*xVal + yVal*yVal + zVal*zVal) 
 						/ (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
 				
-				long actualTime = System.currentTimeMillis();
-				
+				long actualTime = System.currentTimeMillis();				
 				
 			if(accelationSquareRoot >= 1.2) 
 		    {			
@@ -584,15 +583,15 @@ public void onAttach(Activity activity) {
   }
 
 @Override
-public void onLocationChanged(Location location) {
+public void onLocationChanged(Location location) 
+{
 	// TODO Auto-generated method stub
 	
 }
 
 @Override
-public void onStatusChanged(String provider, int status, Bundle extras) {
-	
-	
+public void onStatusChanged(String provider, int status, Bundle extras) 
+{
 	// TODO Auto-generated method stub
 	
     if (DEBUG)
@@ -753,7 +752,7 @@ public void onPause()
 {
 // TODO Auto-generated method stub
 super.onPause();
-sensorManager.unregisterListener((SensorListener)context);
+/*sensorManager.unregisterListener((SensorListener)context);*/
 }
 
 
@@ -762,17 +761,26 @@ public void onResume()
 {
 // TODO Auto-generated method stub
 super.onResume();
+
+/*try{
 sensorManager.registerListener(this, sensorManager.getDefaultSensor
 	(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
- lastTime = System.currentTimeMillis();
+ lastTime = System.currentTimeMillis(); }
+
+catch (NullPointerException e)
+{
+   Log.e(TAG, "Could not start GPSLoggerService.", e);
+	Intent intent = new Intent();
+intent.setClass(getActivity(), MainActivity.class);
+}*/
 }
 
 @Override
 public void onDestroy() 
 {
 	   super.onDestroy();
-	   sensorManager.unregisterListener((SensorListener) context);  
-	   if (DEBUG)
+	   //sensorManager.unregisterListener((SensorListener) context);  
+/*	   if (DEBUG)
 	      {
 	         Log.d(TAG, "onDestroy()");
 	      }
@@ -802,7 +810,7 @@ public void onDestroy()
 
 	      Message msg = Message.obtain();
 	      msg.what = STOPLOOPER;
-	      mHandler.sendMessage(msg);
+	      mHandler.sendMessage(msg);*/
 
 }
 
@@ -1154,7 +1162,7 @@ private void stopListening()
 public void onStop() 
 {
 	   super.onStop();
-	   sensorManager.unregisterListener((SensorListener) context);	   
+	/*   sensorManager.unregisterListener((SensorListener) context);	*/   
 	   
 }
 

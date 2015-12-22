@@ -14,9 +14,9 @@ public class GpxSharing extends GpxCreator
 {
 
 
-   public GpxSharing(Context context, Uri trackUri, String chosenBaseFileName, boolean attachments, ProgressListener listener)
+   public GpxSharing(Context context, Uri labelUri, String chosenBaseFileName, boolean attachments, ProgressListener listener)
    {
-      super(context, trackUri, chosenBaseFileName, attachments, listener);
+      super(context, labelUri, chosenBaseFileName, attachments, listener);
    }
 
    @Override

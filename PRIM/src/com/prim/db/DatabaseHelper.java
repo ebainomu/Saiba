@@ -579,29 +579,29 @@ public class DatabaseHelper extends SQLiteOpenHelper
       args.put(LabelsColumns.DETECTION_TIME, currentTime);
 
       SQLiteDatabase sqldb = getWritableDatabase();
-      long trackId = sqldb.insert(Labels.TABLE, null, args);
+      long labelId = sqldb.insert(Labels.TABLE, null, args);
 
       ContentResolver resolver = this.mContext.getContentResolver();
       resolver.notifyChange(Labels.CONTENT_URI, null);
 
-      return trackId;
+      return labelId;
    }
 
    /**
-    * Moves to a fresh segment to which waypoints can be connected
+    * Moves to a fresh segment to which location points can be connected
     * 
     * @return
     */
-   long toNextSegment(long trackId)
+   long toNextSegment(long labelId)
    {
       SQLiteDatabase sqldb = getWritableDatabase();
 
       ContentValues args = new ContentValues();
-      args.put(Segments.LABEL, trackId);
+      args.put(Segments.LABEL, labelId);
       long segmentId = sqldb.insert(Segments.TABLE, null, args);
 
       ContentResolver resolver = this.mContext.getContentResolver();
-      resolver.notifyChange(Uri.withAppendedPath(Labels.CONTENT_URI, trackId + "/segments"), null);
+      resolver.notifyChange(Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/segments"), null);
 
       return segmentId;
    }

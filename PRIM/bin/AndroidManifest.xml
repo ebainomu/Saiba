@@ -45,6 +45,7 @@
         android:allowBackup="true"        
         android:description="@string/app_name"
         android:hardwareAccelerated="true"
+        android:allowClearUserData="true"
       >
         <uses-library android:name="com.google.android.maps"/>        
 
@@ -74,6 +75,15 @@
                     android:name="android.intent.action.MAIN" />
                 <category 
                     android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+             <intent-filter android:label="Show label" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="content" />
+                <data android:host="dev.baalmart.prim" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.dev.baalmart.prim.label" />
             </intent-filter>
         </activity>
         
@@ -167,7 +177,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
              
         <activity
-            android:name="com.prim.viewer.RouteList"
+            android:name="com.prim.viewer.LabelList"
             android:label="@string/track_list"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -177,7 +187,6 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -200,7 +209,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name="com.prim.viewer.RoutesLiveFolder"
+            android:name="com.prim.viewer.LabelsLiveFolder"
             android:icon="@drawable/icon"
             android:label="@string/track_list" >
             <intent-filter>
@@ -209,12 +218,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-      <!--   <activity
+        <activity
             android:name="com.prim.actions.Statistics"
             android:label="@string/menu_statistics" >
-        </activity> -->
-        <!-- <activity
-            android:name="com.prim.actions.ShareRoute"
+        </activity>
+        <activity
+            android:name="com.prim.actions.ShareLabels"
             android:exported="false"
             android:label="@string/share_track"
             android:windowSoftInputMode="stateUnchanged" >
@@ -223,9 +232,9 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:mimeType="vnd.android.cursor.item/vnd.nl.sogeti.android.track" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.com.prim.label" />
             </intent-filter>
-        </activity> -->
+        </activity>
         <activity
             android:name="com.prim.oauth.PrepareRequestTokenActivity"
             android:exported="true"

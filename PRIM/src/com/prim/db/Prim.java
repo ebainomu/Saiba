@@ -66,7 +66,7 @@ public final class Prim
                                           "," + " " + Labels.Y + " " + Labels.Y_TYPE +
                                            "," + " " + Labels.Z + " " + Labels.Z_TYPE + 
                                            "," + " " + Labels.ACCURACY  + " " + Labels.ACCURACY_TYPE +
-                                            "," + " " + Locations.SPEED     + " " + Locations.SPEED_TYPE + 
+                                            "," + " " +Labels.SPEED     + " " + Labels.SPEED_TYPE + 
                                           ");";
    }     
    public static final String LATITUDE = "latitude";

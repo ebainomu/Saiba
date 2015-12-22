@@ -36,16 +36,16 @@
         <item>Hectares/hour (Metric)</item>
     </string-array>
     <string-array name="sharetype_choices">
-        <item>KMZ - Google Earth, etc.</item>
-        <item>GPX - the GPS Exchange Format</item>
-        <item>Image and text - Speed and distance summary</item>
+    <!--     <item>KMZ - Google Earth, etc.</item> -->
+        <item>XML Format</item>
+     <!--    <item>Image and text - Speed and distance summary</item> -->
     </string-array>
     <string-array name="sharegpxtarget_choices">
         <item>Store to SD Card</item>
         <item>Send with an (email) application</item>
-        <item>Publish to www.jogmap.de</item>
+ <!--        <item>Publish to www.jogmap.de</item>
         <item>Publish as OpenStreetMap trace</item>
-        <item>Publish to Breadcrumbs</item>
+        <item>Publish to Breadcrumbs</item> -->
     </string-array>
     <string-array name="sharekmztarget_choices">
         <item>Store to SD Card</item>

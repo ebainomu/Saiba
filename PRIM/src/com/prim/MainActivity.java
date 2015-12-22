@@ -3,9 +3,12 @@ package com.prim;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -15,7 +18,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,7 +28,9 @@ import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.prim.actions.ShareLabels;
 import com.prim.custom.CustomActivity;
+import com.prim.db.Prim.Labels;
 import com.prim.logger.GPSLoggerServiceManager;
 import com.prim.logger.IGPSLoggerServiceRemote;
 import com.prim.model.Data;
@@ -31,6 +38,7 @@ import com.prim.ui.LeftNavAdapter;
 import com.prim.ui.MainFragment;
 import com.prim.ui.Profile;
 import com.prim.ui.Settings;
+import com.prim.viewer.LabelList;
 
 import android.location.Location;
 import dev.baalmart.prim.R;
@@ -40,6 +48,25 @@ import java.util.ArrayList;
 
 public class MainActivity extends CustomActivity
 {
+	
+	// MENU'S
+	   private static final int MENU_SETTINGS = 1;
+	   private static final int MENU_TRACKING = 2;
+	   private static final int MENU_TRACKLIST = 3;
+	   private static final int MENU_STATS = 4;
+	   private static final int MENU_ABOUT = 5;
+	   private static final int MENU_LAYERS = 6;
+	   private static final int MENU_NOTE = 7;
+	   private static final int MENU_SHARE = 13;
+	   private static final int MENU_CONTRIB = 14;
+	   private static final int DIALOG_NOTRACK = 24;
+	   private static final int DIALOG_LAYERS = 31;
+	   private static final int DIALOG_URIS = 34;
+	   private static final int DIALOG_CONTRIB = 35;
+	   private GPSLoggerServiceManager mLoggerServiceManager;
+	   private long mLabelId = -1;	
+	   ShareLabels shareLabels;
+	
   private DrawerLayout drawerLayout;
   private ListView drawerLeft;
   @SuppressWarnings("deprecation")
@@ -56,12 +83,33 @@ public class MainActivity extends CustomActivity
 	    String str = getString(R.string.app_name);
 	    //Object localObject = null;
 	    Fragment fragment = null;
+	    boolean handled = false;
 	  
 	  //******************Logout********************************
     if (pos == 4)
     {
-      /*startActivity(new Intent(this, Login.class));
-      finish();*/
+      //startActivity(new Intent(this, Login.class));
+    	
+    	 Uri labelUri;
+         Intent intent;
+      try{
+      intent = new Intent(Intent.ACTION_RUN);
+      labelUri = ContentUris.withAppendedId(Labels.CONTENT_URI, mLabelId);
+      intent.setDataAndType(labelUri, Labels.CONTENT_ITEM_TYPE);
+      intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);  
+      this.startActivityForResult(Intent.createChooser(intent, this.getString(R.string.share_track)), 
+    		  MENU_SHARE);
+      handled = true;}
+
+  	catch (NullPointerException e)
+      {
+         Log.e(TAG, "Could not start GPSLoggerService.", e);
+     	Intent nullIntent = new Intent();
+		nullIntent.setClass(this, MainActivity.class);
+      }
+  
+           
+      //finish();
     }    
    
     if (pos == 0)
@@ -77,11 +125,11 @@ public class MainActivity extends CustomActivity
     	  fragment = new MainFragment();
       }
       //*********************favorite***********************
-      else if (pos == 2)
+    /*  else if (pos == 2)
       {
-        //startActivity(new Intent(this, IssueList.class).putExtra("title", "Favorites"));
-        //fragment = null;
-      }      
+        startActivity(new Intent(this, IssueList.class).putExtra("title", "Favorites"));
+        fragment = null;
+      } */     
       
       else
       {
@@ -131,7 +179,7 @@ public class MainActivity extends CustomActivity
     localArrayList.add(new Data(new String[] { "Find" }, new int[] { R.drawable.ic_nav1, R.drawable.ic_nav1_sel }));
     localArrayList.add(new Data(new String[] { "Favorite" }, new int[] { R.drawable.ic_nav2, R.drawable.ic_nav2_sel }));
     localArrayList.add(new Data(new String[] { "Settings" }, new int[] { R.drawable.ic_nav3, R.drawable.ic_nav3_sel }));
-    localArrayList.add(new Data(new String[] { "Log Out" }, new int[] { R.drawable.ic_nav4, R.drawable.ic_nav4_sel }));
+    localArrayList.add(new Data(new String[] { "Share" }, new int[] { R.drawable.ic_nav4, R.drawable.ic_action_share }));
     final LeftNavAdapter localLeftNavAdapter = new LeftNavAdapter(this, localArrayList);
     drawerLeft.setAdapter(localLeftNavAdapter);    
     drawerLeft.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -209,8 +257,25 @@ public class MainActivity extends CustomActivity
     if (drawerToggle.onOptionsItemSelected(paramMenuItem))
     return true;
     return super.onOptionsItemSelected(paramMenuItem);
+    
+    /**
+     * 
+     * 
+     * 
+        case MENU_SHARE:
+           intent = new Intent(Intent.ACTION_RUN);
+           trackUri = ContentUris.withAppendedId(Labels.CONTENT_URI, mTrackId);
+           intent.setDataAndType(trackUri, Labels.CONTENT_ITEM_TYPE);
+           intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+           this.startActivityForResult(Intent.createChooser
+        		   (intent,this.getString(R.string.share_track)), MENU_SHARE);
+           handled = true;
+           break;*/
+    
   }
 
+  
+  
   @Override
   protected void onPostCreate(Bundle paramBundle)
   {

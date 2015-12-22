@@ -311,6 +311,11 @@ public class PrimProvider extends ContentProvider
                String name = ( values == null ) ? "" : values.getAsString( Labels.NAME );
                labelId     = this.mDbHelper.toNextLabel( name );
                insertedUri = ContentUris.withAppendedId( uri, labelId );
+               
+               
+               
+               
+               
                break;
             case TRACK_METADATA:
                pathSegments = uri.getPathSegments();
