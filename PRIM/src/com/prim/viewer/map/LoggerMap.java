@@ -40,6 +40,17 @@ public interface LoggerMap
    void disableMyLocation();
 
    void disableCompass();
+   
+   /**
+    * *the methods which I really need. **
+    * */
+   
+   float getX();
+   float getY();
+   float getZ();
+   double getLatitude();
+   double getLongitude();
+   double getSpeed();
 
    void setZoom(int int1);
 

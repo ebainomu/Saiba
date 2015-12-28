@@ -69,9 +69,7 @@ public class NameRoute extends Activity
          finish();
       }
 
-
    };
-   
    
    private void clearNotification() 
    {

@@ -109,22 +109,20 @@ public class PrimProvider extends ContentProvider
    private static final int LABELS            = 1;
    private static final int LABEL_ID          = 2;   
    private static final int TRACK_MEDIA       = 3;
-   private static final int TRACK_WAYPOINTS   = 4;
+   private static final int LABEL_LOCATIONS   = 4;
    private static final int SEGMENTS          = 5;
    private static final int SEGMENT_ID        = 6;
    private static final int SEGMENT_MEDIA     = 7;
-   private static final int WAYPOINT_MEDIA    = 10;
-   private static final int SEARCH_SUGGEST_ID = 11;
-   private static final int LIVE_FOLDERS      = 12;
-   private static final int MEDIA             = 13;
-   private static final int MEDIA_ID          = 14;   
-   private static final int TRACK_METADATA    = 15;
-   private static final int SEGMENT_METADATA  = 16;
-   private static final int WAYPOINT_METADATA = 17;
-   private static final int METADATA          = 18;
-   private static final int METADATA_ID       = 19;
-   private static final int LOCATIONS         = 20;
-   private static final int LOCATION_ID       = 21;
+   private static final int SEARCH_SUGGEST_ID = 8;
+   private static final int LIVE_FOLDERS      = 9;
+   private static final int MEDIA_ID          = 10;   
+   private static final int LABEL_METADATA    = 11;
+   private static final int SEGMENT_METADATA  = 12;
+   private static final int WAYPOINT_METADATA = 13;
+   private static final int METADATA          = 14;
+   private static final int METADATA_ID       = 15;
+   private static final int LOCATIONS         = 16;
+   private static final int LOCATION_ID       = 17;
    
    private static final String[] SUGGEST_PROJECTION = 
       new String[] 
@@ -146,30 +144,23 @@ public class PrimProvider extends ContentProvider
    private static UriMatcher sURIMatcher = new UriMatcher( UriMatcher.NO_MATCH );
 
    /**
-    * Although it is documented that in addURI(null, path, 0) "path" should be an absolute path this does not seem to work. A relative path gets the jobs done and matches an absolute path.
+    * Although it is documented that in addURI(null, path, 0) "path" 
+    * should be an absolute path this does not seem to work. 
+    * A relative path gets the jobs done and matches an absolute path.
     */
    static
    {
       PrimProvider.sURIMatcher = new UriMatcher( UriMatcher.NO_MATCH );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks", PrimProvider.LABELS );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#", PrimProvider.LABEL_ID );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/media", PrimProvider.TRACK_MEDIA );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/metadata", PrimProvider.TRACK_METADATA );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/waypoints", PrimProvider.TRACK_WAYPOINTS );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments", PrimProvider.SEGMENTS );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#", PrimProvider.SEGMENT_ID );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/media", PrimProvider.SEGMENT_MEDIA );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/metadata", PrimProvider.SEGMENT_METADATA );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/waypoints", PrimProvider.LOCATIONS );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/waypoints/#", PrimProvider.LOCATION_ID );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/waypoints/#/media", PrimProvider.WAYPOINT_MEDIA );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/waypoints/#/metadata", PrimProvider.WAYPOINT_METADATA );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "media", PrimProvider.MEDIA );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "media/#", PrimProvider.MEDIA_ID );
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels", PrimProvider.LABELS );
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels/#", PrimProvider.LABEL_ID );
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels/#/metadata", PrimProvider.LABEL_METADATA );
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels/#/locations", PrimProvider.LABEL_LOCATIONS );      
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels/#/segments/#/waypoints", PrimProvider.LOCATIONS );
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels/#/segments/#/waypoints/#", PrimProvider.LOCATION_ID );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "metadata", PrimProvider.METADATA );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "metadata/#", PrimProvider.METADATA_ID );
       
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "live_folders/tracks", PrimProvider.LIVE_FOLDERS );
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "live_folders/labels", PrimProvider.LIVE_FOLDERS );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "search_suggest_query", PrimProvider.SEARCH_SUGGEST_ID );
 
    }
@@ -207,28 +198,13 @@ public class PrimProvider extends ContentProvider
          case LABEL_ID:
             mime = Labels.CONTENT_ITEM_TYPE;
             break;
-         case SEGMENTS:
-            mime = Segments.CONTENT_TYPE;
-            break;
-         case SEGMENT_ID:
-            mime = Segments.CONTENT_ITEM_TYPE;
-            break;
          case LOCATIONS:
             mime = Locations.CONTENT_TYPE;
             break;
          case LOCATION_ID:
             mime = Locations.CONTENT_ITEM_TYPE;
-            break;
-         case MEDIA_ID:
-         case TRACK_MEDIA:
-         case SEGMENT_MEDIA:
-        /* case WAYPOINT_MEDIA:
-            mime = Media.CONTENT_ITEM_TYPE;
-            break;*/
-         case METADATA_ID:
-         case TRACK_METADATA:
-         case SEGMENT_METADATA:
-         case WAYPOINT_METADATA:
+            break;       
+         case LABEL_METADATA:      
             mime = MetaData.CONTENT_ITEM_TYPE;
             break;
          case UriMatcher.NO_MATCH:
@@ -246,22 +222,17 @@ public class PrimProvider extends ContentProvider
       @Override
       public Uri insert( Uri uri, ContentValues values )
       {
-         //Log.d( TAG, "insert on "+uri );
+         Log.d( TAG, "insert on " +uri );
          Uri insertedUri = null;
          int match = PrimProvider.sURIMatcher.match( uri );
          List<String> pathSegments = null;
-         long labelId = -1;
-         long segmentId = -1;
-         long locationId = -1;
-         long mediaId = -1;
-         String key;
-         String value;
+         long labelId = -1;        
+         long locationId = -1;         
          switch (match)
          {
             case LOCATIONS:
                pathSegments     = uri.getPathSegments();
                labelId          = Long.parseLong( pathSegments.get( 1 ) );
-               segmentId        = Long.parseLong( pathSegments.get( 3 ) );
                Location loc     = new Location( TAG );
                Double latitude  = values.getAsDouble( Locations.LATITUDE );
                Double longitude = values.getAsDouble( Locations.LONGITUDE );
@@ -285,65 +256,18 @@ public class PrimProvider extends ContentProvider
                   loc.setAccuracy( values.getAsFloat( Locations.ACCURACY ) );
                }
               
-               locationId = this.mDbHelper.insertLocation( 
-                     labelId, 
-                     segmentId, 
-                     loc );
+               locationId = this.mDbHelper.insertLocation(labelId,loc );
+               
    //            Log.d( TAG, "Have inserted to segment "+segmentId+" with waypoint "+waypointId );
                insertedUri = ContentUris.withAppendedId( uri, locationId );
-               break;
-            /*case WAYPOINT_MEDIA:
-               pathSegments    = uri.getPathSegments();
-               labelId         = Long.parseLong( pathSegments.get( 1 ) );
-               segmentId       = Long.parseLong( pathSegments.get( 3 ) );
-               locationId      = Long.parseLong( pathSegments.get( 5 ) );
-               String mediaUri = values.getAsString( Media.URI );
-               mediaId         = this.mDbHelper.insertMedia( trackId, segmentId, waypointId, mediaUri );
-               insertedUri     = ContentUris.withAppendedId( Media.CONTENT_URI, mediaId );
-               break;*/
-            case SEGMENTS:
-               pathSegments = uri.getPathSegments();
-               labelId      = Integer.parseInt( pathSegments.get( 1 ) );
-               segmentId    = this.mDbHelper.toNextSegment( labelId );
-               insertedUri  = ContentUris.withAppendedId( uri, segmentId );
                break;
             case LABELS:
                String name = ( values == null ) ? "" : values.getAsString( Labels.NAME );
                labelId     = this.mDbHelper.toNextLabel( name );
-               insertedUri = ContentUris.withAppendedId( uri, labelId );
-               
-               
-               
-               
+               insertedUri = ContentUris.withAppendedId( uri, labelId );     
                
                break;
-            case TRACK_METADATA:
-               pathSegments = uri.getPathSegments();
-               labelId      = Long.parseLong( pathSegments.get( 1 ) );
-               key          = values.getAsString( MetaData.KEY );
-               value        = values.getAsString( MetaData.VALUE );
-               mediaId      = this.mDbHelper.insertOrUpdateMetaData( labelId, -1L, -1L, key, value );
-               insertedUri  = ContentUris.withAppendedId( MetaData.CONTENT_URI, mediaId );
-               break;
-            case SEGMENT_METADATA:
-               pathSegments = uri.getPathSegments();
-               labelId      = Long.parseLong( pathSegments.get( 1 ) );
-               segmentId    = Long.parseLong( pathSegments.get( 3 ) );
-               key          = values.getAsString( MetaData.KEY );
-               value        = values.getAsString( MetaData.VALUE );
-               mediaId      = this.mDbHelper.insertOrUpdateMetaData( labelId, segmentId, -1L, key, value );
-               insertedUri  = ContentUris.withAppendedId( MetaData.CONTENT_URI, mediaId );
-               break;
-            case WAYPOINT_METADATA:
-               pathSegments = uri.getPathSegments();
-               labelId      = Long.parseLong( pathSegments.get( 1 ) );
-               segmentId    = Long.parseLong( pathSegments.get( 3 ) );
-               locationId   = Long.parseLong( pathSegments.get( 5 ) );
-               key          = values.getAsString( MetaData.KEY );
-               value        = values.getAsString( MetaData.VALUE );
-               mediaId      = this.mDbHelper.insertOrUpdateMetaData( labelId, segmentId, labelId, key, value );
-               insertedUri  = ContentUris.withAppendedId( MetaData.CONTENT_URI, mediaId );
-               break;
+           
             default:
                Log.e( PrimProvider.TAG, "Unable to match the insert URI: " + uri.toString() );
                insertedUri =  null;
@@ -398,13 +322,13 @@ public class PrimProvider extends ContentProvider
                innerSelection = Locations.SEGMENT + " =  ?  and " + Locations._ID     + " = ? ";
                innerSelectionArgs = new String[]{ pathSegments.get( 3 ),  pathSegments.get( 5 ) };
                break;
-            case TRACK_WAYPOINTS:
+            case LABEL_LOCATIONS:
                tableName = Locations.TABLE + " INNER JOIN " + Segments.TABLE + " ON "+ Segments.TABLE+"."+Segments._ID +"=="+ Locations.SEGMENT;
                innerSelection = Segments.LABEL + " = ? ";
                innerSelectionArgs = new String[]{  pathSegments.get( 1 ) };
                break;
            
-            case TRACK_METADATA:
+            case LABEL_METADATA:
                tableName = MetaData.TABLE;
                innerSelection = MetaData.LABEL + " = ? and " + MetaData.SEGMENT  + " = ? and " + MetaData.LOCATION + " = ? ";
                innerSelectionArgs = new String[]{  pathSegments.get( 1 ), "-1", "-1" };
@@ -494,7 +418,7 @@ public class PrimProvider extends ContentProvider
    public int update( Uri uri, ContentValues givenValues, String selection, String[] selectionArgs )
    {
       int updates = -1 ;
-      long trackId;
+      long labelId;
       long segmentId;
       long waypointId;
       long metaDataId;
@@ -505,30 +429,30 @@ public class PrimProvider extends ContentProvider
       switch (match)
       {
          case LABEL_ID:
-            trackId = new Long( uri.getLastPathSegment() ).longValue();
+            labelId = new Long( uri.getLastPathSegment() ).longValue();
             String name = givenValues.getAsString( Labels.NAME );
-            updates = mDbHelper.updateLabel(trackId, name);   
+            updates = mDbHelper.updateLabel(labelId, name);   
             break;
-         case TRACK_METADATA:
+         case LABEL_METADATA:
             pathSegments = uri.getPathSegments();
-            trackId      = Long.parseLong( pathSegments.get( 1 ) );
+            labelId      = Long.parseLong( pathSegments.get( 1 ) );
             value = givenValues.getAsString( MetaData.VALUE );
-            updates = mDbHelper.updateMetaData( trackId, -1L, -1L, -1L, selection, selectionArgs, value);
+            updates = mDbHelper.updateMetaData( labelId, -1L, -1L, -1L, selection, selectionArgs, value);
             break;
          case SEGMENT_METADATA:
             pathSegments = uri.getPathSegments();
-            trackId      = Long.parseLong( pathSegments.get( 1 ) );
+            labelId      = Long.parseLong( pathSegments.get( 1 ) );
             segmentId    = Long.parseLong( pathSegments.get( 3 ) );
             value = givenValues.getAsString( MetaData.VALUE );
-            updates = mDbHelper.updateMetaData( trackId, segmentId, -1L, -1L, selection, selectionArgs, value);
+            updates = mDbHelper.updateMetaData( labelId, segmentId, -1L, -1L, selection, selectionArgs, value);
             break;
          case WAYPOINT_METADATA:
             pathSegments = uri.getPathSegments();
-            trackId      = Long.parseLong( pathSegments.get( 1 ) );
+            labelId      = Long.parseLong( pathSegments.get( 1 ) );
             segmentId    = Long.parseLong( pathSegments.get( 3 ) );
             waypointId   = Long.parseLong( pathSegments.get( 5 ) );
             value = givenValues.getAsString( MetaData.VALUE );
-            updates = mDbHelper.updateMetaData( trackId, segmentId, waypointId, -1L, selection, selectionArgs, value);
+            updates = mDbHelper.updateMetaData( labelId, segmentId, waypointId, -1L, selection, selectionArgs, value);
             break;
          case METADATA_ID:
             pathSegments = uri.getPathSegments();
@@ -540,8 +464,6 @@ public class PrimProvider extends ContentProvider
             Log.e( PrimProvider.TAG, "Unable to come to an action in the query uri" + uri.toString() );
             return -1;
       }
-      
-      
       
       return updates;
    }
@@ -582,9 +504,9 @@ public class PrimProvider extends ContentProvider
       {
          case LOCATIONS:
             List<String> pathSegments = uri.getPathSegments();
-            int trackId = Integer.parseInt( pathSegments.get( 1 ) );
+            int labelId = Integer.parseInt( pathSegments.get( 1 ) );
             int segmentId = Integer.parseInt( pathSegments.get( 3 ) );
-            inserted = this.mDbHelper.bulkInsertLocations( trackId, segmentId, valuesArray );
+            inserted = this.mDbHelper.bulkInsertLocations( labelId, segmentId, valuesArray );
             break;
          default:
             inserted = super.bulkInsert( uri, valuesArray );

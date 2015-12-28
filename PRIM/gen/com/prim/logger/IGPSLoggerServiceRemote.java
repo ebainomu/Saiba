@@ -140,6 +140,28 @@ reply.writeNoException();
 reply.writeFloat(_result);
 return true;
 }
+case TRANSACTION_getAcceleromterValues:
+{
+data.enforceInterface(DESCRIPTOR);
+float _result = this.getAcceleromterValues();
+reply.writeNoException();
+reply.writeFloat(_result);
+return true;
+}
+case TRANSACTION_geGPStLocationValues:
+{
+data.enforceInterface(DESCRIPTOR);
+android.location.Location _result = this.geGPStLocationValues();
+reply.writeNoException();
+if ((_result!=null)) {
+reply.writeInt(1);
+_result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+}
+else {
+reply.writeInt(0);
+}
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -337,6 +359,45 @@ _data.recycle();
 }
 return _result;
 }
+@Override public float getAcceleromterValues() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+float _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getAcceleromterValues, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readFloat();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
+@Override public android.location.Location geGPStLocationValues() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+android.location.Location _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_geGPStLocationValues, _data, _reply, 0);
+_reply.readException();
+if ((0!=_reply.readInt())) {
+_result = android.location.Location.CREATOR.createFromParcel(_reply);
+}
+else {
+_result = null;
+}
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
 }
 static final int TRANSACTION_loggingState = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_startLogging = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
@@ -348,6 +409,8 @@ static final int TRANSACTION_isMediaPrepared = (android.os.IBinder.FIRST_CALL_TR
 static final int TRANSACTION_storeDerivedDataSource = (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
 static final int TRANSACTION_getLastWaypoint = (android.os.IBinder.FIRST_CALL_TRANSACTION + 8);
 static final int TRANSACTION_getTrackedDistance = (android.os.IBinder.FIRST_CALL_TRANSACTION + 9);
+static final int TRANSACTION_getAcceleromterValues = (android.os.IBinder.FIRST_CALL_TRANSACTION + 10);
+static final int TRANSACTION_geGPStLocationValues = (android.os.IBinder.FIRST_CALL_TRANSACTION + 11);
 }
 public int loggingState() throws android.os.RemoteException;
 public long startLogging() throws android.os.RemoteException;
@@ -359,4 +422,6 @@ public boolean isMediaPrepared() throws android.os.RemoteException;
 public void storeDerivedDataSource(java.lang.String sourceName) throws android.os.RemoteException;
 public android.location.Location getLastWaypoint() throws android.os.RemoteException;
 public float getTrackedDistance() throws android.os.RemoteException;
+public float getAcceleromterValues() throws android.os.RemoteException;
+public android.location.Location geGPStLocationValues() throws android.os.RemoteException;
 }

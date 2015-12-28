@@ -3,8 +3,9 @@ package com.prim.logger;
 import android.net.Uri;
 import android.location.Location;
 
-interface IGPSLoggerServiceRemote {
 
+interface IGPSLoggerServiceRemote 
+{
 	int loggingState();
     long startLogging();
     void pauseLogging();
@@ -15,4 +16,7 @@ interface IGPSLoggerServiceRemote {
     void storeDerivedDataSource(in String sourceName);
     Location getLastWaypoint();
     float getTrackedDistance();
+    float getAcceleromterValues();
+    Location geGPStLocationValues();
+    
 }

@@ -342,8 +342,36 @@ public class GPSLoggerService extends Service implements LocationListener
          }
       }
    };
+   
+  /****
+   * 
+   * this Binder class since the service only runs on the local application and does not run across processes
+   * 
+   * that provides your client direct access to public methods in the service.
+   *  This works only if the client and service are in the same application and 
+   *  process, which is most common. For example, this would work well for a music 
+   *  application that needs to bind an activity to its own service that's playing music
+   *  in the background.
+   * 
+*/  
    private IBinder mBinder = new IGPSLoggerServiceRemote.Stub()
    {
+	   
+	   /****
+	    create an instance of Binder that either:
+contains public methods that the client can call
+returns the current Service instance, which has public methods the client can call
+or, returns an instance of another class hosted by the service with public 
+methods the client can call
+Return this instance of Binder from the onBind() callback method.
+In the client, receive the Binder from the onServiceConnected() callback 
+method and make calls to the bound service using the methods provided.
+
+My onServiceConnected() is in the GPSLoggerServiceManager Class.
+
+	    * 
+	    * */
+	   
       @Override
       public int loggingState() throws RemoteException
       {
@@ -406,6 +434,20 @@ public class GPSLoggerService extends Service implements LocationListener
       {
          return GPSLoggerService.this.getTrackedDistance();
       }
+
+	@Override
+	public float getAcceleromterValues()
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Location geGPStLocationValues()
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
    };
 
    /**
@@ -706,10 +748,13 @@ public class GPSLoggerService extends Service implements LocationListener
     * (non-Javadoc)
     * 
     * @see android.app.Service#onBind(android.content.Intent)
+    * 
+    *returning an instance of the Binder in the service itself
     */
    @Override
    public IBinder onBind(Intent intent)
    {
+	   
       return this.mBinder;
    }
 
@@ -758,6 +803,8 @@ public class GPSLoggerService extends Service implements LocationListener
     * (non-Javadoc)
     * 
     * @see com.prim.logger.IGPSLoggerService#startLogging()
+    *what happens when the logging starts
+    * 
     */
    public synchronized void startLogging()
    {
@@ -1417,15 +1464,16 @@ public class GPSLoggerService extends Service implements LocationListener
 	   
 	   if (!isLogging())
 	      {
-	         Log.e(TAG, String.format("Not logging but storing location %s, prepare to fail", location.toString()));
+	         Log.e(TAG, String.format("Not logging but storing location %s, prepare to fail", 
+	        		 location.toString()));
 	      }
 	      ContentValues args = new ContentValues();
 	      
-	      args.put(Locations.LATITUDE, Double.valueOf(location.getLatitude()));
-	      
+	      args.put(Locations.LATITUDE, Double.valueOf(location.getLatitude()));	      
 	      args.put(Locations.LONGITUDE, Double.valueOf(location.getLongitude()));
 	      args.put(Locations.SPEED, Float.valueOf(location.getSpeed()));
 	      args.put(Locations.TIME, Long.valueOf(System.currentTimeMillis()));
+	      
 	      if (location.hasAccuracy())
 	      {
 	         args.put(Locations.ACCURACY, Float.valueOf(location.getAccuracy()));

@@ -76,7 +76,7 @@ public class UploadBreadcrumbsLabelTask extends GpxCreator
 		   ProgressListener listener, HttpClient httpclient, OAuthConsumer consumer,
          Uri labelUri, String name)
    {
-      super(context, labelUri, name, true, listener);
+      super(context, labelUri, name, listener); //the GPX creator constructor....
       mService = adapter;
       mHttpClient = httpclient;
       mConsumer = consumer;
@@ -87,10 +87,11 @@ public class UploadBreadcrumbsLabelTask extends GpxCreator
     * Retrieve the OAuth Request Token and present a browser to the user to
     * authorize the token.
     */
+   
    @Override
    protected Uri doInBackground(Void... params)
    {
-      // Leave room in the progressbar for uploading
+      // Leave room in the progress bar for uploading
       determineProgressGoal();
       //mProgressAdmin.setUpload(true);
 
@@ -98,6 +99,7 @@ public class UploadBreadcrumbsLabelTask extends GpxCreator
       Uri gpxFile = exportGpx();
 
       if (isCancelled())
+    	  
       {
          String text = mContext.getString(R.string.ticker_failed) + 
         		 " \"http://api.gobreadcrumbs.com/v1/tracks\" "

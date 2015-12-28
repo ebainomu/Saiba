@@ -324,7 +324,7 @@ public class ShareLabels extends Activity implements StatisticsDelegate
       removeScreenBitmap();
    }*/
 
-   private void setTextLineExportTargets()
+ /*  private void setTextLineExportTargets()
    {
       ArrayAdapter<CharSequence> shareTargetAdapter = ArrayAdapter.createFromResource(this, R.array.sharetexttarget_choices, android.R.layout.simple_spinner_item);
       shareTargetAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -333,7 +333,7 @@ public class ShareLabels extends Activity implements StatisticsDelegate
       mShareTargetSpinner.setSelection(lastTarget);
       removeScreenBitmap();
    }
-
+*/
    
    //the export type
    private void share()
@@ -369,8 +369,8 @@ public class ShareLabels extends Activity implements StatisticsDelegate
       
       //saving to the SD card
          case EXPORT_TARGET_SAVE:
-            new GpxCreator(this, mLabelUri, chosenFileName, true, 
-            		new ShareProgressListener(chosenFileName)).execute();
+        	 //the GPX creator constructor
+            new GpxCreator(this, mLabelUri, chosenFileName, new ShareProgressListener(chosenFileName)).execute();
             ShareLabels.this.finish();
             break;       
          default:
@@ -605,6 +605,7 @@ cursor = resolver.query(People.CONTENT_URI, projection, People.NAME + " LIKE ?",
    {
       Uri fileUri = null;
       FileOutputStream stream = null;
+      
       try
       {
          clearScreenBitmap();

@@ -52,6 +52,7 @@ import android.widget.Toast;
 import com.prim.MainActivity;
 import com.prim.Others;
 import com.prim.IssueList;
+import com.prim.actions.ControlLogging;
 import com.prim.actions.GetAccelerometerValues;
 import com.prim.actions.NameRoute;
 import com.prim.custom.CustomFragment;
@@ -440,6 +441,11 @@ public void onAttach(Activity activity) {
     
   }
   
+  public void getX(float xval)
+  {
+	//  xVal = xval;
+	  
+  }
   /**
    * the getSystemService() method that provides access to system 
    * services comes from Context. An Activity extends Context, 
@@ -504,10 +510,8 @@ public void onAttach(Activity activity) {
 	
     	try 
     	{
-    	 //mLoggerService._handleMessage(msg);    		
-    	mLoggerService. soundGpsSignalAlarm();	
-    	mLoggerService.startLogging();
-    	this.notifyOnEnabledProviderNotification(R.string.service_gpsenabled);
+    		Intent intent = new Intent();
+    		intent.setClass(getActivity(), ControlLogging.class);
     	} 
     	
     	catch (IllegalArgumentException e)

@@ -151,6 +151,7 @@
             android:launchMode="singleTask"
             android:theme="@style/Theme.NoBackground" >
         </activity> -->
+        
         <activity
             android:name="com.prim.viewer.ApplicationPreferenceActivity"
             android:label="@string/menu_settings" />
@@ -163,10 +164,10 @@
         <activity
             android:name="com.prim.actions.ControlLogging"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        
         <!-- <activity
             android:name="com.prim.actions.InsertNote"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" /> -->
-            
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" /> -->            
             
         <activity
             android:name="com.prim.actions.GetMyLocationValues"
@@ -262,6 +263,7 @@
                 </action>
             </intent-filter>
         </service>
+        
         <service android:name="com.prim.breadcrumbs.BreadcrumbsService" />
 
      <!--    this is the provider for the application 
@@ -271,13 +273,13 @@
             android:authorities="dev.baalmart.prim"
             android:enabled="true"
             android:permission="android.permission.ACCESS_FINE_LOCATION" >
-            <grant-uri-permission android:pathPrefix="/tracks/" />
+            <grant-uri-permission android:pathPrefix="/labels/" />
 
             <path-permission
                 android:path="/search_suggest_query"
                 android:readPermission="android.permission.GLOBAL_SEARCH" />
             <path-permission
-                android:path="/live_folders/tracks"
+                android:path="/live_folders/labels"
                 android:readPermission="android.permission.BIND_APPWIDGET" />
         </provider>
 

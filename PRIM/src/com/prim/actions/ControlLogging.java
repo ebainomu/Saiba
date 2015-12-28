@@ -50,8 +50,9 @@ public class ControlLogging extends Activity
                   long loggerLabelId = mLoggerServiceManager.startGPSLogging( null );
                   
                   // Start a naming of the track
+                  //I may do the database insertion from here.
                   Intent namingIntent = new Intent( ControlLogging.this, NameRoute.class );
-                  namingIntent.setData( ContentUris.withAppendedId( Labels.CONTENT_URI, loggerLabelId ) );
+                  namingIntent.setData( ContentUris.withAppendedId( Labels.CONTENT_URI, loggerLabelId ));
                   startActivity( namingIntent );
                   
                   // Create data for the caller that a new track has been started

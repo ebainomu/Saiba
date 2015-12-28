@@ -9,6 +9,7 @@ import com.prim.db.Prim.Locations;
 import com.prim.db.Prim.MetaData;
 import com.prim.db.Prim.Segments;
 import com.prim.db.Prim.Xyz;
+import com.prim.ui.MainFragment;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -207,35 +208,55 @@ public class DatabaseHelper extends SQLiteOpenHelper
     * @param speed the measured speed
     * @return
     */
-   long insertLocation(long labelId, long segmentId, Location location)
+   long insertLocation(long labelId, Location location)
    {
-      if (labelId < 0 || segmentId < 0)
+      if (labelId < 0 )
       {
          throw new IllegalArgumentException("label and segments may not be less than 0.");
       }
 
       SQLiteDatabase sqldb = getWritableDatabase();
-
       ContentValues args = new ContentValues();
-      args.put(LocationColumns.SEGMENT, segmentId);
       args.put(LocationColumns.TIME, location.getTime());
       args.put(LocationColumns.LATITUDE, location.getLatitude());
       args.put(LocationColumns.LONGITUDE, location.getLongitude());
       args.put(LocationColumns.SPEED, location.getSpeed());
       args.put(LocationColumns.ACCURACY, location.getAccuracy());
-   
-
       long locationId = sqldb.insert(Locations.TABLE, null, args);
-
       ContentResolver resolver = this.mContext.getContentResolver();
-      Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/segments/" + segmentId + "/locations");
+      Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/locations");
       resolver.notifyChange(notifyUri, null);
-
       //      Log.d( TAG, "Location stored: "+notifyUri);
       return locationId;
-   }
+      
+   }   
    
-   
+   long insertLabel(long labelId, Location location)
+   {
+      if (labelId < 0 )
+      {
+         throw new IllegalArgumentException("label and segments may not be less than 0.");
+      }
+
+      MainFragment mFragment;
+      SQLiteDatabase sqldb = getWritableDatabase();
+      ContentValues args = new ContentValues();
+      args.put(LabelsColumns.DETECTION_TIME, location.getTime());
+      args.put(LabelsColumns.LATITUDE, location.getLatitude());
+      args.put(LabelsColumns.LONGITUDE, location.getLongitude());
+      args.put(LabelsColumns.SPEED, location.getSpeed());
+      args.put(LabelsColumns.ACCURACY, location.getAccuracy());
+     /* args.put(LabelsColumns.X, mFragment. );
+      args.put(LabelsColumns.Y, );
+      args.put(LabelsColumns.Z, );*/
+      long locationId = sqldb.insert(Locations.TABLE, null, args);
+      ContentResolver resolver = this.mContext.getContentResolver();
+      Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/locations");
+      resolver.notifyChange(notifyUri, null);
+      //      Log.d( TAG, "Location stored: "+notifyUri);
+      return locationId;
+   } 
+      
    /**
     * Insert a key/value pair as meta-data for a label and optionally narrow the
     * scope by segment or segment/waypoint
@@ -247,6 +268,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
     * @param value
     * @return
     */
+   
+   
    long insertOrUpdateMetaData(long labelId, long segmentId, long locationId, String key, String value)
    {
       long metaDataId = -1;
