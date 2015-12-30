@@ -8,7 +8,7 @@ import android.net.Uri;
  * updates from async tasks
  * 
  * @version $Id:$
- * @author rene (c) May 29, 2011, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public interface ProgressListener
 {

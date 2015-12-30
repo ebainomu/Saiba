@@ -16,7 +16,7 @@ import android.util.TypedValue;
  * overridden by configuration
  * 
  * @version $Id$
- * @author rene (c) Feb 2, 2010, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class UnitsI18n
 {

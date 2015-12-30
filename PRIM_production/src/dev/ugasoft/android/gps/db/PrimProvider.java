@@ -94,12 +94,12 @@ import android.util.Log;
  * Note: This does not include meta-data of waypoints or segments.
  *
  * @version $Id$
- * @author rene (c) Jan 22, 2009, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class PrimProvider extends ContentProvider
 {
 
-   private static final String TAG = "OGT.GPStrackingProvider";
+   private static final String TAG = "PRIM.PrimProvider";
 
    /* Action types as numbers for using the UriMatcher */
    private static final int TRACKS            = 1;
@@ -152,7 +152,7 @@ public class PrimProvider extends ContentProvider
       PrimProvider.sURIMatcher = new UriMatcher( UriMatcher.NO_MATCH );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks", PrimProvider.TRACKS );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#", PrimProvider.TRACK_ID );
-   /*   PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels", PrimProvider.LABEL );
+   /* PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels", PrimProvider.LABEL );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels/#", PrimProvider.LABEL_ID );*/
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/media", PrimProvider.TRACK_MEDIA );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/metadata", PrimProvider.TRACK_METADATA );
@@ -210,7 +210,6 @@ public class PrimProvider extends ContentProvider
          case TRACKS:
             mime = Tracks.CONTENT_TYPE;
             break;
-    
          case TRACK_ID:
             mime = Tracks.CONTENT_ITEM_TYPE;
             break;
@@ -227,7 +226,6 @@ public class PrimProvider extends ContentProvider
             mime = Waypoints.CONTENT_ITEM_TYPE;
             break;
      
-            
          case MEDIA_ID:
          case TRACK_MEDIA:
          case SEGMENT_MEDIA:
@@ -255,7 +253,7 @@ public class PrimProvider extends ContentProvider
       @Override
       public Uri insert( Uri uri, ContentValues values )
       {
-         //Log.d( TAG, "insert on "+uri );
+         Log.d( TAG, "insert on "+uri );
          Uri insertedUri = null;
          int match = PrimProvider.sURIMatcher.match( uri );
          List<String> pathSegments = null;

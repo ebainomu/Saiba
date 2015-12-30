@@ -39,7 +39,7 @@ import android.util.Log;
  * ????
  * 
  * @version $Id:$
- * @author rene (c) Oct 20, 2012, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class BreadcrumbsService extends Service implements Observer, ProgressListener
 {

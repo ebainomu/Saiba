@@ -30,7 +30,7 @@ import android.view.View;
  * Calculate and draw graphs of track data
  * 
  * @version $Id$
- * @author rene (c) Mar 22, 2009, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class GraphCanvas extends View
 {

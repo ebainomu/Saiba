@@ -163,8 +163,8 @@ public class MainActivity extends CustomActivity
     		{ R.drawable.ic_nav3, R.drawable.ic_nav3_sel }));
     
     //Share
-    localArrayList.add(new Data(new String[] { "Share" }, new int[] 
-    		{ R.drawable.ic_nav4, R.drawable.ic_action_share }));
+   /* localArrayList.add(new Data(new String[] { "Share" }, new int[] 
+    		{ R.drawable.ic_nav4, R.drawable.ic_action_share }));*/
     
     final LeftNavAdapter localLeftNavAdapter = new LeftNavAdapter(this, localArrayList);
     drawerLeft.setAdapter(localLeftNavAdapter);    

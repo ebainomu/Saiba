@@ -31,7 +31,7 @@ import android.util.Log;
  * Model containing agregrated data retrieved from the GoBreadcrumbs.com API
  * 
  * @version $Id:$
- * @author rene (c) May 9, 2011, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class BreadcrumbsTracks extends Observable
 {

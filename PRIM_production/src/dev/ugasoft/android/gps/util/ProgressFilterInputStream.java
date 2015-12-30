@@ -11,7 +11,7 @@ import dev.ugasoft.android.gps.actions.tasks.GpxParser.ProgressAdmin;
  * ????
  *
  * @version $Id$
- * @author rene (c) Dec 11, 2010, Sogeti B.V.
+ * @author  Martin Bbaale
  */
 public class ProgressFilterInputStream extends FilterInputStream
 {

@@ -39,9 +39,7 @@ import android.widget.SpinnerAdapter;
 
 /**
  * Empty Activity that pops up the dialog to describe the track
- * 
- * @version $Id: NameTrack.java 888 2011-03-14 19:44:44Z rcgroot@gmail.com $
- * @author rene (c) Jul 27, 2010, Sogeti B.V.
+
  */
 public class DescribeTrack extends Activity
 {

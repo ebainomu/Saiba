@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 public class StreamUtils
 {
    @SuppressWarnings("unused")
-   private static final String TAG = "OGT.StreamUtils";
+   private static final String TAG = "PRIM.StreamUtils";
 
    /**
     * Initialize all appropriate stream listeners

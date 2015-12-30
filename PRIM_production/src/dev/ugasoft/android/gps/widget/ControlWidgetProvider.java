@@ -20,7 +20,7 @@ import android.widget.RemoteViews;
  * resume and stop
  * 
  * @version $Id$
- * @author grootren (c) Mar 8, 2011, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class ControlWidgetProvider extends AppWidgetProvider
 {

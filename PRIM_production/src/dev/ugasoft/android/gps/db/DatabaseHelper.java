@@ -30,12 +30,12 @@ import android.util.Log;
  * required functionality set
  * 
  * @version $Id$
-
+   @author Martin Bbaale
  */
 public class DatabaseHelper extends SQLiteOpenHelper
 {
    private Context mContext;
-   private final static String TAG = "OGT.DatabaseHelper";
+   private final static String TAG = "PRIM.DatabaseHelper";
 
    public DatabaseHelper(Context context)
    {
@@ -56,8 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
       db.execSQL(Segments.CREATE_STATMENT);
       db.execSQL(Tracks.CREATE_STATEMENT);
       db.execSQL(Media.CREATE_STATEMENT);
-      db.execSQL(MetaData.CREATE_STATEMENT);
-      
+      db.execSQL(MetaData.CREATE_STATEMENT);      
       //new tables
       db.execSQL(Labels.CREATE_STATEMENT);
       db.execSQL(Locations.CREATE_STATEMENT);
@@ -209,9 +208,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
    long insertMedia(long trackId, long segmentId, long waypointId, String mediaUri)
    {
       if (trackId < 0 || segmentId < 0 || waypointId < 0)
+         
       {
          throw new IllegalArgumentException("Track, segments and waypoint may not the less then 0.");
       }
+      
       SQLiteDatabase sqldb = getWritableDatabase();
 
       ContentValues args = new ContentValues();
@@ -220,16 +221,16 @@ public class DatabaseHelper extends SQLiteOpenHelper
       args.put(MediaColumns.WAYPOINT, waypointId);
       args.put(MediaColumns.URI, mediaUri);
 
-      //      Log.d( TAG, "Media stored in the datebase: "+mediaUri );
+      Log.d( TAG, "Media stored in the datebase: "+mediaUri );
 
       long mediaId = sqldb.insert(Media.TABLE, null, args);
 
       ContentResolver resolver = this.mContext.getContentResolver();
       Uri notifyUri = Uri.withAppendedPath(Tracks.CONTENT_URI, trackId + "/segments/" + segmentId + "/waypoints/" + waypointId + "/media");
-      resolver.notifyChange(notifyUri, null);
-      //      Log.d( TAG, "Notify: "+notifyUri );
+      resolver.notifyChange(notifyUri, null);      
+      Log.d( TAG, "Notify: "+notifyUri );      
       resolver.notifyChange(Media.CONTENT_URI, null);
-      //      Log.d( TAG, "Notify: "+Media.CONTENT_URI );
+      Log.d( TAG, "Notify: "+Media.CONTENT_URI );
 
       return mediaId;
    }

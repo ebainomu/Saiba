@@ -44,7 +44,7 @@ import android.widget.Toast;
  * ????
  *
  * @version $Id:$
- * @author rene (c) Jul 9, 2011, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class OsmSharing extends GpxCreator
 {

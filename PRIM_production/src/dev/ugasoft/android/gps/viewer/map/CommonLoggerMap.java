@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class CommonLoggerMap extends Activity
 {
-   private static final String TAG = "OGT.CommonLoggerMap";
+   private static final String TAG = "PRIM.CommonLoggerMap";
 
    @Override
    protected void onCreate(Bundle savedInstanceState)

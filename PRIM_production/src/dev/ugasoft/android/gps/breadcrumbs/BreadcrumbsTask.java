@@ -13,7 +13,7 @@ import android.util.Log;
  * ????
  * 
  * @version $Id:$
- * @author rene (c) May 29, 2011, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public abstract class BreadcrumbsTask extends AsyncTask<Void, Void, Void>
 {

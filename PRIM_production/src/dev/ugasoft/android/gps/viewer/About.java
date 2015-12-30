@@ -29,7 +29,7 @@ import android.widget.TextView;
 public class About extends Activity
 {
 
-   private static final String TAG = "OGT.About";
+   private static final String TAG = "PRIM.About";
 
    @Override
    protected void onCreate(Bundle savedInstanceState)

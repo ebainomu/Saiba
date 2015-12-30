@@ -33,7 +33,7 @@ import android.util.Xml;
  * Create a KMZ version of a stored track
  * 
  * @version $Id$
- * @author rene (c) Mar 22, 2009, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class KmzCreator extends XmlCreator
 {

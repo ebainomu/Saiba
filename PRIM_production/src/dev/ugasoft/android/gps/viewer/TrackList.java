@@ -56,7 +56,7 @@ import android.widget.TextView;
 public class TrackList extends ListActivity implements ProgressListener
 {
 
-   private static final String TAG = "OGT.TrackList";
+   private static final String TAG = "PRIM.TrackList";
    private static final int MENU_DETELE = Menu.FIRST + 0;
    private static final int MENU_SHARE = Menu.FIRST + 1;
    private static final int MENU_RENAME = Menu.FIRST + 2;

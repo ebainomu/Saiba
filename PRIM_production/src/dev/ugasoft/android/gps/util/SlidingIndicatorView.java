@@ -12,7 +12,7 @@ import android.view.View;
  * ????
  *
  * @version $Id:$
- * @author rene (c) Mar 10, 2012, Sogeti B.V.
+ * @author  Martin Bbaale
  */
 public class SlidingIndicatorView extends View
 {

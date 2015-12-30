@@ -1,5 +1,14 @@
 package com.prim.ui;
 
+
+
+/**
+ * 
+ * @author Martin Bbaale
+ * 
+ * 
+ * ***/
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
@@ -483,6 +492,7 @@ public void onAttach(Activity activity) {
     {
       return paramInt;
     }
+    
 
     @SuppressLint({"InflateParams"})
     public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
@@ -495,6 +505,8 @@ public void onAttach(Activity activity) {
       localTextView.setCompoundDrawablesWithIntrinsicBounds(0, localData.getResources()[0], 0, 0);
       return paramView;
     }
+    
+    
   }
 
 

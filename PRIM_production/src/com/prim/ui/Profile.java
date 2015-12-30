@@ -1,5 +1,10 @@
 package com.prim.ui;
 
+
+/**
+ * @author Martin Bbaale
+ * 
+ * **/
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;

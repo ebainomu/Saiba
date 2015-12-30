@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class BootReceiver extends BroadcastReceiver
 {
-   private final static String TAG = "OGT.BootReceiver";
+   private final static String TAG = "PRIM.BootReceiver";
 
    @Override
    public void onReceive( Context context, Intent intent )

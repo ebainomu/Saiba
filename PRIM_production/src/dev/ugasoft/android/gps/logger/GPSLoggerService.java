@@ -66,7 +66,7 @@ import android.widget.Toast;
 
 /**
  * A system service as controlling the background logging of gps locations.
-
+  @author Martin Bbaale
  */
 public class GPSLoggerService extends Service implements LocationListener, SensorEventListener
 {
@@ -389,8 +389,8 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
       public long startLogging() throws RemoteException
       {
          GPSLoggerService.this.startLogging();
-         //return mTrackId;
-         return mLabelId;
+         return mTrackId;
+         //return mLabelId;
       }
 
       @Override
@@ -946,17 +946,17 @@ This guarantees that changes to the state of the object are visible to all threa
       mLocationManager.removeUpdates(this);
       mLocationManager.requestLocationUpdates(provider, intervaltime, distance, this);
       mCheckPeriod = Math.max(12 * intervaltime, 120 * 1000);
+      
+      sensorManager.registerListener(this, sensorManager.getDefaultSensor
+            (Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+              lastTime = System.currentTimeMillis();
+      
       if (mHeartbeat != null)
       {
          mHeartbeat.cancel();
          mHeartbeat = null;
-      }
-      
-             sensorManager.registerListener(this, sensorManager.getDefaultSensor
-            (Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-              lastTime = System.currentTimeMillis();
-              
-      
+      }     
+        
       mHeartbeat = new Heartbeat(provider);
       mHeartbeatTimer.schedule(mHeartbeat, mCheckPeriod, mCheckPeriod);
    }
@@ -1053,6 +1053,7 @@ This guarantees that changes to the state of the object are visible to all threa
       }
    }
 
+   @SuppressWarnings("deprecation")
    private void updateNotification()
    {
       CharSequence contentTitle = getResources().getString(R.string.app_name);
@@ -1060,6 +1061,7 @@ This guarantees that changes to the state of the object are visible to all threa
       String precision = getResources().getStringArray(R.array.precision_choices)[mPrecision];
       String state = getResources().getStringArray(R.array.state_choices)[mLoggingState - 1];
       CharSequence contentText;
+      
       switch (mPrecision)
       {
          case (Constants.LOGGING_GLOBAL):
@@ -1076,6 +1078,7 @@ This guarantees that changes to the state of the object are visible to all threa
             }
             break;
       }
+      
       Intent notificationIntent = new Intent(this, CommonLoggerMap.class);
       notificationIntent.setData(ContentUris.withAppendedId(Tracks.CONTENT_URI, mTrackId));
       mNotification.contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -1494,14 +1497,14 @@ This guarantees that changes to the state of the object are visible to all threa
       mTrackId = Long.valueOf(newTrack.getLastPathSegment()).longValue();
       startNewSegment();
    }
-   
+  /* 
    private void createNewLabel()
    {
      // mDistance = 0;
       Uri newLabel = this.getContentResolver().insert(Labels.CONTENT_URI, new ContentValues(0));
       mLabelId = Long.valueOf(newLabel.getLastPathSegment()).longValue();
      // startNewSegment();
-   }
+   }*/
 
    /**
     * Trigged by events that start a new segment
@@ -1567,18 +1570,20 @@ This guarantees that changes to the state of the object are visible to all threa
    }
    
    
-   public void storeLocationB (Location location)
+/*   public void storeLocationB (Location location)
    {
       if (!isLogging())
       {
          Log.e(TAG, String.format("Not logging but storing location %s, prepare to fail", location.toString()));
       }
+      
       ContentValues args = new ContentValues();
 
       args.put(Locations.LATITUDE, Double.valueOf(location.getLatitude()));
       args.put(Locations.LONGITUDE, Double.valueOf(location.getLongitude()));
       args.put(Locations.SPEED, Float.valueOf(location.getSpeed()));
       args.put(Locations.TIME, Long.valueOf(System.currentTimeMillis()));
+      
       if (location.hasAccuracy())
       {
          args.put(Locations.ACCURACY, Float.valueOf(location.getAccuracy()));
@@ -1597,7 +1602,7 @@ This guarantees that changes to the state of the object are visible to all threa
       Uri locationsInsertUri = Uri.withAppendedPath(Labels.CONTENT_URI, mLabelId + "/xyz/" + mXyzId + "/locations");
       Uri inserted = this.getContentResolver().insert(locationsInsertUri, args);
       mLocationId = Long.parseLong(inserted.getLastPathSegment());
-   }
+   }*/
    
    /**
     * Consult broadcast options and execute broadcast if necessary
@@ -1786,12 +1791,12 @@ This guarantees that changes to the state of the object are visible to all threa
       
       catch(Exception e)
       {
-         Log.d(TAG, "exception noticed");         
+         Log.d(TAG, "exception noticed inside onSensorChanged");         
       }
    }
       
    //getting the accelerometer readings...
-private void storeAccelerometerValues(SensorEvent event) 
+/*private void storeAccelerometerValues(SensorEvent event) 
      {   
    
       float[] value = event.values;
@@ -1848,7 +1853,41 @@ private void storeAccelerometerValues(SensorEvent event)
       
         }
    
-   }
+   }*/
+   
+   private void storeAccelerometerValues(SensorEvent event) 
+   {   
+ 
+    float[] value = event.values;
+    
+    float xVal = value[0];
+    float yVal = value[1];
+    float zVal = value[2];
+    
+    float xValue;
+    float yValue;
+    float zValue;
+    
+    //long timeNow = System.nanoTime();      
+    //I have changed the value from 1.2...initiall was at 2.
+    //if(accelationSquareRoot > SensorManager.GRAVITY_EARTH)
+          
+             zValue = zVal;
+             xValue = xVal;
+             yValue = yVal;
+        
+             ContentValues accValues = new ContentValues();
+             accValues.put( Xyz.X, xValue);
+             accValues.put( Xyz.Y, yValue);
+             accValues.put( Xyz.Z, zValue);
+             accValues.put(Xyz.TIME, Long.valueOf(System.currentTimeMillis()));
+             getContentResolver().insert( mXyzUri, accValues );   
+             
+             Uri accValueInsertUri = Uri.withAppendedPath(Labels.CONTENT_URI, mLabelId + "/locations/" + mLocationId + "/xyz");
+             Uri inserted = this.getContentResolver().insert(accValueInsertUri, accValues);
+             mXyzId = Long.parseLong(inserted.getLastPathSegment());      
+
+ }
    
    @Override
    public void onAccuracyChanged(Sensor sensor, int accuracy)

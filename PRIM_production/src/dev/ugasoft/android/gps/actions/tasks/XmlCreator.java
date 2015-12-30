@@ -37,7 +37,7 @@ import android.view.Window;
 
 public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
 {
-   private String TAG = "OGT.XmlCreator";
+   private String TAG = "PRIM.XmlCreator";
    private String mExportDirectoryPath;
    private boolean mNeedsBundling;
 

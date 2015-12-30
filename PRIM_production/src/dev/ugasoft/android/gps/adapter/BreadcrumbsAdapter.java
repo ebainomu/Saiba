@@ -20,7 +20,7 @@ import android.widget.TextView;
  * Organizes Breadcrumbs tasks based on demands on the BaseAdapter functions
  * 
  * @version $Id:$
- * @author rene (c) Apr 24, 2011, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class BreadcrumbsAdapter extends BaseAdapter
 {

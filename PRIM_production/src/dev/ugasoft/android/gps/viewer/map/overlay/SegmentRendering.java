@@ -51,7 +51,7 @@ import com.google.android.maps.MapView;
  * Creates an overlay that can draw a single segment of connected waypoints
  * 
  * @version $Id$
- * @author rene (c) Jan 11, 2009, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class SegmentRendering
 {

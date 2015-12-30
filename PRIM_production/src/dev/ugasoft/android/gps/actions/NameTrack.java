@@ -33,7 +33,7 @@ public class NameTrack extends Activity
 {
    private static final int DIALOG_TRACKNAME = 23;
 
-   protected static final String TAG = "OGT.NameTrack";
+   protected static final String TAG = "PRIM.NameTrack";
 
    private EditText mTrackNameView;
    private boolean paused;
@@ -73,7 +73,7 @@ public class NameTrack extends Activity
    private void clearNotification()
    {
 
-      NotificationManager noticationManager = (NotificationManager) this.getSystemService( Context.NOTIFICATION_SERVICE );;
+      NotificationManager noticationManager = (NotificationManager) this.getSystemService( Context.NOTIFICATION_SERVICE );
       noticationManager.cancel( R.layout.namedialog );
    }
    

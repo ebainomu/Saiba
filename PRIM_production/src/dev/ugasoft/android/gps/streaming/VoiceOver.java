@@ -12,7 +12,7 @@ import android.util.Log;
 public class VoiceOver extends BroadcastReceiver implements TextToSpeech.OnInitListener
 {
    private static VoiceOver sVoiceOver = null;
-   private static final String TAG = "OGT.VoiceOver";
+   private static final String TAG = "PRIM.VoiceOver";
    
    public static synchronized void initStreaming(Context ctx)
    {

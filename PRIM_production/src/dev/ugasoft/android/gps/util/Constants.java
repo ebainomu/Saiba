@@ -13,7 +13,7 @@ import android.preference.PreferenceManager;
  * Various application wide constants
  * 
  * @version $Id$
-
+ @author Martin Bbaale
  */
 public class Constants
 {

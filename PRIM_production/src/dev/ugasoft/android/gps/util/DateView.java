@@ -12,7 +12,7 @@ import android.widget.TextView;
  * formating of the text when displaying a date in ms from 1970.
  *
  * @version $Id$
- * @author rene (c) Jan 22, 2009, Sogeti B.V.
+ * @author  Martin Bbaale
  */
 public class DateView extends TextView
 {

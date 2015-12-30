@@ -6,7 +6,9 @@ import android.net.Uri.Builder;
 import android.provider.BaseColumns;
 
 /**
- * The GPStracking provider stores all static information about GPStracking.
+ * The Prim provider stores all static information about PRIM.
+ * 
+ * @author Martin Bbaale
 
  */
 

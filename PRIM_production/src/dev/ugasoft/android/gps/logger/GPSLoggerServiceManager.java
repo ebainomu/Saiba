@@ -14,7 +14,7 @@ import android.util.Log;
 
 /**
  * Class to interact with the service that tracks and logs the locations
- * 
+ * @author Martin Bbaale
 
  */
 public class GPSLoggerServiceManager

@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class DockReceiver extends BroadcastReceiver
 {
-   private final static String TAG = "OGT.DockReceiver";
+   private final static String TAG = "PRIM.DockReceiver";
 
    @Override
    public void onReceive( Context context, Intent intent )

@@ -10,7 +10,7 @@ import android.net.Uri;
  * ????
  *
  * @version $Id:$
- * @author rene (c) Jul 9, 2011, Sogeti B.V.
+ * @author Martin Bbaale
  */
 public class KmzSharing extends KmzCreator
 {
