@@ -360,18 +360,18 @@ public void onAttach(Activity activity) {
                the whole application when they shouldn't be null.
                Use equals with known object first: if("knownObject".equals(unknownObject)
                Prefer valueOf() over toString().
-               Use null safe StringUtils methods StringUtils.isEmpty(null).
+               Use null safe StringUtils methods StringUtils.isEmpty(null). 
+			 * *
 			 * 
-			 * 
-			 * */		
+			 * /
+				
 	         /*startActivity(new Intent(getActivity(), IssueList.class).putExtra
             ("title", ((Data)iList.get(paramAnonymousInt)).getTexts()[0]).
             putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
-            putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]));} */
+            putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]));} 
+            */
+	       
 	     
-	   
-	             
-	
 				   labelName = iList.get(paramAnonymousInt).getTexts()[0].toString();
 				   labelTime = Long.valueOf(System.currentTimeMillis());
 	            ContentValues values = new ContentValues();
@@ -388,12 +388,8 @@ public void onAttach(Activity activity) {
 	            args.put(WaypointsColumns.ACCURACY, location.getAccuracy());
 	            args.put(WaypointsColumns.ALTITUDE, location.getAltitude());
 	            args.put(WaypointsColumns.BEARING, location.getBearing());
-
 	            long waypointId = sqldb.insert(Waypoints.TABLE, null, args);*/
-	            
-	            
-	            
-		   
+	 
       }
       });   
     
@@ -433,22 +429,20 @@ public void onAttach(Activity activity) {
        namingIntent.setClass(getActivity(), NameTrack.class );
        namingIntent.setData( ContentUris.withAppendedId( Labels.CONTENT_URI, loggerTrackId ) );
        startActivity( namingIntent );*/
-       
-       
+  
        Intent namingIntent = new Intent(getActivity(), NameTrack.class );
        namingIntent.setData( ContentUris.withAppendedId( Tracks.CONTENT_URI, loggerTrackId ) );
        startActivity( namingIntent );
        
        // Create data for the caller that a new track has been started
        ComponentName caller = ((Activity) context).getCallingActivity();
+       
        if( caller != null )
        {
           intent.setData( ContentUris.withAppendedId( Tracks.CONTENT_URI, loggerTrackId ) );
      
        }    
-       
-       
-      
+ 
     	} 
     	
     	catch (Exception e)
@@ -457,9 +451,7 @@ public void onAttach(Activity activity) {
        	Intent intent1 = new Intent();
 		intent1.setClass(getActivity(), MainActivity.class);
         }
-      
-    
-    	
+  
     }
       //startActivity(new Intent(getActivity(), IssueList.class).putExtra("title", getString(R.string.nearby)));
   }
@@ -505,13 +497,8 @@ public void onAttach(Activity activity) {
       localTextView.setCompoundDrawablesWithIntrinsicBounds(0, localData.getResources()[0], 0, 0);
       return paramView;
     }
-    
-    
+ 
   }
-
-
-
-
 
 @Override
 public void onPause() 
@@ -542,8 +529,5 @@ public void onStop()
 	   super.onStop();
 		   
 }
-
-
-
 
 }

@@ -97,6 +97,7 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
     * <code>MAX_REASONABLE_SPEED</code> is about 324 kilometer per hour or 201
     * mile per hour.
     */
+   
    private static final int MAX_REASONABLE_SPEED = 90;
 
    /**
@@ -453,6 +454,7 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
    /**
     * Task to determine if the GPS is alive
     */
+   
    class Heartbeat extends TimerTask
    {
 
@@ -516,6 +518,7 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
     * location. Calculated to be either 120 seconds or 4 times the requested
     * period, whichever is larger.
     */
+   
    private long mCheckPeriod;
 
    private float mBroadcastDistance;
@@ -1248,7 +1251,9 @@ This guarantees that changes to the state of the object are visible to all threa
             {
                notifyOnDisabledProvider(R.string.service_connectiondisabled);
             }
+            
             break;
+            
          case REQUEST_CUSTOMGPS_LOCATIONUPDATES:
             intervaltime = 60 * 1000 * Long.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.LOGGING_INTERVAL, "15000"));
             distance = Float.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.LOGGING_DISTANCE, "10"));
@@ -1371,15 +1376,12 @@ This guarantees that changes to the state of the object are visible to all threa
          mWeakLocations.clear();
       }
       return proposedLocation;
-   }
-   
+   }   
    
    // a filter for the proposed accelerometer value events...
    
-   public SensorEvent accelerometerValueFilter(SensorEvent proposedEvent)
-   
-   {
-      
+   public SensorEvent accelerometerValueFilter(SensorEvent proposedEvent)   
+   {      
       float[] value = proposedEvent.values;
       
       float xVal = value[0];
@@ -1396,6 +1398,7 @@ This guarantees that changes to the state of the object are visible to all threa
       {
          Log.w(TAG, "wrong sensor values were received, the acceleration square root"
                + "was less than 1.2... ");
+         
          proposedEvent = null;
       }
       
@@ -1403,6 +1406,7 @@ This guarantees that changes to the state of the object are visible to all threa
       {
          Log.w(TAG, "wrong sensor values were received, the difference between the actual and last time is"
                + "less than 2000000000 ms... ");
+         
          proposedEvent = null;
       }
       // Older bad locations will not be needed
@@ -1412,8 +1416,7 @@ This guarantees that changes to the state of the object are visible to all threa
       }
       return proposedEvent;
    }
-   
-   
+      
    /**
     * Store a bad location, when to many bad locations are stored the the
     * storage is cleared and the least bad one is returned
@@ -1422,6 +1425,7 @@ This guarantees that changes to the state of the object are visible to all threa
     * @return null when the bad location is stored or the least bad one if the
     *         storage was full
     */
+   
    private Location addBadLocation(Location location)
    {
       mWeakLocations.add(location);
@@ -1490,6 +1494,7 @@ This guarantees that changes to the state of the object are visible to all threa
    /**
     * Trigged by events that start a new track
     */
+   
    private void startNewTrack()
    {
       mDistance = 0;
@@ -1497,6 +1502,7 @@ This guarantees that changes to the state of the object are visible to all threa
       mTrackId = Long.valueOf(newTrack.getLastPathSegment()).longValue();
       startNewSegment();
    }
+   
   /* 
    private void createNewLabel()
    {
@@ -1516,8 +1522,7 @@ This guarantees that changes to the state of the object are visible to all threa
       mSegmentId = Long.valueOf(newSegment.getLastPathSegment()).longValue();
       crashProtectState();
    }
-   
-   
+      
    protected void storeMediaUri(Uri mediaUri)
    {
       if (isMediaPrepared())
@@ -1538,6 +1543,7 @@ This guarantees that changes to the state of the object are visible to all threa
     * 
     * @param location
     */
+   
    public void storeLocation(Location location)
    {
       if (!isLogging())
@@ -1851,8 +1857,7 @@ This guarantees that changes to the state of the object are visible to all threa
         {
         Log.e(TAG, "general exception", e);
       
-        }
-   
+        }   
    }*/
    
    private void storeAccelerometerValues(SensorEvent event) 

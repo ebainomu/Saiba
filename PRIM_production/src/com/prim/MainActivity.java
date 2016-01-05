@@ -54,12 +54,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends CustomActivity
-{
-	
-	   LoggerMapHelper mHelper;
-	 
-	   ShareTrack shareLabels;
-	   
+{	
+	   LoggerMapHelper mHelper;	 
+	   ShareTrack shareLabels;	   
 	   MainFragment mFragment;
 	
   private DrawerLayout drawerLayout;
@@ -151,7 +148,7 @@ public class MainActivity extends CustomActivity
     ArrayList<Data> localArrayList = new ArrayList<Data>();
     
     //Find
-    localArrayList.add(new Data(new String[] { "Find" }, new int[] 
+    localArrayList.add(new Data(new String[] {"Find" }, new int[] 
     		{ R.drawable.ic_nav1, R.drawable.ic_nav1_sel }));
     
     //Favorite
@@ -236,7 +233,6 @@ public class MainActivity extends CustomActivity
     setupDrawer();
     setupContainer(1);
   }
-
   
   @Override
 public boolean onCreateOptionsMenu(Menu paramMenu)
@@ -259,6 +255,7 @@ public boolean onCreateOptionsMenu(Menu paramMenu)
          Intent intent = new Intent(this, CommonLoggerMap.class);
          this.startActivity(intent);
          break;
+         
      case R.id.subItem2:
         /*
         Intent intent2 = new Intent(this, CommonLoggerMap.class);
@@ -266,7 +263,7 @@ public boolean onCreateOptionsMenu(Menu paramMenu)
          break;*/ 
      default:
         return super.onOptionsItemSelected(paramMenuItem);
-        } 
+     } 
     
     return true;
   }
@@ -288,15 +285,14 @@ public boolean onCreateOptionsMenu(Menu paramMenu)
   @Override
 	protected void onResume() 
   {
-	  super.onResume();
-	
+	  super.onResume();	
 	  setupContainer(1);
   }
   
   @Override
-	protected void onStop() {
-	  super.onStop();
-	
+	protected void onStop() 
+  {
+	  super.onStop();	
   }
  
   
