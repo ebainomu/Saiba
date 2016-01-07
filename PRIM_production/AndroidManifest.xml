@@ -217,6 +217,15 @@
                     android:scheme="x-oauthflow-opengpstracker" />
             </intent-filter>
         </activity>
+        
+        <!-- *********************************
+              this is the database management tool which I will use
+              ***************************************
+               -->
+               
+        <activity android:name="dev.ugasoft.android.gps.db.AndroidDatabaseManager" 
+          android:theme="@style/Theme.AppCompat.Light"/>
+        
 
         <service
             android:name="dev.ugasoft.android.gps.logger.GPSLoggerService"
