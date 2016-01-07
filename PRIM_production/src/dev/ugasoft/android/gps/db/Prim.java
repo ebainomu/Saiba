@@ -60,6 +60,8 @@ public final class Prim
 
       /** The name of this table */
       public static final String TABLE = "xyz";
+      
+      //this is the create statement to be used by the Database helper when setting up the database
       static final String CREATE_STATEMENT = 
          "CREATE TABLE " + Xyz.TABLE + "(" + " " + Xyz._ID           + " " + Xyz._ID_TYPE +                                          
                                           "," + " " + Xyz.TIME + " "  + Xyz.TIME_TYPE + 
@@ -96,11 +98,7 @@ public final class Prim
    
      }
    
-   
-   
-   
-   
-   
+
    public static final class Tracks extends TracksColumns implements android.provider.BaseColumns
    {
       /** The MIME type of a CONTENT_URI subdirectory of a single track. */
@@ -228,13 +226,13 @@ public final class Prim
       
       static final String[] UPGRADE_STATEMENT_7_TO_8 = 
          {
-            "ALTER TABLE " + Waypoints.TABLE + " ADD COLUMN " + LocationsColumns.ACCURACY + " " + LocationsColumns.ACCURACY_TYPE +";",
-            "ALTER TABLE " + Waypoints.TABLE + " ADD COLUMN " + LocationsColumns.ALTITUDE + " " + LocationsColumns.ALTITUDE_TYPE +";",
-            "ALTER TABLE " + Waypoints.TABLE + " ADD COLUMN " + LocationsColumns.BEARING  + " " + LocationsColumns.BEARING_TYPE +";"
+            "ALTER TABLE " + Locations.TABLE + " ADD COLUMN " + LocationsColumns.ACCURACY + " " + LocationsColumns.ACCURACY_TYPE +";",
+            "ALTER TABLE " + Locations.TABLE + " ADD COLUMN " + LocationsColumns.ALTITUDE + " " + LocationsColumns.ALTITUDE_TYPE +";",
+            "ALTER TABLE " + Locations.TABLE + " ADD COLUMN " + LocationsColumns.BEARING  + " " + LocationsColumns.BEARING_TYPE +";"
          };
 
       /**
-       * Build a waypoint Uri like:
+       * Build a location Uri like:
        * 
        * @param labelId
        * @param xyzId

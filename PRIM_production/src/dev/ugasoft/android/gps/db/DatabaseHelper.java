@@ -3,7 +3,9 @@ package dev.ugasoft.android.gps.db;
 import java.util.Date;
 
 import dev.ugasoft.android.gps.db.Prim.Labels;
+import dev.ugasoft.android.gps.db.Prim.LabelsColumns;
 import dev.ugasoft.android.gps.db.Prim.Locations;
+import dev.ugasoft.android.gps.db.Prim.LocationsColumns;
 import dev.ugasoft.android.gps.db.Prim.Media;
 import dev.ugasoft.android.gps.db.Prim.MediaColumns;
 import dev.ugasoft.android.gps.db.Prim.MetaData;
@@ -105,6 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
       }
    }
 
+   //vacuuming the database
    public void vacuum()
    {
       new Thread()
@@ -195,6 +198,36 @@ public class DatabaseHelper extends SQLiteOpenHelper
       //      Log.d( TAG, "Waypoint stored: "+notifyUri);
       return waypointId;
    }
+   
+   long insertLocation(long labelId, Location location, long xyzId)
+   {
+      if (labelId < 0 || xyzId < 0)
+      {
+         throw new IllegalArgumentException("Labels and acceleration coordiates may not be the less then 0.");
+      }
+
+      SQLiteDatabase sqldb = getWritableDatabase();
+
+      ContentValues args = new ContentValues();
+      args.put(LocationsColumns.TIME, location.getTime());
+      args.put(LocationsColumns.LATITUDE, location.getLatitude());
+      args.put(LocationsColumns.LONGITUDE, location.getLongitude());
+      args.put(LocationsColumns.SPEED, location.getSpeed());
+      args.put(LocationsColumns.ACCURACY, location.getAccuracy());
+      args.put(LocationsColumns.ALTITUDE, location.getAltitude());
+      args.put(LocationsColumns.BEARING, location.getBearing());
+
+      long locationId = sqldb.insert(Locations.TABLE, null, args);
+
+      ContentResolver resolver = this.mContext.getContentResolver();
+      Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/xyz/" + xyzId + "/locations");
+      resolver.notifyChange(notifyUri, null);
+
+            Log.d( TAG, "Location stored: "+notifyUri);
+      return locationId;
+   }
+   
+   
 
    long insertLabel(long labelId, Location location)
    {
@@ -208,13 +241,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
       ContentValues args = new ContentValues();
       args.put(Labels.CREATION_TIME, location.getTime());
       args.put(Labels.NAME, location.getLatitude());
-      long locationId = sqldb.insert(Waypoints.TABLE, null, args);
+      long locationId = sqldb.insert(Locations.TABLE, null, args);
 
       ContentResolver resolver = this.mContext.getContentResolver();
       Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/locations");
       resolver.notifyChange(notifyUri, null);
 
-      //      Log.d( TAG, "Waypoint stored: "+notifyUri);
+           Log.d( TAG, "label stored " +notifyUri);
       return locationId;
    }
    
@@ -555,6 +588,24 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
       return updates;
    }
+   
+   int updateLabel(long labelId, String name)
+   {
+      int updates;
+      String whereclause = Labels._ID + " = " + labelId;
+      ContentValues args = new ContentValues();
+      args.put(Labels.NAME, name);
+
+      // Execute the query.
+      SQLiteDatabase mDb = getWritableDatabase();
+      updates = mDb.update(Labels.TABLE, args, whereclause, null);
+
+      ContentResolver resolver = this.mContext.getContentResolver();
+      Uri notifyUri = ContentUris.withAppendedId(Labels.CONTENT_URI, labelId);
+      resolver.notifyChange(notifyUri, null);
+
+      return updates;
+   }
 
    /**
     * Insert a key/value pair as meta-data for a track and optionally narrow the
@@ -647,6 +698,22 @@ public class DatabaseHelper extends SQLiteOpenHelper
       resolver.notifyChange(Tracks.CONTENT_URI, null);
 
       return trackId;
+   }
+   
+   long toNextLabel(String name)
+   {
+      long currentTime = new Date().getTime();
+      ContentValues args = new ContentValues();
+      args.put(LabelsColumns.NAME, name);
+      args.put(LabelsColumns.CREATION_TIME, currentTime);
+
+      SQLiteDatabase sqldb = getWritableDatabase();
+      long labelId = sqldb.insert(Labels.TABLE, null, args);
+
+      ContentResolver resolver = this.mContext.getContentResolver();
+      resolver.notifyChange(Labels.CONTENT_URI, null);
+
+      return labelId;
    }
 
    /**

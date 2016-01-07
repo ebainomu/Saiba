@@ -25,9 +25,9 @@ import android.provider.LiveFolders;
 import android.util.Log;
 
 /**
- * Goal of this Content Provider is to make the GPS Tracking information uniformly 
- * available to this application and even other applications. The GPS-tracking 
- * database can hold, tracks, segments or waypoints 
+ * Goal of this Content Provider is to make the PRIM information uniformly 
+ * available to this application and even other applications. The PRIM 
+ * database can hold, labels, locations, acceleration values, tracks, segments or waypoints 
  * <p>
  * A track is an actual route taken from start to finish. All the GPS locations
  * collected are waypoints. Waypoints taken in sequence without loss of GPS-signal
@@ -121,10 +121,10 @@ public class PrimProvider extends ContentProvider
    private static final int WAYPOINT_METADATA = 17;
    private static final int METADATA          = 18;
    private static final int METADATA_ID       = 19;
-  /* private static final int LABEL            = 20;
-   private static final int LABEL_ID          = 21;
-   private static final int LOCATION            = 22;
-   private static final int LOCATION_ID          = 23;*/
+   private static final int LOCATIONS         = 20;
+   private static final int LABELS         = 21;
+   private static final int LOCATION_ID         = 22;
+   private static final int LABEL_ID         = 23;
    private static final String[] SUGGEST_PROJECTION = 
       new String[] 
         { 
@@ -249,6 +249,8 @@ public class PrimProvider extends ContentProvider
    /**
        * (non-Javadoc)
        * @see android.content.ContentProvider#insert(android.net.Uri, android.content.ContentValues)
+       * data insertions into the database
+       * 
        */
       @Override
       public Uri insert( Uri uri, ContentValues values )
@@ -260,6 +262,9 @@ public class PrimProvider extends ContentProvider
          long trackId = -1;
          long segmentId = -1;
          long waypointId = -1;
+         long locationId = -1;
+         long labelId = -1;
+         long xyzId = -1;
         
          long mediaId = -1;
          String key;
@@ -292,22 +297,76 @@ public class PrimProvider extends ContentProvider
                {
                   loc.setAccuracy( values.getAsFloat( Waypoints.ACCURACY ) );
                }
+               
                if( values.containsKey( Waypoints.ALTITUDE ) )
                {
                   loc.setAltitude( values.getAsDouble( Waypoints.ALTITUDE ) );
                   
                }
+               
                if( values.containsKey( Waypoints.BEARING ) )
                {
                   loc.setBearing( values.getAsFloat( Waypoints.BEARING ) );
                }
+               
                waypointId = this.mDbHelper.insertWaypoint( 
                      trackId, 
                      segmentId, 
                      loc );
-   //            Log.d( TAG, "Have inserted to segment "+segmentId+" with waypoint "+waypointId );
+              Log.d( TAG, "Have inserted to segment "+segmentId+" with waypoint "+waypointId );
                insertedUri = ContentUris.withAppendedId( uri, waypointId );
                break;
+               
+            case LOCATIONS:
+               pathSegments     = uri.getPathSegments();
+               labelId          = Long.parseLong( pathSegments.get( 1 ) );
+               segmentId        = Long.parseLong( pathSegments.get( 3 ) );
+               Location location     = new Location( TAG );
+               Double latitude_loc  = values.getAsDouble( Locations.LATITUDE );
+               Double longitude_loc = values.getAsDouble( Locations.LONGITUDE );
+               Long time_loc        = values.getAsLong( Locations.TIME );
+               Float speed_loc      = values.getAsFloat( Locations.SPEED );
+               
+               if( time_loc == null )
+               {
+                  time_loc = System.currentTimeMillis();
+               }
+               
+               if( speed_loc == null )
+               {
+                  speed  = 0f;
+               }
+               location.setLatitude( latitude_loc );
+               location.setLongitude( longitude_loc );
+               location.setTime( time_loc );
+               location.setSpeed( speed_loc );
+               
+               if( values.containsKey( Locations.ACCURACY ) )
+               {
+                  location.setAccuracy( values.getAsFloat( Locations.ACCURACY ) );
+               }
+               
+               if( values.containsKey( Locations.ALTITUDE ) )
+               {
+                  location.setAltitude( values.getAsDouble( Locations.ALTITUDE ) );                  
+               }
+               
+               if( values.containsKey( Locations.BEARING ) )
+               {
+                  location.setBearing( values.getAsFloat( Locations.BEARING ) );
+               }
+               
+               locationId = this.mDbHelper.insertLocation
+                     ( 
+                     labelId, 
+                     location,
+                     xyzId
+                     );
+               
+              Log.d( TAG, "Have inserted a location basing on "+labelId+" with location "+locationId );
+               insertedUri = ContentUris.withAppendedId( uri, locationId );
+               break;
+                              
             case WAYPOINT_MEDIA:
                pathSegments    = uri.getPathSegments();
                trackId         = Long.parseLong( pathSegments.get( 1 ) );
@@ -328,6 +387,13 @@ public class PrimProvider extends ContentProvider
                trackId     = this.mDbHelper.toNextTrack( name );
                insertedUri = ContentUris.withAppendedId( uri, trackId );
                break;
+               
+            case LABELS:
+               String nLabel = ( values == null ) ? "" : values.getAsString( Labels.NAME );
+               trackId     = this.mDbHelper.toNextTrack( nLabel );
+               insertedUri = ContentUris.withAppendedId( uri, labelId );
+               break;
+               
             case TRACK_METADATA:
                pathSegments = uri.getPathSegments();
                trackId      = Long.parseLong( pathSegments.get( 1 ) );
