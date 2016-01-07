@@ -40,6 +40,7 @@ import com.prim.ui.Settings;
 import dev.baalmart.gps.R;
 import dev.ugasoft.android.gps.actions.ControlTracking;
 import dev.ugasoft.android.gps.actions.ShareTrack;
+import dev.ugasoft.android.gps.db.AndroidDatabaseManager;
 import dev.ugasoft.android.gps.db.Prim.Labels;
 import dev.ugasoft.android.gps.db.Prim.Tracks;
 import dev.ugasoft.android.gps.logger.GPSLoggerServiceManager;
@@ -257,10 +258,9 @@ public boolean onCreateOptionsMenu(Menu paramMenu)
          break;
          
      case R.id.subItem2:
-        /*
-        Intent intent2 = new Intent(this, CommonLoggerMap.class);
-            this.startActivity(intent2);
-         break;*/ 
+        Intent dbmanager = new Intent(this,AndroidDatabaseManager.class);
+        startActivity(dbmanager);
+        
      default:
         return super.onOptionsItemSelected(paramMenuItem);
      } 

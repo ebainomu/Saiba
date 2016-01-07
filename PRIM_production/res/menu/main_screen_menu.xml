@@ -11,8 +11,9 @@
         
         <menu>
             <item android:id="@+id/subItem1" android:title="Share" />
-            <item android:id="@+id/subItem2" android:title="Others" />
-           
+            <item android:id="@+id/subItem2" android:title="DBMS" />           
         </menu>
+        
     </item>
+    
 </menu>
