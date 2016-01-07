@@ -196,6 +196,29 @@ public class DatabaseHelper extends SQLiteOpenHelper
       return waypointId;
    }
 
+   long insertLabel(long labelId, Location location)
+   {
+      if (labelId < 0)
+      {
+         throw new IllegalArgumentException("Track and segments may not the less then 0.");
+      }
+
+      SQLiteDatabase sqldb = getWritableDatabase();
+
+      ContentValues args = new ContentValues();
+      args.put(Labels.CREATION_TIME, location.getTime());
+      args.put(Labels.NAME, location.getLatitude());
+      long locationId = sqldb.insert(Waypoints.TABLE, null, args);
+
+      ContentResolver resolver = this.mContext.getContentResolver();
+      Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/locations");
+      resolver.notifyChange(notifyUri, null);
+
+      //      Log.d( TAG, "Waypoint stored: "+notifyUri);
+      return locationId;
+   }
+   
+   
    /**
     * Insert a URI for a given waypoint/segment/track in the media table
     * 
