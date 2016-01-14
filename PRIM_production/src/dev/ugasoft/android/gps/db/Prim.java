@@ -44,10 +44,14 @@ public final class Prim
          "CREATE TABLE " + Labels.TABLE + "(" + " " + Labels._ID           + " " + Labels._ID_TYPE + 
                                           "," + " " + Labels.NAME          + " " + Labels.NAME_TYPE + 
                                           "," + " " + Labels.CREATION_TIME + " " + Labels.CREATION_TIME_TYPE + 
+                                          "," + " " + Labels.LONGITUDE + " " + Labels.LONGITUDE_TYPE +
+                                          "," + " " + Labels.LATITUDE + " " + Labels.LATITUDE_TYPE +
+                                          "," + " " + Labels.SPEED + " " + Labels.SPEED_TYPE +
+                                          "," + " " + Labels.X + " " + Labels.X_TYPE + 
+                                          "," + " " + Labels.Y + " " + Labels.Y_TYPE +
+                                          "," + " " + Labels.Z + " " + Labels.Z_TYPE +
                                           ");";
    }
-   
-   
    
    public static final class Xyz extends XYZColumns implements android.provider.BaseColumns
    {
@@ -324,21 +328,36 @@ public final class Prim
    
    /**
     * Columns from the tracks table.
-    * 
- 
+    *  
     */
+   
    public static class LabelsColumns
    {
       public static final String NAME          = "name";
       public static final String CREATION_TIME = "creationtime";
+      public static final String X ="x";
+      public static final String Y ="y";
+      public static final String Z ="z"; 
+      public static final String SPEED = "speed";
+      /** The latitude */
+      public static final String LATITUDE = "latitude";
+      /** The longitude */
+      public static final String LONGITUDE = "longitude";
+      
       static final String CREATION_TIME_TYPE   = "INTEGER NOT NULL";
       static final String NAME_TYPE            = "TEXT";
       static final String _ID_TYPE             = "INTEGER PRIMARY KEY AUTOINCREMENT";
+      static final String X_TYPE = "REAL NOT NULL";
+      static final String Y_TYPE = "REAL NOT NULL";
+      static final String Z_TYPE = "REAL NOT NULL";
+      static final String SPEED_TYPE     = "REAL NOT NULL";
+      static final String LATITUDE_TYPE  = "REAL NOT NULL";
+      static final String LONGITUDE_TYPE = "REAL NOT NULL";
    }
    
    public static class XYZColumns
-   {
    
+   {   
       public static final String SPEED = "speed";
       public static final String X ="x";
       public static final String Y ="y";
@@ -352,8 +371,7 @@ public final class Prim
       static final String Y_TYPE = "REAL NOT NULL";
       static final String Z_TYPE = "REAL NOT NULL";
    }   
-   
-   
+     
   
    /**
     * Columns from the segments table.

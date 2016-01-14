@@ -22,7 +22,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -69,21 +71,26 @@ import com.prim.model.Data;
 import dev.baalmart.gps.R;
 import dev.ugasoft.android.gps.actions.ControlTracking;
 import dev.ugasoft.android.gps.actions.NameTrack;
+import dev.ugasoft.android.gps.db.AndroidDatabaseManager;
 import dev.ugasoft.android.gps.db.DatabaseHelper;
 import dev.ugasoft.android.gps.db.Prim.Labels;
 import dev.ugasoft.android.gps.db.Prim.Tracks;
 import dev.ugasoft.android.gps.db.Prim.Waypoints;
 import dev.ugasoft.android.gps.db.Prim.WaypointsColumns;
+import dev.ugasoft.android.gps.db.Prim.Xyz;
 import dev.ugasoft.android.gps.db.PrimProvider;
 import dev.ugasoft.android.gps.logger.GPSLoggerService;
 import dev.ugasoft.android.gps.logger.GPSLoggerServiceManager;
 import dev.ugasoft.android.gps.logger.IGPSLoggerServiceRemote;
 import dev.ugasoft.android.gps.streaming.StreamUtils;
 import dev.ugasoft.android.gps.util.Constants;
+import dev.ugasoft.android.gps.viewer.map.CommonLoggerMap;
 import dev.ugasoft.android.gps.viewer.map.LoggerLabelHelper;
 import dev.ugasoft.android.gps.viewer.map.LoggerMapHelper;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Queue;
@@ -93,12 +100,24 @@ import java.util.Vector;
 
 @SuppressWarnings("deprecation")
 public class MainFragment extends CustomFragment  
-{
-	
-      ;;LoggerLabelHelper mHelper;
-      
-      DatabaseHelper mDbHelper;
+{	
+      LoggerLabelHelper mHelper;
+      //MainFragment.Result lastRecorderdResult;
+       SensorEvent mLastRecordedEvent;
+       Location mLastRecordedLocation;      
+      Context mContext;
+      DatabaseHelper mDbHelper;      
       PrimProvider pProvider;
+      SensorManager mSensorManager;
+      Sensor mAccelerometer;
+      SQLiteDatabase db;
+      String lastKnownLabelName;
+      private Vector<SensorEvent> mWeakSensorEvent;
+      MainActivity mA;
+      
+      float LastRecorded_xVal;
+      float LastRecorded_yVal;
+      float LastRecorded_zVal;
    
 	   private static final float FINE_DISTANCE = 5F;
 	   private static final long  FINE_INTERVAL = 1000l;
@@ -175,7 +194,8 @@ public class MainFragment extends CustomFragment
 
 	   private String mSources;
 
-	   private Location mPreviousLocation;
+	   
+	   //private SensorEvent mSensorEvent;
 	   private float mDistance;
 
 	   private Vector<Location> mWeakLocations;
@@ -183,14 +203,13 @@ public class MainFragment extends CustomFragment
 
 //declarations	
 private Sensor sensor;
-protected static final String TAG = null;
+protected static final String TAG = "PRIM.MainFragment";
 private ArrayList<Data> iList;
 private static final Boolean DEBUG = false;
 private int mPrecision;
 private boolean mShowingGpsDisabled;
 private boolean mStartNextSegment;
 private float mMaxAcceptableAccuracy = 20;
-
 
 private LocationManager mLocationManager;
 private PowerManager.WakeLock mWakeLock;
@@ -200,7 +219,6 @@ private Handler mHandler;
  * If speeds should be checked to sane values
  */
 private boolean mSpeedSanityCheck;
-
 
 /**
  * Time thread to runs tasks that check whether the GPS listener has received
@@ -217,9 +235,9 @@ private NameTrack nameRoute;
 //private static final Boolean GPSenabled = false; 
 private int mLoggingState = Constants.STOPPED;
 
-String labelName = null;
+//String labelName = "label";
 Context context = null;
-Long labelTime = null;
+//Long labelTime = null;
 private long mLabelId = -1;
 private Notification mNotification;
 private int mSatellites = 0;
@@ -228,14 +246,31 @@ private int mSatellites = 0;
  */
 private boolean mStatusMonitor;
 
-private SensorManager sensorManager;
+//private SensorManager sensorManager;
 long lastTime;
 
 Uri mLabelUri;
 private Activity mActivity;
 
+
 @Override
-public void onAttach(Activity activity) {
+public void onCreate(Bundle savedInstanceState) 
+{
+   super.onCreate(savedInstanceState);
+   mDbHelper = new DatabaseHelper(getActivity()); 
+   lastTime = System.currentTimeMillis();
+   
+   //startLogging();
+  //mLastRecordedEvent = (SensorEvent)this.getSystemService(SENSOR_SERVICE);
+}
+
+
+@Override
+public void onAttach(Activity activity) 
+{
+   
+   mDbHelper = new DatabaseHelper(getActivity()); 
+   lastTime = System.currentTimeMillis();
     super.onAttach(activity);
     mActivity = activity;
 }
@@ -295,16 +330,15 @@ public void onAttach(Activity activity) {
     		R.drawable.others, 
     		R.drawable.others }));
   }
-
-  @NonNull
-  @Nullable
+  
   private void setupView(View paramView)
   {
     setTouchNClick(paramView.findViewById(R.id.nearby));
     loadDummyData();
     GridView localGridView = (GridView)paramView.findViewById(R.id.grid);
+    
     localGridView.setAdapter(new GridAdapter());   
-    lastTime = System.currentTimeMillis();
+    
     
   /*  mNoticationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
     stopNotification();*/
@@ -317,79 +351,61 @@ public void onAttach(Activity activity) {
    public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, 
     		  int paramAnonymousInt, long paramAnonymousLong)
       {
-		  
-	    
-	   /*     startActivity(new Intent(getActivity(), IssueList.class).putExtra
-	        		("title", ((Data)iList.get(paramAnonymousInt)).getTexts()[0]).
-	        		putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
-	        		putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]));}        		
-	   */	  
-		
-		/*  String labelName = null;
-		  Context context = null;
-		  Long labelTime = null;*/
-		  
-		  //used the final modifier to enforce good initializer;
-	
-		/*	//You need context object in your view.
-			sensorManager = (SensorManager)getActivity().getSystemService(getActivity().SENSOR_SERVICE);						
-			sensorManager.registerListener(MainFragment.this, Sensor.TYPE_ACCELEROMETER, 
-					SensorManager.SENSOR_DELAY_NORMAL);*/
-	
-	     	 /* in this section
-	     	  * the logging has to momentarily stop
-	     	  * then the x,y,z,longitude and latitude values are all stored with respect to the time
-	     	  * that data is changed to XML using the XML creator class
-	     	  * And then stored in a file on the SD card     
-	     	  * 
-	     	  * store the label name, 	
-	     	  * 
-	     	  * */ 	
-		
-
-			/**
-			 * I have used this assertion below to prevent the null pointer exception.
-			 * 
-			 * More about NullPointerExceptions:
-			 * 
-			 * Use final modifier to enforce good initialization.
-               Avoid returning null in methods, for example returning empty collections 
-               when applicable.
-               Use annotations @NotNull and @Nullable
-               Fail fast and use asserts to avoid propagation of null objects trough 
-               the whole application when they shouldn't be null.
-               Use equals with known object first: if("knownObject".equals(unknownObject)
-               Prefer valueOf() over toString().
-               Use null safe StringUtils methods StringUtils.isEmpty(null). 
-			 * *
-			 * 
-			 * /
-				
-	         /*startActivity(new Intent(getActivity(), IssueList.class).putExtra
-            ("title", ((Data)iList.get(paramAnonymousInt)).getTexts()[0]).
-            putExtra("icon", ((Data)iList.get(paramAnonymousInt)).getResources()[1]).
-            putExtra("icon1", ((Data)iList.get(paramAnonymousInt)).getResources()[2]));} 
-            */
-	       
-	     
-				   labelName = iList.get(paramAnonymousInt).getTexts()[0].toString();
-				   labelTime = Long.valueOf(System.currentTimeMillis());
-	            ContentValues values = new ContentValues();
-	            values.put( Labels.NAME, labelName );  
-				   values.put(Labels.CREATION_TIME, labelTime);
-	            context.getContentResolver().insert( mLabelUri, values );	  
+	   
+	   lastKnownLabelName = iList.get(paramAnonymousInt).getTexts()[0].toString();
+      
+	  mLastRecordedEvent = ((MainActivity)getActivity()).getmLastRecordedEvent();
+	  mLastRecordedLocation = ((MainActivity)getActivity()).getmLastRecordedLocation();
+	  
+	   
+	 // ((MainActivity)getActivity()).onSensorChanged(mLastRecordedEvent);
+	   
+	    try
+	          {  	   
+	            if (mLastRecordedEvent != null )
+	            {
+	             storeAllValues(mLastRecordedEvent, mLastRecordedLocation);
+	             }
 	            
-	       /*     ContentValues args = new ContentValues();
-	            args.put(WaypointsColumns.SEGMENT, segmentId);
-	            args.put(WaypointsColumns.TIME, location.getTime());
-	            args.put(WaypointsColumns.LATITUDE, location.getLatitude());
-	            args.put(WaypointsColumns.LONGITUDE, location.getLongitude());
-	            args.put(WaypointsColumns.SPEED, location.getSpeed());
-	            args.put(WaypointsColumns.ACCURACY, location.getAccuracy());
-	            args.put(WaypointsColumns.ALTITUDE, location.getAltitude());
-	            args.put(WaypointsColumns.BEARING, location.getBearing());
-	            long waypointId = sqldb.insert(Waypoints.TABLE, null, args);*/
-	 
+	            // mLoggerService.pauseLogging();
+	            
+	           /* if (mLoggerService.getmLastRecordedEvent() != null && mLoggerService.getmLastRecordedLocation() != null )
+               {
+                storeAllValues(mLoggerService.getmLastRecordedEvent(), mLoggerService.getmLastRecordedLocation());
+                }*/
+	            
+	           // mLoggerService.startLogging();
+	            float x = mLastRecordedEvent.values[0];
+               float y = mLastRecordedEvent.values[1];
+               float z = mLastRecordedEvent.values[2];
+	            
+	            Log.d("x:", "" + x );
+               Log.d("y:", "" + y );
+               Log.d("z:", "" + z );
+	          	             
+	          }
+	    
+     catch (NullPointerException e)
+             {
+                Log.e(TAG, "NullPointerException", e);
+               
+                try 
+                {
+                double lat = mLastRecordedLocation.getLatitude();
+                double lon = mLastRecordedLocation.getLongitude();
+              
+                Log.d("latitude:","" +lat);
+                Log.d("longitude:","" + lon);
+                }
+                catch(NullPointerException f)
+                {
+                   Log.d(TAG, "exception noticed inside onLocationChanged", f); 
+                   
+                }
+             
+       
+             }
+	  
       }
       });   
     
@@ -418,40 +434,16 @@ public void onAttach(Activity activity) {
     if (paramView.getId() == R.id.nearby) 
     {
     	//using this one to start and stop the logging
-       Intent intent = new Intent();
-	
-    	try 
-    	{
-
-       long loggerTrackId = mLoggerServiceManager.startGPSLogging( null );
-       
-/*       Intent namingIntent = new Intent();
-       namingIntent.setClass(getActivity(), NameTrack.class );
-       namingIntent.setData( ContentUris.withAppendedId( Labels.CONTENT_URI, loggerTrackId ) );
-       startActivity( namingIntent );*/
-  
-       Intent namingIntent = new Intent(getActivity(), NameTrack.class );
-       namingIntent.setData( ContentUris.withAppendedId( Tracks.CONTENT_URI, loggerTrackId ) );
-       startActivity( namingIntent );
-       
-       // Create data for the caller that a new track has been started
-       ComponentName caller = ((Activity) context).getCallingActivity();
-       
-       if( caller != null )
+       try
        {
-          intent.setData( ContentUris.withAppendedId( Tracks.CONTENT_URI, loggerTrackId ) );
-     
-       }    
- 
-    	} 
-    	
-    	catch (Exception e)
-        {
-           Log.e(TAG, "Could not start GPSLoggerService.", e);
-       	Intent intent1 = new Intent();
-		intent1.setClass(getActivity(), MainActivity.class);
+        Intent intent = new Intent(getActivity(), CommonLoggerMap.class);
+        this.startActivity(intent);
+        } 
+        catch(Exception e)
+        {           
+           Log.e(TAG, "just handling any damn exception", e);
         }
-  
+ 
     }
       //startActivity(new Intent(getActivity(), IssueList.class).putExtra("title", getString(R.string.nearby)));
   }
@@ -472,7 +464,12 @@ public void onAttach(Activity activity) {
 
     public int getCount()
     {
+       
+     
       return iList.size();
+      
+
+        
     }
 
     public Data getItem(int paramInt)
@@ -485,7 +482,6 @@ public void onAttach(Activity activity) {
       return paramInt;
     }
     
-
     @SuppressLint({"InflateParams"})
     public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
     {
@@ -505,29 +501,79 @@ public void onPause()
 {
 // TODO Auto-generated method stub
 super.onPause();
-
+//mSensorManager.unregisterListener(this);
 }
-
 
 @Override
 public void onResume() 
 {
 // TODO Auto-generated method stub
-super.onResume();
+  super.onResume();
+ // resumeLogging();  
 }
 
 @Override
 public void onDestroy() 
 {
   super.onDestroy();
-	
+  //mSensorManager.unregisterListener(this);	
 }
 
 @Override
 public void onStop() 
 {
 	   super.onStop();
-		   
+	   //mSensorManager.unregisterListener(this);		   
 }
+
+public void storeAllValues(SensorEvent event, Location location) 
+{ 
+   //mLastRecordedEvent = event;
+   
+   /*if (event == null) 
+   {
+      
+      Log.d("error:", "event is null");
+      event = mLastRecordedEvent;
+      
+   }
+   
+   else 
+   {*/
+ String queryStoreValues ="Insert into "+Labels.TABLE+" (";
+ 
+ queryStoreValues=queryStoreValues+Labels.X+",";
+ queryStoreValues=queryStoreValues+Labels.Y+",";
+ queryStoreValues=queryStoreValues+Labels.Z+",";
+ queryStoreValues=queryStoreValues+Labels.NAME+",";
+ queryStoreValues=queryStoreValues+Labels.LATITUDE+",";
+ queryStoreValues=queryStoreValues+Labels.LONGITUDE+",";
+ queryStoreValues=queryStoreValues+Labels.SPEED;
+
+ queryStoreValues=queryStoreValues+Labels.CREATION_TIME;
+ 
+ 
+ queryStoreValues=queryStoreValues+" ) VALUES ( ";
+ 
+ queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[0])+"' , ";
+ queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[1])+"' , ";
+ queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[2])+"' ) ";
+ queryStoreValues=queryStoreValues+"'"+lastKnownLabelName+"' , ";
+ queryStoreValues=queryStoreValues+"'"+Double.valueOf(location.getLatitude())+"' , ";
+ queryStoreValues=queryStoreValues+"'"+Double.valueOf(location.getLongitude())+"' , "; 
+ queryStoreValues=queryStoreValues+"'"+Float.valueOf(location.getSpeed())+"' , ";
+ //iList.get(getId()).getTexts()[0].toString();
+ 
+ queryStoreValues=queryStoreValues+"'"+Long.valueOf(System.currentTimeMillis()) +"' ) "; 
+//.get(getId()).getTexts()[0].toString()
+ Log.d("Insert Query", queryStoreValues);
+  
+ mDbHelper.getData(queryStoreValues);
+   //}
+        
+}
+
+
+
 
 }

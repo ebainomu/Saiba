@@ -57,16 +57,22 @@ public class DatabaseHelper extends SQLiteOpenHelper
    @Override
    public void onCreate(SQLiteDatabase db)
    {
+      db.execSQL(Labels.CREATE_STATEMENT);
+      db.execSQL(Locations.CREATE_STATEMENT);
+      db.execSQL(Xyz.CREATE_STATEMENT);
       db.execSQL(Waypoints.CREATE_STATEMENT);
       db.execSQL(Segments.CREATE_STATMENT);
       db.execSQL(Tracks.CREATE_STATEMENT);
       db.execSQL(Media.CREATE_STATEMENT);
       db.execSQL(MetaData.CREATE_STATEMENT);      
-      //new tables
-      db.execSQL(Labels.CREATE_STATEMENT);
-      db.execSQL(Locations.CREATE_STATEMENT);
-      db.execSQL(Xyz.CREATE_STATEMENT);
+     
    }
+   
+   
+  /* public SQLiteDatabase openDB(SQLiteDatabase db) {
+      db = this.getWritableDatabase();
+      return db;
+  }*/
    
    
    /**
@@ -160,6 +166,47 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
       return inserted;
    }
+   
+   
+   
+   int bulkInsertLocations(long labelId, ContentValues[] valuesArray)
+   {
+      if (labelId < 0 )
+      {
+         throw new IllegalArgumentException("labels may not the less then 0.");
+      }
+      int inserted = 0;
+
+      SQLiteDatabase sqldb = getWritableDatabase();
+      sqldb.beginTransaction();
+      try
+      {
+         for (ContentValues args : valuesArray)
+         {
+            //args.put(Locations.SEGMENT, segmentId);
+
+            long id = sqldb.insert(Locations.TABLE, null, args);
+            if (id >= 0)
+            {
+               inserted++;
+            }
+         }
+         sqldb.setTransactionSuccessful();
+
+      }
+      finally
+      {
+         if (sqldb.inTransaction())
+         {
+            sqldb.endTransaction();
+         }
+      }
+
+      return inserted;
+   }
+   
+   
+   
 
    /**
     * Creates a waypoint under the current track segment with the current time
@@ -202,13 +249,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
       return waypointId;
    }
    
-   long insertLocation(long labelId, Location location, long xyzId)
+   public long insertLocation(Location location)
    {
-      if (labelId < 0 || xyzId < 0)
-      {
-         throw new IllegalArgumentException("Labels and acceleration coordiates may not be the less then 0.");
-      }
-
       SQLiteDatabase sqldb = getWritableDatabase();
 
       ContentValues args = new ContentValues();
@@ -216,45 +258,117 @@ public class DatabaseHelper extends SQLiteOpenHelper
       args.put(LocationsColumns.LATITUDE, location.getLatitude());
       args.put(LocationsColumns.LONGITUDE, location.getLongitude());
       args.put(LocationsColumns.SPEED, location.getSpeed());
-      args.put(LocationsColumns.ACCURACY, location.getAccuracy());
-      args.put(LocationsColumns.ALTITUDE, location.getAltitude());
-      args.put(LocationsColumns.BEARING, location.getBearing());
-
+      args.put(LocationsColumns.ACCURACY, location.getAccuracy());    
       long locationId = sqldb.insert(Locations.TABLE, null, args);
-
-      ContentResolver resolver = this.mContext.getContentResolver();
-      Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/xyz/" + xyzId + "/locations");
-      resolver.notifyChange(notifyUri, null);
-
-            Log.d( TAG, "Location stored: "+notifyUri);
+      sqldb.close();
+            Log.d( TAG, "Location stored: ");
       return locationId;
    }
    
+   public void deleteLocation(long id) {
+      SQLiteDatabase db = getWritableDatabase();
+      if (db == null) {
+          return;
+      }
+      db.delete("locations", "_id = ?", new String[] { String.valueOf(id) });
+      db.close();
+  }
+   
    
 
-   long insertLabel(long labelId, Location location)
+   public void insertLabel(String label, Long labelTime)
    {
-      if (labelId < 0)
+      
+      SQLiteDatabase sqldb = getWritableDatabase();
+     
+      try
       {
-         throw new IllegalArgumentException("Track and segments may not the less then 0.");
+      ContentValues args = new ContentValues();
+      args.put(Labels.CREATION_TIME, labelTime);
+      args.put(Labels.NAME, label);
+      sqldb.insert(Labels.TABLE, null, args);    
+      
+          Log.d( TAG, "label stored ");
       }
-
+      
+      catch (Exception e) {
+         Log.d(TAG, "Error while trying to add post to database");
+     } 
+      //return labelId;
+   }
+   
+   public void deleteLabel(long id) {
+      SQLiteDatabase db = getWritableDatabase();
+      if (db == null) {
+          return;
+      }
+      db.delete("labels", "_id = ?", new String[] { String.valueOf(id) });
+      db.close();
+  }
+   
+   public long insert_xyz(float x, float y, float z, Location location)
+   {
+     
       SQLiteDatabase sqldb = getWritableDatabase();
 
       ContentValues args = new ContentValues();
-      args.put(Labels.CREATION_TIME, location.getTime());
-      args.put(Labels.NAME, location.getLatitude());
-      long locationId = sqldb.insert(Locations.TABLE, null, args);
-
-      ContentResolver resolver = this.mContext.getContentResolver();
-      Uri notifyUri = Uri.withAppendedPath(Labels.CONTENT_URI, labelId + "/locations");
-      resolver.notifyChange(notifyUri, null);
-
-           Log.d( TAG, "label stored " +notifyUri);
-      return locationId;
+      args.put(Xyz.TIME, location.getTime());
+      args.put(Xyz.X, x);
+      args.put(Xyz.Y, y);
+      args.put(Xyz.Z, z);
+      long xyzId = sqldb.insert(Xyz.TABLE, null, args);
+      sqldb.close();
+          Log.d( TAG, "acceleration value stored ");
+      return xyzId;
    }
    
+   public void delete_xyz(long id) {
+      SQLiteDatabase db = getWritableDatabase();
+      if (db == null) {
+          return;
+      }
+      db.delete("xyz", "_id = ?", new String[] { String.valueOf(id) });
+      db.close();
+  }
+  
+   /**
+    * Return values for a single row with the specified id
+    * @param id The unique id for the row o fetch
+    * @return All column values are stored as properties in the ContentValues object
+    */
+   public ContentValues get(long id) 
+   {
+       SQLiteDatabase db = getReadableDatabase();
+       if (db == null) 
+       {
+           return null;
+       }
+       ContentValues row = new ContentValues();
+       Cursor cur = db.rawQuery("select name, creationtime from labels where _id = ?", new String[] { String.valueOf(id) });
+       if (cur.moveToNext()) 
+       {
+           row.put("name", cur.getString(0));
+           row.put("creationtime", cur.getInt(1));
+       }
+       cur.close();
+       db.close();
+       return row;
+   }
    
+  
+   public Cursor selectLabelsRecords() 
+   {
+      SQLiteDatabase database = getReadableDatabase();
+      String[] cols = new String[] {Labels._ID, Labels.NAME};  
+      Cursor mCursor = database.query(true, Labels.TABLE,cols,null  
+               , null, null, null, null, null);  
+      if (mCursor != null) {  
+        mCursor.moveToFirst();  
+      }  
+      return mCursor; // iterate to get each value.
+   }
+  
+ 
    /**
     * Insert a URI for a given waypoint/segment/track in the media table
     * 
@@ -746,7 +860,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
     * ************/
    
    
-   public ArrayList<Cursor> getData(String Query){
+   public ArrayList<Cursor> getData(String Query)
+   {
       //get writable database
       SQLiteDatabase sqlDB = this.getWritableDatabase();
       String[] columns = new String[] { "mesage" };
@@ -757,14 +872,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
       alc.add(null);
       alc.add(null);
       
-      
       try
       {
          String maxQuery = Query ;
          //execute the query results will be save in Cursor c
          Cursor c = sqlDB.rawQuery(maxQuery, null);
          
-
          //add value to cursor2
          Cursor2.addRow(new Object[] { "Success" });
          
@@ -783,7 +896,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
       {
          Log.d("printing exception", sqlEx.getMessage());
          //if any exceptions are triggered save the error message to cursor an return the arraylist
-         Cursor2.addRow(new Object[] { ""+sqlEx.getMessage() });
+         Cursor2.addRow(new Object[] 
+               { ""+sqlEx.getMessage() });
          alc.set(1,Cursor2);
          return alc;
       } 

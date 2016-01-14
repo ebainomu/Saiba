@@ -14,10 +14,12 @@ import java.util.TimeZone;
 import dev.baalmart.gps.R;
 import dev.ugasoft.android.gps.actions.utils.ProgressListener;
 import dev.ugasoft.android.gps.db.Prim;
+import dev.ugasoft.android.gps.db.Prim.Labels;
 import dev.ugasoft.android.gps.db.Prim.Media;
 import dev.ugasoft.android.gps.db.Prim.Segments;
 import dev.ugasoft.android.gps.db.Prim.Tracks;
 import dev.ugasoft.android.gps.db.Prim.Waypoints;
+import dev.ugasoft.android.gps.db.Prim.Xyz;
 import dev.ugasoft.android.gps.util.Constants;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -189,20 +191,23 @@ public class GpxCreator extends XmlCreator
          serializeWaypoints(mContext, serializer, Uri.withAppendedPath(trackUri, "/media"));
       }
 
-      // <trk/> [0...] Track 
-      serializer.text("\n");
+      // <trk/> [0...] Label
+  /*    serializer.text("\n");
       serializer.startTag("", "label");
-      serializer.text("\n");
+      serializer.text("\n");*/
       
-      serializer.startTag("", "name");
+      serializer.startTag("", "label");
       serializer.text(mName);
-      serializer.endTag("", "name");
+     /* serializer.endTag("", "name");*/
       
       // The list of segments in the track
       serializeSegments(serializer, Uri.withAppendedPath(trackUri, "segments"));
-      serializer.text("\n");
+
+     /* serializeTrackPoints(serializer,  Uri.withAppendedPath(trackUri, "waypoints"));      
+      serializer.text("\n");*/
       
       serializer.endTag("", "label");
+     /* serializer.endTag("", "label");*/      
 
       serializer.text("\n");
       serializer.endTag("", "prim");
@@ -216,20 +221,21 @@ public class GpxCreator extends XmlCreator
          throw new IOException("Fail to execute request due to canceling");
       }
       ContentResolver resolver = context.getContentResolver();
-      Cursor trackCursor = null;
+      Cursor labelCursor = null;
 
       String databaseName = null;
       try
       {
-         trackCursor = resolver.query(trackUri, new String[] { Tracks._ID, Tracks.NAME, Tracks.CREATION_TIME }, null, null, null);
-         if (trackCursor.moveToFirst())
+         /*trackCursor = resolver.query(trackUri, new String[] { Tracks._ID, Tracks.NAME, Tracks.CREATION_TIME }, null, null, null);*/
+         labelCursor = resolver.query(trackUri, new String[] { Labels._ID, Labels.NAME, Labels.CREATION_TIME }, null, null, null);
+         if (labelCursor.moveToFirst())
          {
-            databaseName = trackCursor.getString(1);
+            databaseName = labelCursor.getString(1);
             serializer.text("\n");
             serializer.startTag("", "metadata");
             serializer.text("\n");
             serializer.startTag("", "time");
-            Date time = new Date(trackCursor.getLong(2));
+            Date time = new Date(labelCursor.getLong(2));
             synchronized (ZULU_DATE_FORMATER)
             {
                serializer.text(ZULU_DATE_FORMATER.format(time));
@@ -241,9 +247,9 @@ public class GpxCreator extends XmlCreator
       }
       finally
       {
-         if (trackCursor != null)
+         if (labelCursor != null)
          {
-            trackCursor.close();
+            labelCursor.close();
          }
       }
       if (mName == null)
@@ -259,6 +265,43 @@ public class GpxCreator extends XmlCreator
          mName = mChosenName;
       }
    }
+   
+   
+   private void serializeAccelerationValues(XmlSerializer serializer, Uri accelerationValues) throws IOException
+   {
+      if (isCancelled())
+      {
+         throw new IOException("Fail to execute request due to canceling");
+      }
+      Cursor xyzCursor = null;
+      ContentResolver resolver = mContext.getContentResolver();
+      try
+      {
+         xyzCursor = resolver.query(accelerationValues, new String[] { Xyz._ID }, null, null, null);
+         if (xyzCursor.moveToFirst())
+         {
+            do
+            {
+               Uri acc_points = Uri.withAppendedPath(accelerationValues, xyzCursor.getLong(0) + "/locations");
+               serializer.text("\n");
+               serializer.startTag("", "acc");
+              // serializeAccelerationPoints(serializer, acc_points);
+               serializer.text("\n");
+               serializer.endTag("", "acc");
+            }
+            while (xyzCursor.moveToNext());
+         }
+      }
+      
+      finally
+      {
+         if (xyzCursor != null)
+         {
+            xyzCursor.close();
+         }
+      }
+   }
+   
 
    private void serializeSegments(XmlSerializer serializer, Uri segments) throws IOException
    {

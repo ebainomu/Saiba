@@ -125,6 +125,9 @@ public class PrimProvider extends ContentProvider
    private static final int LABELS         = 21;
    private static final int LOCATION_ID         = 22;
    private static final int LABEL_ID         = 23;
+   private static final int XYZ         = 24;
+   private static final int XYZ_ID         = 25;
+   
    private static final String[] SUGGEST_PROJECTION = 
       new String[] 
         { 
@@ -152,8 +155,8 @@ public class PrimProvider extends ContentProvider
       PrimProvider.sURIMatcher = new UriMatcher( UriMatcher.NO_MATCH );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks", PrimProvider.TRACKS );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#", PrimProvider.TRACK_ID );
-   /* PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels", PrimProvider.LABEL );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels/#", PrimProvider.LABEL_ID );*/
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels", PrimProvider.LABELS );
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "labels/#", PrimProvider.LABEL_ID );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/media", PrimProvider.TRACK_MEDIA );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/metadata", PrimProvider.TRACK_METADATA );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/waypoints", PrimProvider.TRACK_WAYPOINTS );
@@ -164,8 +167,8 @@ public class PrimProvider extends ContentProvider
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/waypoints", PrimProvider.WAYPOINTS );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/waypoints/#", PrimProvider.WAYPOINT_ID );
       
-     /* PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/locations", PrimProvider.LOCATION );
-      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/locations/#", PrimProvider.LOCATION_ID );*/
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/locations", PrimProvider.LOCATIONS );
+      PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/locations/#", PrimProvider.LOCATION_ID );
       
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/waypoints/#/media", PrimProvider.WAYPOINT_MEDIA );
       PrimProvider.sURIMatcher.addURI( Prim.AUTHORITY, "tracks/#/segments/#/waypoints/#/metadata", PrimProvider.WAYPOINT_METADATA );
@@ -213,6 +216,15 @@ public class PrimProvider extends ContentProvider
          case TRACK_ID:
             mime = Tracks.CONTENT_ITEM_TYPE;
             break;
+            
+         case LABELS:
+            mime = Labels.CONTENT_TYPE;
+            break;
+            
+         case LABEL_ID:
+            mime = Labels.CONTENT_ITEM_TYPE;
+            break;
+            
         case SEGMENTS:
             mime = Segments.CONTENT_TYPE;
             break;
@@ -358,14 +370,35 @@ public class PrimProvider extends ContentProvider
                
                locationId = this.mDbHelper.insertLocation
                      ( 
-                     labelId, 
-                     location,
-                     xyzId
+                     location
                      );
                
               Log.d( TAG, "Have inserted a location basing on "+labelId+" with location "+locationId );
                insertedUri = ContentUris.withAppendedId( uri, locationId );
                break;
+               
+           /*    
+            case XYZ:
+               
+               pathSegments     = uri.getPathSegments();
+               labelId          = Long.parseLong( pathSegments.get( 1 ) );            
+               
+               Long time_xyz        = values.getAsLong( Locations.TIME );
+               Float speed_xyz      = values.getAsFloat( Locations.SPEED );
+               
+               if( time_xyz == null )
+               {
+                  time_xyz = System.currentTimeMillis();
+               }
+               
+               if( speed_xyz == null )
+               {
+                  speed  = 0f;
+               }
+          
+              Log.d( TAG, "Have inserted a location basing on "+labelId+" with location "+xyzId );
+               insertedUri = ContentUris.withAppendedId( uri, xyzId );
+               break;*/
                               
             case WAYPOINT_MEDIA:
                pathSegments    = uri.getPathSegments();
@@ -390,7 +423,7 @@ public class PrimProvider extends ContentProvider
                
             case LABELS:
                String nLabel = ( values == null ) ? "" : values.getAsString( Labels.NAME );
-               trackId     = this.mDbHelper.toNextTrack( nLabel );
+               labelId     = this.mDbHelper.toNextLabel( nLabel );
                insertedUri = ContentUris.withAppendedId( uri, labelId );
                break;
                
@@ -450,16 +483,29 @@ public class PrimProvider extends ContentProvider
             case TRACKS:
                tableName = Tracks.TABLE;
                break;
+         
             case TRACK_ID:
                tableName = Tracks.TABLE;
                innerSelection = Tracks._ID + " = ? ";
                innerSelectionArgs = new String[]{ pathSegments.get( 1 ) };
                break;
+               
+            case LABELS:
+               tableName = Labels.TABLE;
+               break;
+               
+            case LABEL_ID:
+               tableName = Labels.TABLE;
+               innerSelection = Labels._ID + " = ? ";
+               innerSelectionArgs = new String[]{ pathSegments.get( 1 ) };
+               break;
+              
             case SEGMENTS:
                tableName = Segments.TABLE;
                innerSelection = Segments.TRACK + " = ? ";
                innerSelectionArgs = new String[]{ pathSegments.get( 1 ) };
                break;
+               
             case SEGMENT_ID:
                tableName = Segments.TABLE;
                innerSelection = Segments.TRACK + " = ?  and " + Segments._ID   + " = ? ";
@@ -475,6 +521,19 @@ public class PrimProvider extends ContentProvider
                innerSelection = Waypoints.SEGMENT + " =  ?  and " + Waypoints._ID     + " = ? ";
                innerSelectionArgs = new String[]{ pathSegments.get( 3 ),  pathSegments.get( 5 ) };
                break;
+               
+            case LOCATIONS:
+               tableName = Locations.TABLE;
+               innerSelection = Locations.SEGMENT + " = ? ";
+               innerSelectionArgs = new String[]{ pathSegments.get( 3 ) };
+               break;
+               
+            case LOCATION_ID:
+               tableName = Locations.TABLE;
+               innerSelection = Locations.SEGMENT + " = ? ";
+               innerSelectionArgs = new String[]{ pathSegments.get( 3 ) };
+               break;
+               
             case TRACK_WAYPOINTS:
                tableName = Waypoints.TABLE + " INNER JOIN " + Segments.TABLE + " ON "+ Segments.TABLE+"."+Segments._ID +"=="+ Waypoints.SEGMENT;
                innerSelection = Segments.TRACK + " = ? ";
@@ -607,6 +666,13 @@ public class PrimProvider extends ContentProvider
             String name = givenValues.getAsString( Tracks.NAME );
             updates = mDbHelper.updateTrack(trackId, name);   
             break;
+            
+         case LABEL_ID:
+            trackId = new Long( uri.getLastPathSegment() ).longValue();
+            String nLabel = givenValues.getAsString( Labels.NAME );
+            updates = mDbHelper.updateTrack(trackId, nLabel);   
+            break;
+            
          case TRACK_METADATA:
             pathSegments = uri.getPathSegments();
             trackId      = Long.parseLong( pathSegments.get( 1 ) );
@@ -684,6 +750,13 @@ public class PrimProvider extends ContentProvider
             int segmentId = Integer.parseInt( pathSegments.get( 3 ) );
             inserted = this.mDbHelper.bulkInsertWaypoint( trackId, segmentId, valuesArray );
             break;
+            
+         case LOCATIONS:
+            List<String> pathSegmentsL = uri.getPathSegments();
+            int labelId = Integer.parseInt( pathSegmentsL.get( 1 ) );
+            inserted = this.mDbHelper.bulkInsertLocations( labelId, valuesArray );
+            break;
+            
          default:
             inserted = super.bulkInsert( uri, valuesArray );
             break;

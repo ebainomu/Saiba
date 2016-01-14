@@ -36,7 +36,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 //a static class to save cursor,table values etc which is used by functions to share data in the program.
 	static class indexInfo
     {
-    	public static int index = 10;
+    	public static int index = 10; //the items shown in the spinner for table names # size
     	public static int numberofpages = 0;
     	public static int currentpage = 0;
     	public static String table_name="";
@@ -51,8 +51,6 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 
 // all global variables
 	
-	//in the below line Change the text 'yourCustomSqlHelper' with your custom sqlitehelper class name.
-	//Do not change the variable name dbm
 	DatabaseHelper dbm;
 	TableLayout tableLayout;
 	TableRow.LayoutParams tableRowParams;
@@ -69,14 +67,13 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-
-		//in the below line Change the text 'yourCustomSqlHelper' with your custom sqlitehelper class name
+	
 		dbm = new DatabaseHelper(AndroidDatabaseManager.this);
 		
 		mainscrollview = new ScrollView(AndroidDatabaseManager.this);
 		
-		//the main linear layout to which all tables spinners etc will be added.In this activity every element is created dynamically  to avoid using xml file
+		//the main linear layout to which all tables spinners etc will be added. In this activity every element is created dynamically  
+		//to avoid using xml file
 		 mainLayout = new LinearLayout(AndroidDatabaseManager.this);
 		 mainLayout.setOrientation(LinearLayout.VERTICAL);
 		 mainLayout.setBackgroundColor(Color.WHITE);
@@ -103,10 +100,10 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 		firstrow.addView(select_table);
 		mainLayout.addView(firstrow);
 		
-		ArrayList<Cursor> alc ;
+		ArrayList<Cursor> alc;
                
-         	 //the horizontal scroll view for table if the table content doesnot fit into screen
-		 hsv = new HorizontalScrollView(AndroidDatabaseManager.this);
+         	 //the horizontal scroll view for table if the table content does not fit into screen
+		    hsv = new HorizontalScrollView(AndroidDatabaseManager.this);
 
 		 //the main table layout where the content of the sql tables will be displayed when user selects a table	
     		 tableLayout = new TableLayout(AndroidDatabaseManager.this);
@@ -203,11 +200,11 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 		
 		//when user enter a custom query in text view and clicks on submit query button
 		//display results in tablelayout
-		submitQuery.setOnClickListener(new OnClickListener() {
-			
+		submitQuery.setOnClickListener(new OnClickListener() 
+		{			
 			@Override
-			public void onClick(View v) {
-				
+			public void onClick(View v) 
+			{				
 				tableLayout.removeAllViews();
 				customQuery.setVisibility(View.GONE);
 				
@@ -247,6 +244,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 				}
 			}
 		});
+		
 		//layout parameters for each row in the table
        tableRowParams = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
        tableRowParams.setMargins(0, 0, 2, 0);
@@ -602,14 +600,11 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 	                  									String Query4 ="Insert into "+indexInfo.table_name+" (";
 	                  									for(int i=0 ; i<addnewrownames.size();i++)
 	                  									{
-
 	                  										TextView tv = addnewrownames.get(i);
 	                  										tv.getText().toString();
 	                  										if(i==addnewrownames.size()-1)
 	                  										{
-
 	                  											Query4=Query4+tv.getText().toString();
-
 	                  										}
 	                  										else
 	                  										{
@@ -631,7 +626,6 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 	                  										{
 	                  										Query4=Query4+"'"+et.getText().toString()+"' , ";
 	                  										}
-
 
 	                  									}
 	                  									//this is the insert query which has been generated
@@ -721,7 +715,6 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 
 		                cell.addView(tableheadercolums);
 		                tableheader2.addView(cell);
-
 
 		                tableLayout.addView(tableheader2);
 

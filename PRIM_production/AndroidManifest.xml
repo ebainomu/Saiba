@@ -125,6 +125,7 @@
             android:launchMode="singleTask"
             android:theme="@style/Theme.NoBackground" >
         </activity>
+        
         <activity
             android:name="dev.ugasoft.android.gps.viewer.ApplicationPreferenceActivity"
             android:label="@string/menu_settings" />

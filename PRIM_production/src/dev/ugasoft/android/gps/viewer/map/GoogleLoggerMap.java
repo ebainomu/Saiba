@@ -1,10 +1,12 @@
 package dev.ugasoft.android.gps.viewer.map;
 
 import dev.baalmart.gps.R;
+import dev.ugasoft.android.gps.db.AndroidDatabaseManager;
 import dev.ugasoft.android.gps.util.Constants;
 import dev.ugasoft.android.gps.util.SlidingIndicatorView;
 import dev.ugasoft.android.gps.viewer.map.overlay.FixedMyLocationOverlay;
 import dev.ugasoft.android.gps.viewer.map.overlay.OverlayProvider;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -13,6 +15,7 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +49,7 @@ public class GoogleLoggerMap extends MapActivity implements LoggerMap
       mMapView = (MapView) findViewById(R.id.myMapView);
       mMylocation = new FixedMyLocationOverlay(this, mMapView);
       mMapView.setBuiltInZoomControls(true);
+      
       TextView[] speeds = { (TextView) findViewById(R.id.speedview05), (TextView) findViewById(R.id.speedview04), (TextView) findViewById(R.id.speedview03),
             (TextView) findViewById(R.id.speedview02), (TextView) findViewById(R.id.speedview01), (TextView) findViewById(R.id.speedview00) };
       mSpeedtexts = speeds;
@@ -53,7 +57,8 @@ public class GoogleLoggerMap extends MapActivity implements LoggerMap
       
       //stuff to do with altitude and all.
       mLastGPSAltitudeView = (TextView) findViewById(R.id.currentAltitude);
-      mDistanceView = (TextView) findViewById(R.id.currentDistance);
+      mDistanceView = (TextView) findViewById(R.id.currentDistance);      
+    
       
       mHelper.onCreate(load);
    }
@@ -64,6 +69,8 @@ public class GoogleLoggerMap extends MapActivity implements LoggerMap
       super.onResume();
       mHelper.onResume();
    }
+   
+
    
    @Override
    protected void onPause()
@@ -464,4 +471,9 @@ public class GoogleLoggerMap extends MapActivity implements LoggerMap
    {
       return (SlidingIndicatorView) findViewById(R.id.scaleindicator);
    }
+   
+  
+   
+   
+   
 }

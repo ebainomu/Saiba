@@ -77,6 +77,9 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
    Uri mXyzUri;   
    private SensorManager sensorManager;
    
+   private SensorEvent mLastRecordedEvent;
+   private Location mLastRecordedLocation; 
+   
    private static final float FINE_DISTANCE = 5F;
    private static final long  FINE_INTERVAL = 1000l;
    private static final float FINE_ACCURACY = 20f;
@@ -243,7 +246,7 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
       {
          Log.v(TAG, "onLocationChanged( Location " + location + " )");
       }
-      ;
+      
       // Might be claiming GPS disabled but when we were paused this changed and this location proves so
       if (mShowingGpsDisabled)
       {
@@ -272,6 +275,23 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
          storeLocation(filteredLocation);
          broadcastLocation(filteredLocation);
          mPreviousLocation = location;
+         setmLastRecordedLocation(location);
+         
+         try {
+         double lat = mLastRecordedLocation.getLatitude();
+         double lon = mLastRecordedLocation.getLongitude();
+         
+         Log.d("latitude:","" +lat);
+         Log.d("longitude:","" + lon);
+         }
+         
+         catch(Exception i)
+         {
+            Log.d(TAG, "exception noticed inside onLocationChanged"); 
+            
+         }
+         
+         
       }
    }
    @Override
@@ -319,7 +339,7 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
       {
          Log.d(TAG, "onStatusChanged( String " + provider + ", int " + status + ", Bundle " + extras + " )");
       }
-      ;
+    
       if (status == LocationProvider.OUT_OF_SERVICE)
       {
          Log.e(TAG, String.format("Provider %s changed to status %d", provider, status));
@@ -1295,7 +1315,6 @@ This guarantees that changes to the state of the object are visible to all threa
          }
       }
    }
-
    /**
     * Some GPS waypoints received are of to low a quality for tracking use. Here
     * we filter those out.
@@ -1393,22 +1412,22 @@ This guarantees that changes to the state of the object are visible to all threa
       
       long actualTime = System.currentTimeMillis();
             
-      // Do no include log wrong 0.0 lat 0.0 long, skip to next value in while-loop
-      if (proposedEvent != null && ( accelationSquareRoot < 1.2) )
+      
+     /* if (proposedEvent != null && ( accelationSquareRoot < 1.2) )
       {
          Log.w(TAG, "wrong sensor values were received, the acceleration square root"
                + "was less than 1.2... ");
          
          proposedEvent = null;
-      }
+      }*/
       
-      if (proposedEvent != null && (actualTime - lastTime) < 2*Math.pow(10,9))
+/*      if (proposedEvent != null && (actualTime - lastTime) < 2*Math.pow(10,9))
       {
          Log.w(TAG, "wrong sensor values were received, the difference between the actual and last time is"
-               + "less than 2000000000 ms... ");
+               + "less than 2*10 pow 9 ms... ");
          
          proposedEvent = null;
-      }
+      }*/
       // Older bad locations will not be needed
       if (proposedEvent != null)
       {
@@ -1621,17 +1640,24 @@ This guarantees that changes to the state of the object are visible to all threa
 
       if (mStreamBroadcast)
       {
-         final long minDistance = (long) PreferenceManager.getDefaultSharedPreferences(this).getFloat("streambroadcast_distance_meter", 5000F);
-         final long minTime = 60000 * Long.parseLong(PreferenceManager.getDefaultSharedPreferences(this).getString("streambroadcast_time", "1"));
+         final long minDistance = (long) PreferenceManager.getDefaultSharedPreferences(this).
+               getFloat("streambroadcast_distance_meter", 5000F);
+         
+         final long minTime = 60000 * Long.parseLong(PreferenceManager.
+               getDefaultSharedPreferences(this).getString("streambroadcast_time", "1"));
+         
          final long nowTime = location.getTime();
+         
          if (mPreviousLocation != null)
          {
             mBroadcastDistance += location.distanceTo(mPreviousLocation);
          }
+         
          if (mLastTimeBroadcast == 0)
          {
             mLastTimeBroadcast = nowTime;
          }
+         
          long passedTime = (nowTime - mLastTimeBroadcast);
          intent.putExtra(Constants.EXTRA_DISTANCE, (int) mBroadcastDistance);
          intent.putExtra(Constants.EXTRA_TIME, (int) passedTime/60000);
@@ -1790,14 +1816,34 @@ This guarantees that changes to the state of the object are visible to all threa
          
       if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
       {         
-         SensorEvent filteredEvent = accelerometerValueFilter(event);         
-         storeAccelerometerValues(filteredEvent);         
+         /*SensorEvent filteredEvent = accelerometerValueFilter(event);         
+         storeAccelerometerValues(filteredEvent); */
+         
+         setmLastRecordedEvent(event);
+         
+         float x = event.values[0];
+         float y = event.values[1];
+         float z = event.values[2];
+         
+         Log.d("x:", "" + x );
+         Log.d("y:", "" + y );
+         Log.d("z:", "" + z );
+         
       }
       }
       
       catch(Exception e)
       {
-         Log.d(TAG, "exception noticed inside onSensorChanged");         
+         Log.d(TAG, "exception noticed inside onSensorChanged"); 
+         Log.d(TAG, "" + e);
+       /*  
+         float x = event.values[0];
+         float y = event.values[1];
+         float z = event.values[2];
+         
+         Log.d("x:", "" + x );
+         Log.d("y:", "" + y );
+         Log.d("z:", "" + z );*/
       }
    }
       
@@ -1892,12 +1938,28 @@ This guarantees that changes to the state of the object are visible to all threa
              Uri inserted = this.getContentResolver().insert(accValueInsertUri, accValues);
              mXyzId = Long.parseLong(inserted.getLastPathSegment());      
 
- }
+   }
    
    @Override
    public void onAccuracyChanged(Sensor sensor, int accuracy)
    {
       // TODO Auto-generated method stub
       
+   }
+   public SensorEvent getmLastRecordedEvent()
+   {
+      return mLastRecordedEvent;
+   }
+   public void setmLastRecordedEvent(SensorEvent mLastRecordedEvent)
+   {
+      this.mLastRecordedEvent = mLastRecordedEvent;
+   }
+   public Location getmLastRecordedLocation()
+   {
+      return mLastRecordedLocation;
+   }
+   public void setmLastRecordedLocation(Location mLastRecordedLocation)
+   {
+      this.mLastRecordedLocation = mLastRecordedLocation;
    }
 }

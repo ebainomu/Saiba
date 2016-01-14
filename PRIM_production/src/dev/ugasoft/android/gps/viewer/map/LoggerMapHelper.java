@@ -20,6 +20,7 @@ import dev.ugasoft.android.gps.viewer.ApplicationPreferenceActivity;
 import dev.ugasoft.android.gps.viewer.TrackList;
 import dev.ugasoft.android.gps.viewer.map.overlay.BitmapSegmentsOverlay;
 import dev.ugasoft.android.gps.viewer.map.overlay.SegmentRendering;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -190,6 +191,7 @@ public class LoggerMapHelper
       mLoggerServiceManager.startup(mLoggerMap.getActivity(), mServiceConnected);
       mSharedPreferences.registerOnSharedPreferenceChangeListener(mSharedPreferenceChangeListener);
       mUnits.setUnitsChangeListener(mUnitsChangeListener);
+      setupActionBar();
       updateTitleBar();
       updateBlankingBehavior();
 
@@ -222,6 +224,25 @@ public class LoggerMapHelper
       mLoggerMap.executePostponedActions();
    }
 
+   protected void setupActionBar()
+   {
+     ActionBar localActionBar = mLoggerMap.getActivity().getActionBar();    
+     
+     if (localActionBar == null)
+       return;
+     localActionBar.setDisplayShowTitleEnabled(true);
+     localActionBar.setNavigationMode(0);
+     localActionBar.setDisplayUseLogoEnabled(true);
+     localActionBar.setLogo(R.drawable.ic_car_white);
+     localActionBar.setBackgroundDrawable(mLoggerMap.getActivity().getResources().getDrawable(R.drawable.action_bar_bg));
+     localActionBar.setDisplayHomeAsUpEnabled(true);
+     localActionBar.setHomeButtonEnabled(true);
+     //localActionBar.setTitle(updateTitleBar());
+     //localActionBar.setIcon(R.drawable.ic_action_share);
+     localActionBar.setIcon(R.drawable.ic_action_share);
+   }
+   
+   
    protected void onPause()
    {
       if (this.mWakeLock != null && this.mWakeLock.isHeld())
@@ -741,6 +762,7 @@ public class LoggerMapHelper
       };
    }
 
+   
    public void onCreateOptionsMenu(Menu menu)
    {
       menu.add(ContextMenu.NONE, MENU_TRACKING, ContextMenu.NONE, R.string.menu_tracking).
