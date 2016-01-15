@@ -5,7 +5,7 @@
         <TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/settings" style="@style/lbl_setting1" />
         <View android:id="@+id/view1" android:background="@color/side_menu_divider" android:layout_width="fill_parent" android:layout_height="@dimen/pad_1dp" android:layout_marginTop="@dimen/pad_3dp" android:layout_marginBottom="@dimen/pad_10dp" />
         <TextView android:id="@+id/lbl1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/account" style="@style/lbl_setting2" />
-        <TextView android:textSize="@dimen/txt_12sp" android:textStyle="normal" android:id="@id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Anna Mccoy" style="@style/lbl_setting1" />
+        <TextView android:textSize="@dimen/txt_12sp" android:textStyle="normal" android:id="@id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Martin Bbaale" style="@style/lbl_setting1" />
         <View android:id="@+id/view2" android:background="@color/side_menu_divider" android:layout_width="fill_parent" android:layout_height="@dimen/divider" android:layout_marginTop="@dimen/pad_10dp" android:layout_marginBottom="@dimen/pad_10dp" />
         <TextView android:id="@+id/lbl2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/acc_pos" style="@style/lbl_setting2" />
         <View android:id="@+id/view3" android:background="@color/side_menu_divider" android:layout_width="fill_parent" android:layout_height="@dimen/divider" android:layout_marginTop="@dimen/pad_10dp" android:layout_marginBottom="@dimen/pad_10dp" />

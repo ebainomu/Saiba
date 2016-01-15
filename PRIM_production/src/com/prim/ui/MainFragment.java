@@ -114,6 +114,24 @@ public class MainFragment extends CustomFragment
       String lastKnownLabelName;
       private Vector<SensorEvent> mWeakSensorEvent;
       MainActivity mA;
+      String queryUpdateLongitude;
+      String queryUpdateLatitude;
+      String queryUpdateSpeed;
+      
+      String queryLatitude;
+      String querySpeed;
+      String queryTime;
+      String queryLongitude;
+      
+      double mQueryLatitude;
+      double mQueryLongitude;
+      float mQuerySpeed;
+      long mQueryTime;
+      
+      double mQueryUpdateLongitude;
+      double mQueryUpdateLatitude;
+      float mQueryUpdateSpeed;
+      long mQueryUpdateTime;
       
       float LastRecorded_xVal;
       float LastRecorded_yVal;
@@ -258,8 +276,7 @@ public void onCreate(Bundle savedInstanceState)
 {
    super.onCreate(savedInstanceState);
    mDbHelper = new DatabaseHelper(getActivity()); 
-   lastTime = System.currentTimeMillis();
-   
+   lastTime = System.currentTimeMillis();   
    //startLogging();
   //mLastRecordedEvent = (SensorEvent)this.getSystemService(SENSOR_SERVICE);
 }
@@ -362,9 +379,9 @@ public void onAttach(Activity activity)
 	   
 	    try
 	          {  	   
-	            if (mLastRecordedEvent != null )
+	            if (mLastRecordedEvent != null)
 	            {
-	             storeAllValues(mLastRecordedEvent, mLastRecordedLocation);
+	             storeAllValues(mLastRecordedEvent);
 	             }
 	            
 	            // mLoggerService.pauseLogging();
@@ -391,8 +408,8 @@ public void onAttach(Activity activity)
                
                 try 
                 {
-                double lat = mLastRecordedLocation.getLatitude();
-                double lon = mLastRecordedLocation.getLongitude();
+                double lat = mLoggerService.getmLastRecordedLocation().getLatitude();
+                double lon = mLoggerService.getmLastRecordedLocation().getLongitude();
               
                 Log.d("latitude:","" +lat);
                 Log.d("longitude:","" + lon);
@@ -526,7 +543,7 @@ public void onStop()
 	   //mSensorManager.unregisterListener(this);		   
 }
 
-public void storeAllValues(SensorEvent event, Location location) 
+public void storeAllValues(SensorEvent event) 
 { 
    //mLastRecordedEvent = event;
    
@@ -548,7 +565,7 @@ public void storeAllValues(SensorEvent event, Location location)
  queryStoreValues=queryStoreValues+Labels.NAME+",";
  queryStoreValues=queryStoreValues+Labels.LATITUDE+",";
  queryStoreValues=queryStoreValues+Labels.LONGITUDE+",";
- queryStoreValues=queryStoreValues+Labels.SPEED;
+ queryStoreValues=queryStoreValues+Labels.SPEED+",";
 
  queryStoreValues=queryStoreValues+Labels.CREATION_TIME;
  
@@ -557,21 +574,131 @@ public void storeAllValues(SensorEvent event, Location location)
  
  queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[0])+"' , ";
  queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[1])+"' , ";
- queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[2])+"' ) ";
+ queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[2])+"', ";
  queryStoreValues=queryStoreValues+"'"+lastKnownLabelName+"' , ";
- queryStoreValues=queryStoreValues+"'"+Double.valueOf(location.getLatitude())+"' , ";
- queryStoreValues=queryStoreValues+"'"+Double.valueOf(location.getLongitude())+"' , "; 
- queryStoreValues=queryStoreValues+"'"+Float.valueOf(location.getSpeed())+"' , ";
+ queryStoreValues=queryStoreValues+"'"+getQueryUpdateLatitude()+"' , ";
+ queryStoreValues=queryStoreValues+"'"+getQueryUpdateLongitude()+"' , "; 
+ queryStoreValues=queryStoreValues+"'"+getQueryUpdateSpeed()+"' , ";
  //iList.get(getId()).getTexts()[0].toString();
  
  queryStoreValues=queryStoreValues+"'"+Long.valueOf(System.currentTimeMillis()) +"' ) "; 
 //.get(getId()).getTexts()[0].toString()
  Log.d("Insert Query", queryStoreValues);
+ 
+ 
+   queryLatitude = "Select "+Waypoints.LATITUDE+" FROM "+Waypoints.TABLE+"  ";
+   queryLongitude = "Select "+Waypoints.LONGITUDE+" FROM "+Waypoints.TABLE+"  ";
+   querySpeed = "Select "+Waypoints.SPEED+" FROM "+Waypoints.TABLE+"  ";
+   queryTime = "Select "+Waypoints.TIME+" FROM "+Waypoints.TABLE+"  ";
   
+ queryUpdateLongitude ="Update "+Labels.TABLE+" ";
+ queryUpdateLongitude = queryUpdateLongitude+" SET ";
+ queryUpdateLongitude = queryUpdateLongitude+ " "+Labels.LONGITUDE+" = "+getQueryLongitude()+"  ";
+ queryUpdateLongitude = queryUpdateLongitude+" WHERE ";
+ queryUpdateLongitude = queryUpdateLongitude+ " "+Labels.CREATION_TIME+" = "+getQueryTime()+" ";
+ 
+ 
+ queryUpdateLatitude ="Update "+Labels.TABLE+" ";
+ queryUpdateLatitude = queryUpdateLatitude+" SET ";
+ queryUpdateLatitude = queryUpdateLatitude+ " "+Labels.LATITUDE+" = "+getQueryLatitude()+" ";
+ queryUpdateLatitude= queryUpdateLatitude+" WHERE ";
+ queryUpdateLatitude = queryUpdateLatitude+ " "+Labels.CREATION_TIME+" = "+getQueryTime()+" ";
+ 
+ 
+ queryUpdateSpeed ="Update "+Labels.TABLE+" ";
+ queryUpdateSpeed = queryUpdateSpeed+" SET ";
+ queryUpdateSpeed = queryUpdateSpeed+ " "+Labels.LONGITUDE+" = "+getQuerySpeed()+" ";
+ queryUpdateSpeed= queryUpdateSpeed+" WHERE ";
+ queryUpdateSpeed = queryUpdateSpeed+ " "+Labels.CREATION_TIME+" = "+getQueryTime()+" ";
+ 
  mDbHelper.getData(queryStoreValues);
    //}
         
 }
+
+//end of method
+
+public double getQueryLatitude()
+{
+   return mQueryLatitude;
+}
+public void setQueryLatitude(ArrayList<Cursor> mQueryLatitude)
+{
+  mQueryLatitude = mDbHelper.getData(queryLatitude);
+}
+
+
+public double getQueryLongitude()
+{
+   return mQueryLongitude;
+}
+public void setQueryLongitude(ArrayList<Cursor> mQueryLongitude)
+{
+  mQueryLongitude = mDbHelper.getData(queryLongitude);
+}
+
+//for the time query
+public long getQueryTime()
+{  
+ return mQueryTime;
+}
+
+public void setQueryTime(ArrayList<Cursor> mQueryTime)
+{
+ mQueryTime = mDbHelper.getData(queryTime);
+}
+
+public float getQuerySpeed()
+{
+   return mQuerySpeed;
+}
+public void setQuerySpeed(ArrayList<Cursor> mQuerySpeed)
+{
+  mQuerySpeed = mDbHelper.getData(queryLongitude);
+}
+
+
+/******************************************************************
+updates
+
+*******************************************************************/
+
+//for the latitude update
+public double getQueryUpdateLatitude()
+{  
+   return mQueryUpdateLatitude;
+}
+
+public void setQueryUpdateLatitude(ArrayList<Cursor> mQueryUpdateLatitude)
+{
+   mQueryUpdateLatitude = mDbHelper.getData(queryUpdateLatitude);
+}
+
+
+//for the speed update
+public float getQueryUpdateSpeed()
+{  
+   return mQueryUpdateSpeed;
+}
+
+
+public void setQueryUpdateSpeed(ArrayList<Cursor> mQueryUpdateSpeed)
+{
+   mQueryUpdateSpeed = mDbHelper.getData(queryUpdateSpeed);
+}
+
+
+//for the longitude update
+public double getQueryUpdateLongitude()
+{   
+return  mQueryUpdateLongitude;
+}
+
+public void setQueryUpdateLongitude(ArrayList<Cursor> mQueryUpdateLongitude)
+{
+   mQueryUpdateLongitude = mDbHelper.getData(queryUpdateLongitude);
+}
+
 
 
 

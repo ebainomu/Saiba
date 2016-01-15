@@ -277,7 +277,9 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
          mPreviousLocation = location;
          setmLastRecordedLocation(location);
          
-         try {
+         try 
+         {
+            
          double lat = mLastRecordedLocation.getLatitude();
          double lon = mLastRecordedLocation.getLongitude();
          
@@ -287,7 +289,7 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
          
          catch(Exception i)
          {
-            Log.d(TAG, "exception noticed inside onLocationChanged"); 
+            Log.d(TAG, "exception noticed inside onLocationChanged" +i.getMessage()); 
             
          }
          
