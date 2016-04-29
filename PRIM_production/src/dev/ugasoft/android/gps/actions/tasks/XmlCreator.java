@@ -21,6 +21,7 @@ import java.util.zip.ZipOutputStream;
 import org.xmlpull.v1.XmlSerializer;
 
 import dev.ugasoft.android.gps.actions.utils.ProgressListener;
+import dev.ugasoft.android.gps.db.Prim.Labels;
 import dev.ugasoft.android.gps.db.Prim.Media;
 import dev.ugasoft.android.gps.db.Prim.Tracks;
 import dev.ugasoft.android.gps.db.Prim.Waypoints;
@@ -49,7 +50,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
    private String mErrorText;
    private Exception mException;
    private String mTask;
-   public ProgressAdmin mProgressAdmin;
+   public ProgressAdmin mProgressAdmin; //this can be accessed by the GpxCreator class since it is public.
 
    XmlCreator(Context context, Uri trackUri, String chosenFileName, ProgressListener listener)
    {
@@ -69,6 +70,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       {
          executeOnExecutor(executor);
       }
+      
       else
       {
          execute();
@@ -108,6 +110,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       if (mProgressListener != null)
       {
          Uri allWaypointsUri = Uri.withAppendedPath(mTrackUri, "waypoints");
+         Uri allLabelsUri = Uri.withAppendedPath(mTrackUri, "labels");
          Uri allMediaUri = Uri.withAppendedPath(mTrackUri, "media");
          Cursor cursor = null;
          ContentResolver resolver = mContext.getContentResolver();
@@ -118,20 +121,33 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
             {
                mProgressAdmin.setWaypointCount(cursor.getInt(0));
             }
+            
             cursor.close();
+            
+            cursor = resolver.query(allLabelsUri, new String[] { "count(" + Labels.TABLE + "." + Labels._ID + ")" }, null, null, null);
+            if (cursor.moveToLast())
+            {
+               mProgressAdmin.setLabelsCount(cursor.getInt(0));
+            }
+            
+            cursor.close();
+            
+            
             cursor = resolver.query(allMediaUri, new String[] { "count(" + Media.TABLE + "." + Media._ID + ")" }, null, null, null);
             if (cursor.moveToLast())
             {
                 mProgressAdmin.setMediaCount(cursor.getInt(0));
             }
+            
             cursor.close();
             cursor = resolver.query(allMediaUri, new String[] { "count(" + Tracks._ID + ")" }, Media.URI + " LIKE ? and " + Media.URI + " NOT LIKE ?",
                   new String[] { "file://%", "%txt" }, null);
             if (cursor.moveToLast())
             {
                mProgressAdmin.setCompress( cursor.getInt(0) > 0 ); 
-            }
+            }            
          }
+         
          finally
          {
             if (cursor != null)
@@ -235,6 +251,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
     * @return full path of the build zip file
     * @throws IOException
     */
+   
    protected String bundlingMediaAndXml(String fileName, String extension) throws IOException
    {
       String zipFilePath;
@@ -322,7 +339,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       serializer.text(content);
       serializer.endTag(ns, tag);
    }
-
+ 
    public boolean needsBundling()
    {
       return mNeedsBundling;
@@ -432,7 +449,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
          mProgressListener.finished(resultFilename);
       }
    }
-
+   
    @Override
    protected void onCancelled()
    {
@@ -453,7 +470,9 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       private int mediaCount;
       private int mediaProgress;
       private int waypointCount;
+      private int labelCount;
       private int waypointProgress;
+      private int labelProgress;
       private long photoUploadCount ;
       private long photoUploadProgress ;
       
@@ -484,6 +503,7 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       {
          int blocks = 0;
          if( waypointCount > 0     ){ blocks++; }
+         //if( labelCount > 0        ){ blocks++; }
          if( mediaCount > 0        ){ blocks++; }
          if( compressCount         ){ blocks++; }
          if( uploadCount           ){ blocks++; }
@@ -505,11 +525,19 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
          //Log.d( TAG, "Progress updated to "+progress);
          return progress;
       }
+      
       public void setWaypointCount(int waypoint)
       {
          waypointCount = waypoint;
          considerPublishProgress();
       }
+      
+      public void setLabelsCount(int label)
+      {
+         labelCount = label;
+         considerPublishProgress();
+      }
+      
       public void setMediaCount(int media)
       {
          mediaCount = media;
@@ -536,6 +564,12 @@ public abstract class XmlCreator extends AsyncTask<Void, Integer, Uri>
       public void addWaypointProgress(int i)
       {
          waypointProgress += i;
+         considerPublishProgress();
+      } 
+      
+      public void addLabelProgress(int i)
+      {
+         labelProgress += i;
          considerPublishProgress();
       } 
       

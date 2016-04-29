@@ -41,6 +41,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -65,6 +66,7 @@ import android.widget.Toast;
 import com.prim.MainActivity;
 import com.prim.Others;
 import com.prim.IssueList;
+
 import com.prim.custom.CustomFragment;
 import com.prim.model.Data;
 
@@ -81,7 +83,7 @@ import dev.ugasoft.android.gps.db.Prim.Xyz;
 import dev.ugasoft.android.gps.db.PrimProvider;
 import dev.ugasoft.android.gps.logger.GPSLoggerService;
 import dev.ugasoft.android.gps.logger.GPSLoggerServiceManager;
-import dev.ugasoft.android.gps.logger.IGPSLoggerServiceRemote;
+/*import dev.ugasoft.android.gps.logger.IGPSLoggerServiceRemote;*/
 import dev.ugasoft.android.gps.streaming.StreamUtils;
 import dev.ugasoft.android.gps.util.Constants;
 import dev.ugasoft.android.gps.viewer.map.CommonLoggerMap;
@@ -121,6 +123,8 @@ public class MainFragment extends CustomFragment
       String queryLatitude;
       String querySpeed;
       String queryTime;
+      String queryWaypointsTime;
+      String queryLabelsTime;
       String queryLongitude;
       
       double mQueryLatitude;
@@ -132,6 +136,8 @@ public class MainFragment extends CustomFragment
       double mQueryUpdateLatitude;
       float mQueryUpdateSpeed;
       long mQueryUpdateTime;
+      
+      long mCurrentSystemTime;
       
       float LastRecorded_xVal;
       float LastRecorded_yVal;
@@ -205,13 +211,9 @@ public class MainFragment extends CustomFragment
 	   private long mWaypointId = -1;
 	   private long mLocationId = -1;
 	   private long mCheckPeriod;
-
 	   private float mBroadcastDistance;
-
 	   private long mLastTimeBroadcast;
-
 	   private String mSources;
-
 	   
 	   //private SensorEvent mSensorEvent;
 	   private float mDistance;
@@ -246,7 +248,7 @@ private Timer mHeartbeatTimer;
 private NotificationManager mNoticationManager;
 private static final int LOGGING_UNAVAILABLE = R.string.service_connectiondisabled;
 private GPSLoggerServiceManager mLoggerServiceManager;
-private IGPSLoggerServiceRemote mGPSLoggerRemote;
+/*private IGPSLoggerServiceRemote mGPSLoggerRemote;*/
 private GPSLoggerService mLoggerService;
 private NameTrack nameRoute;
 //GetAccelerometerValues getAccelerometerValues;
@@ -269,6 +271,7 @@ long lastTime;
 
 Uri mLabelUri;
 private Activity mActivity;
+GPSLoggerService gLogger;
 
 
 @Override
@@ -276,9 +279,14 @@ public void onCreate(Bundle savedInstanceState)
 {
    super.onCreate(savedInstanceState);
    mDbHelper = new DatabaseHelper(getActivity()); 
-   lastTime = System.currentTimeMillis();   
+   lastTime = System.currentTimeMillis();  
+  // callAsynchronousTask();
+   //callAsynchronousTask();
+   
    //startLogging();
   //mLastRecordedEvent = (SensorEvent)this.getSystemService(SENSOR_SERVICE);
+   
+  
 }
 
 
@@ -290,11 +298,18 @@ public void onAttach(Activity activity)
    lastTime = System.currentTimeMillis();
     super.onAttach(activity);
     mActivity = activity;
+    
+    //new Storing_xyz().execute();
+    //storeAllAccelerationValues(mLastRecordedEvent);
+    
+    
 }
 
   private void loadDummyData() //from private
   {
     iList = new ArrayList<Data>();
+    
+   
     
     //potholes
     iList.add(new Data(new String[] { "potholes" }, 
@@ -352,44 +367,47 @@ public void onAttach(Activity activity)
   {
     setTouchNClick(paramView.findViewById(R.id.nearby));
     loadDummyData();
+    
     GridView localGridView = (GridView)paramView.findViewById(R.id.grid);
     
-    localGridView.setAdapter(new GridAdapter());   
-    
-    
+    localGridView.setAdapter(new GridAdapter());  
+     
+  
   /*  mNoticationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
     stopNotification();*/
     
     ///handling item click events
     localGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
     {
+
        
 	@Override
    public void onItemClick(AdapterView<?> paramAnonymousAdapterView, View paramAnonymousView, 
     		  int paramAnonymousInt, long paramAnonymousLong)
       {
 	   
-	   lastKnownLabelName = iList.get(paramAnonymousInt).getTexts()[0].toString();
+	  lastKnownLabelName = iList.get(paramAnonymousInt).getTexts()[0].toString();
       
 	  mLastRecordedEvent = ((MainActivity)getActivity()).getmLastRecordedEvent();
-	  mLastRecordedLocation = ((MainActivity)getActivity()).getmLastRecordedLocation();
-	  
+	  mLastRecordedLocation = ((MainActivity)getActivity()).getmLastRecordedLocation();	  
 	   
 	 // ((MainActivity)getActivity()).onSensorChanged(mLastRecordedEvent);
 	   
 	    try
 	          {  	   
 	            if (mLastRecordedEvent != null)
-	            {
+	             {
 	             storeAllValues(mLastRecordedEvent);
+	             //storeAllAccelerationValues(mLastRecordedEvent);
 	             }
 	            
 	            // mLoggerService.pauseLogging();
 	            
 	           /* if (mLoggerService.getmLastRecordedEvent() != null && mLoggerService.getmLastRecordedLocation() != null )
-               {
+                {
                 storeAllValues(mLoggerService.getmLastRecordedEvent(), mLoggerService.getmLastRecordedLocation());
-                }*/
+                }                
+              */
 	            
 	           // mLoggerService.startLogging();
 	            float x = mLastRecordedEvent.values[0];
@@ -399,6 +417,10 @@ public void onAttach(Activity activity)
 	            Log.d("x:", "" + x );
                Log.d("y:", "" + y );
                Log.d("z:", "" + z );
+               
+               Log.d("latitude query:",queryLatitude);
+               Log.d("longitude query:",queryLongitude);
+               Log.d("speed query:",querySpeed);
 	          	             
 	          }
 	    
@@ -419,13 +441,9 @@ public void onAttach(Activity activity)
                    Log.d(TAG, "exception noticed inside onLocationChanged", f); 
                    
                 }
-             
-       
              }
-	  
       }
       });   
-    
   }
   
   public void getX(float xval)
@@ -450,17 +468,10 @@ public void onAttach(Activity activity)
     super.onClick(paramView);
     if (paramView.getId() == R.id.nearby) 
     {
-    	//using this one to start and stop the logging
-       try
-       {
-        Intent intent = new Intent(getActivity(), CommonLoggerMap.class);
-        this.startActivity(intent);
-        } 
-        catch(Exception e)
-        {           
-           Log.e(TAG, "just handling any damn exception", e);
-        }
- 
+    	//using this one to start and stop the logging for the accelerometer values and the gps values
+    /*   SensorEvent mLastContinousEvent = ((MainActivity)getActivity()).getmLastRecordedEvent();
+       storeAllAccelerationValues(mLastContinousEvent);*/
+       callAsynchronousTask();
     }
       //startActivity(new Intent(getActivity(), IssueList.class).putExtra("title", getString(R.string.nearby)));
   }
@@ -481,11 +492,7 @@ public void onAttach(Activity activity)
 
     public int getCount()
     {
-       
-     
       return iList.size();
-      
-
         
     }
 
@@ -545,18 +552,7 @@ public void onStop()
 
 public void storeAllValues(SensorEvent event) 
 { 
-   //mLastRecordedEvent = event;
    
-   /*if (event == null) 
-   {
-      
-      Log.d("error:", "event is null");
-      event = mLastRecordedEvent;
-      
-   }
-   
-   else 
-   {*/
  String queryStoreValues ="Insert into "+Labels.TABLE+" (";
  
  queryStoreValues=queryStoreValues+Labels.X+",";
@@ -566,10 +562,8 @@ public void storeAllValues(SensorEvent event)
  queryStoreValues=queryStoreValues+Labels.LATITUDE+",";
  queryStoreValues=queryStoreValues+Labels.LONGITUDE+",";
  queryStoreValues=queryStoreValues+Labels.SPEED+",";
-
  queryStoreValues=queryStoreValues+Labels.CREATION_TIME;
- 
- 
+  
  queryStoreValues=queryStoreValues+" ) VALUES ( ";
  
  queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[0])+"' , ";
@@ -584,32 +578,41 @@ public void storeAllValues(SensorEvent event)
  queryStoreValues=queryStoreValues+"'"+Long.valueOf(System.currentTimeMillis()) +"' ) "; 
 //.get(getId()).getTexts()[0].toString()
  Log.d("Insert Query", queryStoreValues);
+    
  
+ /*queryLatitude = "Select "+Waypoints.LATITUDE+" FROM "+Waypoints.TABLE+" WHERE time( "+Waypoints.TIME+" ) = time ("+mCurrentSystemTime+")  ";*/
  
-   queryLatitude = "Select "+Waypoints.LATITUDE+" FROM "+Waypoints.TABLE+"  ";
-   queryLongitude = "Select "+Waypoints.LONGITUDE+" FROM "+Waypoints.TABLE+"  ";
-   querySpeed = "Select "+Waypoints.SPEED+" FROM "+Waypoints.TABLE+"  ";
-   queryTime = "Select "+Waypoints.TIME+" FROM "+Waypoints.TABLE+"  ";
-  
+   queryLatitude = "Select "+Waypoints.LATITUDE+" FROM "+Waypoints.TABLE+" WHERE time( "+Waypoints.TIME+" ) = time ("+Labels.CREATION_TIME+")  ";
+   queryLongitude = "Select "+Waypoints.LONGITUDE+" FROM "+Waypoints.TABLE+" WHERE time ("+Waypoints.TIME+" ) = time( "+Labels.CREATION_TIME+")  ";
+   querySpeed = "Select "+Waypoints.SPEED+" FROM "+Waypoints.TABLE+" WHERE time ("+Waypoints.TIME+" ) = time("+Labels.CREATION_TIME+")  ";
+   queryTime = "Select "+Waypoints.TIME+" FROM "+Waypoints.TABLE+" WHERE time("+Waypoints.TIME+") = time ("+Labels.CREATION_TIME+")  ";
+   
+   //time issues
+   mCurrentSystemTime = Long.valueOf(System.currentTimeMillis());
+   queryWaypointsTime = "Select "+Waypoints.TIME+" FROM "+Waypoints.TABLE+" "; 
+   queryLabelsTime  = "Select "+Labels.CREATION_TIME+" FROM "+Labels.TABLE+" ";
+   
+   
+
  queryUpdateLongitude ="Update "+Labels.TABLE+" ";
  queryUpdateLongitude = queryUpdateLongitude+" SET ";
  queryUpdateLongitude = queryUpdateLongitude+ " "+Labels.LONGITUDE+" = "+getQueryLongitude()+"  ";
- queryUpdateLongitude = queryUpdateLongitude+" WHERE ";
- queryUpdateLongitude = queryUpdateLongitude+ " "+Labels.CREATION_TIME+" = "+getQueryTime()+" ";
+/* queryUpdateLongitude = queryUpdateLongitude+" WHERE ";
+ queryUpdateLongitude = queryUpdateLongitude+ " "+mCurrentSystemTime+" = "+getQueryTime()+" ";*/
  
  
  queryUpdateLatitude ="Update "+Labels.TABLE+" ";
  queryUpdateLatitude = queryUpdateLatitude+" SET ";
  queryUpdateLatitude = queryUpdateLatitude+ " "+Labels.LATITUDE+" = "+getQueryLatitude()+" ";
- queryUpdateLatitude= queryUpdateLatitude+" WHERE ";
- queryUpdateLatitude = queryUpdateLatitude+ " "+Labels.CREATION_TIME+" = "+getQueryTime()+" ";
+/* queryUpdateLatitude= queryUpdateLatitude+" WHERE ";
+ queryUpdateLatitude = queryUpdateLatitude+ " "+mCurrentSystemTime+" = "+getQueryTime()+" ";*/
  
  
  queryUpdateSpeed ="Update "+Labels.TABLE+" ";
  queryUpdateSpeed = queryUpdateSpeed+" SET ";
  queryUpdateSpeed = queryUpdateSpeed+ " "+Labels.LONGITUDE+" = "+getQuerySpeed()+" ";
- queryUpdateSpeed= queryUpdateSpeed+" WHERE ";
- queryUpdateSpeed = queryUpdateSpeed+ " "+Labels.CREATION_TIME+" = "+getQueryTime()+" ";
+/* queryUpdateSpeed= queryUpdateSpeed+" WHERE ";
+ queryUpdateSpeed = queryUpdateSpeed+ " "+mCurrentSystemTime+" = "+getQueryTime()+" ";*/
  
  mDbHelper.getData(queryStoreValues);
    //}
@@ -654,7 +657,7 @@ public float getQuerySpeed()
 }
 public void setQuerySpeed(ArrayList<Cursor> mQuerySpeed)
 {
-  mQuerySpeed = mDbHelper.getData(queryLongitude);
+  mQuerySpeed = mDbHelper.getData(querySpeed);
 }
 
 
@@ -697,6 +700,114 @@ return  mQueryUpdateLongitude;
 public void setQueryUpdateLongitude(ArrayList<Cursor> mQueryUpdateLongitude)
 {
    mQueryUpdateLongitude = mDbHelper.getData(queryUpdateLongitude);
+}
+
+//the method for collecting the xyz data
+
+public void storeAllAccelerationValues(SensorEvent event) 
+{ 
+ float[] value = event.values;
+   
+   float xVal = value[0];
+   float yVal = value[1];
+   float zVal = value[2];
+   
+   float accelationSquareRoot = (xVal*xVal + yVal*yVal + zVal*zVal) 
+         / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+  
+   long actualTime = System.currentTimeMillis();
+   
+   /*if (accelationSquareRoot >= 1) 
+   {
+   
+      //the time interval is 2x10 power 9
+      if(actualTime - lastTime < 2000000000) 
+      {*/
+   
+ String queryStoreAccelerationValues ="Insert into "+Xyz.TABLE+" (";
+ 
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.X+",";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.Y+",";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.Z+","; 
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.SPEED+",";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.TIME;
+  
+ queryStoreAccelerationValues=queryStoreAccelerationValues+" ) VALUES ( ";
+ 
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[0])+"' , ";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[1])+"' , ";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[2])+"', "; 
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+accelationSquareRoot+"', ";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Long.valueOf(System.currentTimeMillis()) +"' ) "; 
+ Log.d("Insert Query", queryStoreAccelerationValues);
+    
+    mDbHelper.getData(queryStoreAccelerationValues);
+    /*
+      }
+      }*/
+
+}
+
+public void callAsynchronousTask() 
+{
+    final Handler handler = new Handler();
+    Timer timer = new Timer();
+    TimerTask doAsynchronousTask = new TimerTask() {       
+        @Override
+        public void run() {
+            handler.post(new Runnable() {
+                public void run() {       
+                    try {
+                       
+                       //mLastRecordedEvent = ((MainActivity)getActivity()).getmLastRecordedEvent();
+                       Storing_xyz performBackgroundTask = new Storing_xyz();
+                        // PerformBackgroundTask this class is the class that extends AsynchTask 
+                        performBackgroundTask.execute();
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                    }
+                }
+            });
+        }
+    };
+    timer.schedule(doAsynchronousTask, 0, 20); //execute in every 20 ms
+}
+
+
+private class Storing_xyz extends AsyncTask<String, Void, String> 
+{
+   @Override
+   protected String doInBackground(String... params) 
+   {
+      
+          
+              /*storeAllAccelerationValues(mLastRecordedEvent);*/              
+              SensorEvent mLastContinousEvent = ((MainActivity)getActivity()).getmLastRecordedEvent();
+              storeAllAccelerationValues(mLastContinousEvent);
+          
+       return "Executed";
+   }
+
+   @Override
+   protected void onPostExecute(String result) 
+   {
+      // TextView txt = (TextView) findViewById(R.id.output);
+       //txt.setText("Executed"); // txt.setText(result);
+       // might want to change "executed" for the returned string passed
+       // into onPostExecute() but that is upto you
+   }
+
+   @Override
+   protected void onPreExecute() 
+   {
+      
+   }
+
+   @Override
+   protected void onProgressUpdate(Void... values) 
+   {
+      
+   }
 }
 
 

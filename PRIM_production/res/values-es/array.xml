@@ -5,6 +5,7 @@
         <item>Paused</item>
         <item>Stopped</item>
     </string-array>
+    
     <string-array name="precision_choices">
         <item>Custom</item>
         <item>Fine</item>
@@ -12,11 +13,13 @@
         <item>Coarse</item>
         <item>Global network</item>
     </string-array>
+    
     <string-array name="mapprovider_choices">
         <item>Google Maps</item>
         <item>OpenStreetMap</item>
         <item>Mapquest</item>
     </string-array>
+    
     <string-array name="trackcoloring_choices">
         <item>Green</item>
         <item>Red</item>
@@ -37,7 +40,7 @@
     </string-array>
     <string-array name="sharetype_choices">
         <item>KMZ - Google Earth, etc.</item>
-        <item>GPX - the GPS Exchange Format</item>
+        <item>XML</item>
         <item>Text - Speed and distance summary</item>
     </string-array>
     <string-array name="sharegpxtarget_choices">

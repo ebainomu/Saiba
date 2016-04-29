@@ -68,7 +68,7 @@ import android.widget.Toast;
 
 public class ShareTrack extends Activity implements StatisticsDelegate
 {
-   private static final String TAG = "OGT.ShareTrack";
+   private static final String TAG = "PRIM.ShareTrack";
 
    private static final int EXPORT_TYPE_KMZ = 0;
    private static final int EXPORT_TYPE_GPX = 1;

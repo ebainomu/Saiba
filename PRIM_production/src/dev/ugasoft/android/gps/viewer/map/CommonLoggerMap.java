@@ -33,7 +33,7 @@ public class CommonLoggerMap extends Activity
             mapClass = MapQuestLoggerMap.class;
             break;
          default:
-            mapClass = GoogleLoggerMap.class;
+            mapClass = OsmLoggerMap.class;
             Log.e(TAG, "Fault in value " + provider + " as MapProvider, defaulting to Google Maps.");
             break;
       }

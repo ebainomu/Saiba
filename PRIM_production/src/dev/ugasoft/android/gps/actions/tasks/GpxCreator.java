@@ -45,7 +45,7 @@ public class GpxCreator extends XmlCreator
       ZULU_DATE_FORMATER.setTimeZone(utc); // ZULU_DATE_FORMAT format ends with Z for UTC so make that true
    }
 
-   private String TAG = "OGT.GpxCreator";
+   private String TAG = "PRIM.GpxCreator";
    private boolean includeAttachments;
    protected String mName;
 
@@ -77,7 +77,7 @@ public class GpxCreator extends XmlCreator
       else
       {
          setExportDirectoryPath(Constants.getSdCardDirectory(mContext) + mFileName);
-         xmlFilePath = getExportDirectoryPath() + "/" + mFileName + ".gpx";
+         xmlFilePath = getExportDirectoryPath() + "/" + mFileName + ".xml";
       }
 
       new File(getExportDirectoryPath()).mkdirs();
@@ -126,6 +126,7 @@ public class GpxCreator extends XmlCreator
          String text = mContext.getString(R.string.ticker_failed) + " \"" + xmlFilePath + "\" " + mContext.getString(R.string.error_filename);
          handleError(mContext.getString(R.string.taskerror_gpx_write), e, text);
       }
+      
       catch (IllegalStateException e)
       {
          String text = mContext.getString(R.string.ticker_failed) + " \"" + xmlFilePath + "\" " + mContext.getString(R.string.error_buildxml);
@@ -196,8 +197,8 @@ public class GpxCreator extends XmlCreator
       serializer.startTag("", "label");
       serializer.text("\n");*/
       
-      serializer.startTag("", "label");
-      serializer.text(mName);
+      /*serializer.startTag("", "label");
+      serializer.text(mName);*/
      /* serializer.endTag("", "name");*/
       
       // The list of segments in the track
@@ -206,7 +207,7 @@ public class GpxCreator extends XmlCreator
      /* serializeTrackPoints(serializer,  Uri.withAppendedPath(trackUri, "waypoints"));      
       serializer.text("\n");*/
       
-      serializer.endTag("", "label");
+     /* serializer.endTag("", "label");*/
      /* serializer.endTag("", "label");*/      
 
       serializer.text("\n");
@@ -264,8 +265,7 @@ public class GpxCreator extends XmlCreator
       {
          mName = mChosenName;
       }
-   }
-   
+   }   
    
    private void serializeAccelerationValues(XmlSerializer serializer, Uri accelerationValues) throws IOException
    {
@@ -320,10 +320,10 @@ public class GpxCreator extends XmlCreator
             {
                Uri waypoints = Uri.withAppendedPath(segments, segmentCursor.getLong(0) + "/waypoints");
                serializer.text("\n");
-               serializer.startTag("", "location");
+               //serializer.startTag("", "location");
                serializeTrackPoints(serializer, waypoints);
                serializer.text("\n");
-               serializer.endTag("", "location");
+               //serializer.endTag("", "location");
             }
             while (segmentCursor.moveToNext());
          }
@@ -349,14 +349,15 @@ public class GpxCreator extends XmlCreator
       {
          waypointsCursor = resolver.query(waypoints, new String[] { Waypoints.LONGITUDE, Waypoints.LATITUDE, Waypoints.TIME, Waypoints.ALTITUDE, Waypoints._ID, Waypoints.SPEED, Waypoints.ACCURACY,
                Waypoints.BEARING }, null, null, null);
+         
          if (waypointsCursor.moveToFirst())
          {
             do
             {
                mProgressAdmin.addWaypointProgress(1);
-
+               
                serializer.text("\n");
-               serializer.startTag("", "pt");
+               serializer.startTag("", "label");
                serializer.attribute(null, "lat", Double.toString(waypointsCursor.getDouble(1)));
                serializer.attribute(null, "lon", Double.toString(waypointsCursor.getDouble(0)));
               /* serializer.text("\n");
@@ -364,6 +365,12 @@ public class GpxCreator extends XmlCreator
                serializer.text(Double.toString(waypointsCursor.getDouble(3)));
                serializer.endTag("", "ele");
                serializer.text("\n");*/
+               
+               serializer.text("\n");
+               serializer.startTag("", "name");
+               serializer.text("LabelName");
+               serializer.endTag("", "name");
+               serializer.text("\n");               
                
                serializer.text("\n");
                serializer.startTag("", "x");
@@ -381,8 +388,7 @@ public class GpxCreator extends XmlCreator
                serializer.startTag("", "z");
                serializer.text(Double.toString(waypointsCursor.getDouble(3)));
                serializer.endTag("", "z");
-               serializer.text("\n");
-            
+               serializer.text("\n");            
                
                serializer.startTag("", "time");
                Date time = new Date(waypointsCursor.getLong(2));
@@ -411,7 +417,7 @@ public class GpxCreator extends XmlCreator
                }*/
                serializer.endTag("", "extensions");
                serializer.text("\n");
-               serializer.endTag("", "pt");
+               serializer.endTag("", "label");
             }
             while (waypointsCursor.moveToNext());
          }

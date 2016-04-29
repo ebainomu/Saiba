@@ -26,9 +26,9 @@ public class ControlWidgetProvider extends AppWidgetProvider
 {
    private static final int BUTTON_TRACKINGCONTROL = 2;
    private static final int BUTTON_INSERTNOTE = 3;
-   private static final String TAG = "OGT.ControlWidgetProvider";
+   private static final String TAG = "PRIM.ControlWidgetProvider";
 
-   static final ComponentName THIS_APPWIDGET = new ComponentName("nl.sogeti.android.gpstracker", "nl.sogeti.android.gpstracker.widget.ControlWidgetProvider");
+   static final ComponentName THIS_APPWIDGET = new ComponentName("dev.baalmart.gps", "dev.ugasoft.android.gps.widget.ControlWidgetProvider");
    private static int mState;
 
    public ControlWidgetProvider()

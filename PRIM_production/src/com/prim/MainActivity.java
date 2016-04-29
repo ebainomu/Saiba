@@ -16,6 +16,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,9 +58,10 @@ import dev.ugasoft.android.gps.db.DatabaseHelper;
 import dev.ugasoft.android.gps.db.PrimProvider;
 import dev.ugasoft.android.gps.db.Prim.Labels;
 import dev.ugasoft.android.gps.db.Prim.Tracks;
+import dev.ugasoft.android.gps.db.Prim.Xyz;
 import dev.ugasoft.android.gps.logger.GPSLoggerService;
 import dev.ugasoft.android.gps.logger.GPSLoggerServiceManager;
-import dev.ugasoft.android.gps.logger.IGPSLoggerServiceRemote;
+/*import dev.ugasoft.android.gps.logger.IGPSLoggerServiceRemote;*/
 import dev.ugasoft.android.gps.util.Constants;
 import dev.ugasoft.android.gps.viewer.map.CommonLoggerMap;
 import dev.ugasoft.android.gps.viewer.map.GoogleLoggerMap;
@@ -88,16 +90,36 @@ public class MainActivity extends CustomActivity implements SensorEventListener,
 	   ShareTrack shareLabels;	   
 	   MainFragment mFragment;
 	   private SensorManager mSensorManager;
-	  
-     
+	   String TAG_IT = "Main Activity";
+	   
+	   long startTime = 0;	   
+	    //runs without a timer by reposting this handler at the end of the runnable
+	  /*  Handler timerHandler = new Handler();	    
+	    Runnable timerRunnable = new Runnable() 
+	    
+	    {
+	        @Override
+	        public void run() 
+	        {
+	            long millis = System.currentTimeMillis() - startTime;
+	            int seconds = (int) (millis / 1000);
+	            int minutes = seconds / 60;
+	            seconds = seconds % 60;
+	            storeAllAccelerationValues(mLastRecordedEvent);
+	            timerHandler.postDelayed(this, 500);
+	        }
+	    };*/
+	
       //MainFragment.Result lastRecorderdResult;
       private SensorEvent mLastRecordedEvent;
-       private Location mLastRecordedLocation;      
+      private Location mLastRecordedLocation;  
+      // private float accelationSquareRoot;
       Context mContext;
       DatabaseHelper mDbHelper;      
       PrimProvider pProvider;
       Sensor mAccelerometer;
       SQLiteDatabase db;
+      
       private Vector<SensorEvent> mWeakSensorEvent;
    
       private static final float FINE_DISTANCE = 5F;
@@ -202,16 +224,16 @@ private Handler mHandler;
  */
 private boolean mSpeedSanityCheck;
 
-
 /**
  * Time thread to runs tasks that check whether the GPS listener has received
  * enough to consider the GPS system alive.
  */
+
 private Timer mHeartbeatTimer;
 private NotificationManager mNoticationManager;
 private static final int LOGGING_UNAVAILABLE = R.string.service_connectiondisabled;
 private GPSLoggerServiceManager mLoggerServiceManager;
-private IGPSLoggerServiceRemote mGPSLoggerRemote;
+/*private IGPSLoggerServiceRemote mGPSLoggerRemote;*/
 private GPSLoggerService mLoggerService;
 private NameTrack nameRoute;
 //GetAccelerometerValues getAccelerometerValues;
@@ -231,12 +253,11 @@ private boolean mStatusMonitor;
 
 //private SensorManager sensorManager;
 public long lastTime;
+public long currentTime;
 
 Uri mLabelUri;
 private Activity mActivity;
 
-
-	
   private DrawerLayout drawerLayout;
   private ListView drawerLeft;
   @SuppressWarnings("deprecation")
@@ -306,6 +327,7 @@ private Activity mActivity;
       public void onDrawerOpened(View paramAnonymousView)
       {
       }
+      
     };
     
     drawerLayout.setDrawerListener(drawerToggle);
@@ -378,7 +400,7 @@ private Activity mActivity;
           {
              Log.e(TAG, "IllegalStateException", e);
              Intent intent = new Intent();
-      		Context packageContext = null;
+      		 Context packageContext = null;
  			intent.setClass(packageContext, MainActivity.class);
           }
           catch (NullPointerException e)
@@ -442,10 +464,11 @@ public boolean onCreateOptionsMenu(Menu paramMenu)
      case R.id.subItem1:
         
         try
-        {
+         {
          Intent intent = new Intent(this, CommonLoggerMap.class);
          this.startActivity(intent);
          } 
+        
          catch(Exception e)
          {           
             Log.e(TAG, "just handling any damn exception", e);
@@ -454,6 +477,7 @@ public boolean onCreateOptionsMenu(Menu paramMenu)
          break;
          
      case R.id.subItem2:
+        
         Intent dbmanager = new Intent(this,AndroidDatabaseManager.class);
         startActivity(dbmanager);
         
@@ -479,18 +503,17 @@ public boolean onCreateOptionsMenu(Menu paramMenu)
   {
 	  super.onPause();
 	  //drawerToggle.syncState();
-	  mSensorManager.unregisterListener(this);
-	  
+	  mSensorManager.unregisterListener(this);	  
   }
   
   @Override
 	protected void onResume() 
+  
   {
 	  super.onResume();	
 	  mSensorManager.registerListener(this, mSensorManager.getDefaultSensor
            (Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
    lastTime = System.currentTimeMillis();
-
   }
   
   @Override
@@ -509,31 +532,42 @@ public void onSensorChanged(SensorEvent event)
    {
       
    if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-   {  
-      
+   {        
        //SensorEvent filteredEvent = accelerometerValueFilter(event);       
-      
-          setmLastRecordedEvent(event);
-         
-   }
-   
+                setmLastRecordedEvent(event);    
+                //mLastRecordedEvent = getmLastRecordedEvent();
+               /* float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];                
+                Log.d("x:", "" + x );
+                Log.d("y:", "" + y );
+                Log.d("z:", "" + z );*/
+                
+                currentTime = System.currentTimeMillis();
+           
+                //new Storing_xyz().execute();
+                
+           // callAsynchronousTask();
+           
+              /*  float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+                
+                Log.d("x:", "" + x );
+                Log.d("y:", "" + y );
+                Log.d("z:", "" + z );*/
+    }   
    }
    
    catch(Exception e)
    {
       //e.printStackTrace();
-      float x = event.values[0];
-      float y = event.values[1];
-      float z = event.values[2];
-      
-      Log.d("x:", "" + x );
-      Log.d("y:", "" + y );
-      Log.d("z:", "" + z );
+      Log.e(TAG, "NullPointerException", e);  
       
    }
-   
-   
+  
 }
+
 
 @Override
 public void onAccuracyChanged(Sensor sensor, int accuracy)
@@ -555,8 +589,7 @@ public synchronized void resumeLogging()
       //resume the accelerometer sensor
       mSensorManager.registerListener(this, mSensorManager.getDefaultSensor
             (Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-              lastTime = System.currentTimeMillis();
-      
+              lastTime = System.currentTimeMillis();      
       this.mLoggingState = Constants.LOGGING;     
       updateNotification();
    }
@@ -621,8 +654,7 @@ public synchronized void startLogging()
               lastTime = System.currentTimeMillis(); }
       catch(NullPointerException e)
       {
-         Log.e(TAG, "NullPointerException", e);
-       
+         Log.e(TAG, "NullPointerException", e);       
       }
       
    }
@@ -714,8 +746,7 @@ public void onLocationChanged(Location location)
    
    if (location != null)
    { 
-      setmLastRecordedLocation(location);
-     
+      setmLastRecordedLocation(location);     
    } 
    
 }
@@ -869,7 +900,10 @@ public Location getLocation() {
            }
        }
 
-   } catch (Exception e) {
+   } 
+
+   catch (Exception e) 
+   {
        e.printStackTrace();
    }
 
@@ -927,9 +961,44 @@ private Location addBadLocation(Location location)
    return location;
 }
 
-
-
-
+public void storeAllAccelerationValues(SensorEvent event) 
+{ 
+   float[] value = event.values;
+   
+   
+   float xVal = value[0];
+   float yVal = value[1];
+   float zVal = value[2];
+   
+   float accelationSquareRoot = (xVal*xVal + yVal*yVal + zVal*zVal) 
+         / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+   
+   long actualTime = System.currentTimeMillis();   
+   /*if (accelationSquareRoot >= 1.2) 
+   {*/
+   
+      //the time interval is 2x10 power 9
+  String queryStoreAccelerationValues ="Insert into "+Xyz.TABLE+" (";
+ 
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.X+",";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.Y+",";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.Z+",";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.SPEED+",";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.TIME;
+  
+ queryStoreAccelerationValues=queryStoreAccelerationValues+" ) VALUES ( ";
+ 
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[0])+"' , ";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[1])+"' , ";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[2])+"', "; 
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+accelationSquareRoot+"', ";
+ queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Long.valueOf(System.currentTimeMillis()) +"' ) "; 
+ 
+ Log.d("Insert Query", queryStoreAccelerationValues);
+ 
+    mDbHelper.getData(queryStoreAccelerationValues);      
+ 
+}
 
 private void notifyOnEnabledProviderNotification(int resId)
 {
@@ -962,6 +1031,66 @@ public void onProviderDisabled(String provider)
    
 }
 
+
+public void callAsynchronousTask() {
+   final Handler handler = new Handler();
+   Timer timer = new Timer();
+   TimerTask doAsynchronousTask = new TimerTask() {       
+       @Override
+       public void run() {
+           handler.post(new Runnable() {
+               @Override
+               public void run() {       
+                   try {
+                      Storing_xyz performBackgroundTask = new Storing_xyz();
+                       // PerformBackgroundTask this class is the class that extends AsynchTask 
+                       performBackgroundTask.execute();
+                   } catch (Exception e) {
+                       // TODO Auto-generated catch block
+                   }
+               }
+           });
+       }
+   };
+   timer.schedule(doAsynchronousTask, 0, 50000); //execute in every 50000 ms
+}
+
+
+
+private class Storing_xyz extends AsyncTask<String, Void, String> 
+{
+   @Override
+   protected String doInBackground(String... params) 
+   {
+      if (mLastRecordedEvent != null)
+      {
+     //storeAllAccelerationValues(mLastRecordedEvent);
+      }
+       return "Executed";
+   }
+
+   @Override
+   protected void onPostExecute(String result) 
+   {
+      // TextView txt = (TextView) findViewById(R.id.output);
+       //txt.setText("Executed"); // txt.setText(result);
+       // might want to change "executed" for the returned string passed
+       // into onPostExecute() but that is upto you
+   }
+
+   @Override
+   protected void onPreExecute() 
+   {
+      
+   }
+
+   @Override
+   protected void onProgressUpdate(Void... values) 
+   {
+      
+   }
+}
+
 public SensorEvent getmLastRecordedEvent()
 {
    return mLastRecordedEvent;
@@ -982,8 +1111,4 @@ public void setmLastRecordedLocation(Location mLastRecordedLocation)
    this.mLastRecordedLocation = mLastRecordedLocation;
 }
 
-
-
- 
-  
 }

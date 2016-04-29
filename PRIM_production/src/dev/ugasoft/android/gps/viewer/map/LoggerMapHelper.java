@@ -1067,7 +1067,8 @@ public class LoggerMapHelper
    private void updateMapProvider()
    {
       Class< ? > mapClass = null;
-      int provider = Integer.valueOf(mSharedPreferences.getString(Constants.MAPPROVIDER, "" + Constants.GOOGLE)).intValue();
+      int provider = Integer.valueOf(mSharedPreferences.getString(Constants.MAPPROVIDER, "" + Constants.GOOGLE)
+            ).intValue();
       switch (provider)
       {
          case Constants.GOOGLE:
@@ -1080,7 +1081,7 @@ public class LoggerMapHelper
             mapClass = MapQuestLoggerMap.class;
             break;
          default:
-            mapClass = GoogleLoggerMap.class;
+            mapClass = OsmLoggerMap.class;
             Log.e(TAG, "Fault in value " + provider + " as MapProvider, defaulting to Google Maps.");
             break;
       }

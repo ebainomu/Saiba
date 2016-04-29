@@ -757,6 +757,12 @@ public class PrimProvider extends ContentProvider
             inserted = this.mDbHelper.bulkInsertLocations( labelId, valuesArray );
             break;
             
+         case XYZ:
+            List<String> pathSegmentsA = uri.getPathSegments();
+            int xyzId = Integer.parseInt( pathSegmentsA.get( 1 ) );
+            inserted = this.mDbHelper.bulkInsertLocations( xyzId, valuesArray );
+            break;
+            
          default:
             inserted = super.bulkInsert( uri, valuesArray );
             break;

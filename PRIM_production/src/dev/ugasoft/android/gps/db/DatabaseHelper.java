@@ -1,7 +1,15 @@
 package dev.ugasoft.android.gps.db;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Date;
+
+import com.opencsv.CSVWriter;
 
 import dev.ugasoft.android.gps.db.Prim.Labels;
 import dev.ugasoft.android.gps.db.Prim.LabelsColumns;
@@ -27,7 +35,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Class to hold bare-metal database operations exposed as functionality blocks
@@ -852,6 +862,156 @@ public class DatabaseHelper extends SQLiteOpenHelper
       return segmentId;
    }
    
+   
+   /*
+    * Exporting the database....
+    * 
+    * **/
+   
+   @SuppressWarnings("unused")
+   public void exportLabels() {
+      
+     
+      File dbFile = mContext.getDatabasePath(Prim.DATABASE_NAME);
+      DatabaseHelper dbhelper = new DatabaseHelper(mContext);
+      File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+      if (!exportDir.exists())
+      {
+          exportDir.mkdirs();
+      }
+
+      File file = new File(exportDir, "labels.csv");
+      try
+      {
+          file.createNewFile();
+          CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+          SQLiteDatabase db = dbhelper.getReadableDatabase();
+          //selecting the table to export from
+          Cursor curCSV = db.rawQuery("SELECT * FROM labels",null);
+          csvWrite.writeNext(curCSV.getColumnNames());
+          while(curCSV.moveToNext())
+          {
+              //Which column you want to exprort
+              String arrStr[] ={curCSV.getString(1),curCSV.getString(2), 
+                    curCSV.getString(6), curCSV.getString(7), curCSV.getString(8)};
+              csvWrite.writeNext(arrStr);
+          }
+          csvWrite.close();
+          curCSV.close();
+      }
+      catch(Exception sqlEx)
+      {
+          Log.e("DatabaseHelper", sqlEx.getMessage(), sqlEx);
+      }   
+   }
+      
+   @SuppressWarnings("unused")
+   public void export_xyz() {
+      
+     
+      File dbFile = mContext.getDatabasePath(Prim.DATABASE_NAME);
+      DatabaseHelper dbhelper = new DatabaseHelper(mContext);
+      File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+      if (!exportDir.exists())
+      {
+          exportDir.mkdirs();
+      }
+
+      File file = new File(exportDir, "xyz.csv");
+      try
+      {
+          file.createNewFile();
+          CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+          SQLiteDatabase db = dbhelper.getReadableDatabase();
+          //selecting the table to export from
+          Cursor curCSV = db.rawQuery("SELECT * FROM xyz",null);
+          csvWrite.writeNext(curCSV.getColumnNames());
+          while(curCSV.moveToNext())
+          {
+              //Which column you want to exprort
+              String arrStr[] ={curCSV.getString(1),curCSV.getString(2), 
+                    curCSV.getString(3), curCSV.getString(4), curCSV.getString(5)};
+              csvWrite.writeNext(arrStr);
+          }
+          csvWrite.close();
+          curCSV.close();
+      }
+      catch(Exception sqlEx)
+      {
+          Log.e("DatabaseHelper", sqlEx.getMessage(), sqlEx);
+      }   
+   }
+   
+   
+   @SuppressWarnings("unused")
+   public void export_waypoints() {
+      
+     
+      File dbFile = mContext.getDatabasePath(Prim.DATABASE_NAME);
+      DatabaseHelper dbhelper = new DatabaseHelper(mContext);
+      File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+      if (!exportDir.exists())
+      {
+          exportDir.mkdirs();
+      }
+
+      File file = new File(exportDir, "waypoints.csv");
+      try
+      {
+          file.createNewFile();
+          CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+          SQLiteDatabase db = dbhelper.getReadableDatabase();
+          //selecting the table to export from
+          Cursor curCSV = db.rawQuery("SELECT * FROM waypoints",null);
+          csvWrite.writeNext(curCSV.getColumnNames());
+          while(curCSV.moveToNext())
+          {
+              //Which column you want to exprort
+              String arrStr[] ={curCSV.getString(1),curCSV.getString(2), 
+                    curCSV.getString(3), curCSV.getString(4)};
+              csvWrite.writeNext(arrStr);
+          }
+          csvWrite.close();
+          curCSV.close();
+      }
+      catch(Exception sqlEx)
+      {
+          Log.e("DatabaseHelper", sqlEx.getMessage(), sqlEx);
+      }   
+   }
+   
+   
+   
+   /*
+   //another one for exporting a database
+   
+   public void exportDB_2()
+   {
+      File sd = Environment.getExternalStorageDirectory();
+        File data = Environment.getDataDirectory();
+        FileChannel source=null;
+        FileChannel destination=null;
+        String currentDBPath = "/data/"+ "dev.baalmart.gps" +"/databases/"+Prim.DATABASE_NAME;
+        String backupDBPath = Prim.DATABASE_NAME;
+        File currentDB = new File(data, currentDBPath);
+        File backupDB = new File(sd, backupDBPath);
+        try {
+            source = new FileInputStream(currentDB).getChannel();
+            destination = new FileOutputStream(backupDB).getChannel();
+            destination.transferFrom(source, 0, source.size());
+            source.close();
+            destination.close();
+            //Toast.makeText(this, "DB Exported!", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, " DB exported", Toast.LENGTH_LONG).show();
+        } 
+        
+        catch(IOException e) 
+        
+        {
+         e.printStackTrace();
+        }
+   }
+   */
    /***
     * 
     * ************methods for the database manager**********

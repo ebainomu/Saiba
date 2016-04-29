@@ -6,7 +6,7 @@ import android.net.Uri.Builder;
 import android.provider.BaseColumns;
 
 /**
- * The Prim provider stores all static information about PRIM.
+ * The Prim provider stores all static information about PRIM like the database details, etc....
  * 
  * @author Martin Bbaale
 
@@ -14,9 +14,9 @@ import android.provider.BaseColumns;
 
 public final class Prim
 {
-   /** The authority of this provider: nl.sogeti.android.gpstracker */
+
    public static final String AUTHORITY = "nl.sogeti.android.gpstracker";
-   /** The content:// style Uri for this provider, content://nl.sogeti.android.gpstracker */
+  
    public static final Uri CONTENT_URI = Uri.parse( "content://" + Prim.AUTHORITY );
    /** The name of the database file */
    static final String DATABASE_NAME = "GPSLOG.db";
@@ -73,34 +73,8 @@ public final class Prim
                                           "," + " " + Xyz.X          + " " + Xyz.X_TYPE +
                                           "," + " " + Xyz.Y          + " " + Xyz.Y_TYPE +
                                           "," + " " + Xyz.Z          + " " + Xyz.Z_TYPE +
-                                          ");";      
-      /**
-       * Build an Xyz Uri like:
-       * 
-       * @param labelId
-       * @param xyzId
-       * @param waypointId
-       * 
-       * @return
-       */
-      
-      
-      public static Uri buildUri(long labelId, long waypointId , long xyzId)
-      
-      {
-         Builder builder = Labels.CONTENT_URI.buildUpon();
-         ContentUris.appendId(builder, labelId);
-        
-         builder.appendPath(Locations.TABLE);
-         ContentUris.appendId(builder, waypointId);
-         
-         builder.appendPath(Xyz.TABLE);
-         ContentUris.appendId(builder, xyzId);
-         
-         return builder.build();
-      }
-   
-     }
+                                          ");";    
+         }
    
 
    public static final class Tracks extends TracksColumns implements android.provider.BaseColumns
@@ -121,13 +95,7 @@ public final class Prim
                                           ");";
    }
  
-   
-   
-   
-   
-   
-   
-   
+    
    /**
     * This table contains segments.
 
@@ -202,8 +170,7 @@ public final class Prim
          
          return builder.build();
       }
-   }
-   
+   }   
    
    
    public static final class Locations extends LocationsColumns implements android.provider.BaseColumns
@@ -355,13 +322,12 @@ public final class Prim
       static final String LONGITUDE_TYPE = "REAL NOT NULL";
    }
    
-   public static class XYZColumns
-   
+   public static class XYZColumns   
    {   
       public static final String SPEED = "speed";
       public static final String X ="x";
       public static final String Y ="y";
-      public static final String Z ="z";   
+      public static final String Z ="z";  
       static final String _ID_TYPE = "INTEGER PRIMARY KEY AUTOINCREMENT"; 
       /** The recorded time */
       public static final String TIME = "time";
@@ -371,8 +337,7 @@ public final class Prim
       static final String Y_TYPE = "REAL NOT NULL";
       static final String Z_TYPE = "REAL NOT NULL";
    }   
-     
-  
+ 
    /**
     * Columns from the segments table.
     * 

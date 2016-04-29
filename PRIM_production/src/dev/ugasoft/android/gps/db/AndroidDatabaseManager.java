@@ -4,8 +4,10 @@ package dev.ugasoft.android.gps.db;
 //all required import files
 import java.util.ArrayList;
 import java.util.LinkedList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -65,7 +67,8 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 	
 	indexInfo info = new indexInfo();
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 	
 		dbm = new DatabaseHelper(AndroidDatabaseManager.this);
@@ -78,7 +81,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 		 mainLayout.setOrientation(LinearLayout.VERTICAL);
 		 mainLayout.setBackgroundColor(Color.WHITE);
 		 mainLayout.setScrollContainer(true);
-		mainscrollview.addView(mainLayout);
+		 mainscrollview.addView(mainLayout);
 		
 		//all required layouts are created dynamically and added to the main scrollview
 		setContentView(mainscrollview);
@@ -125,12 +128,13 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 		secondrow.addView(secondrowtext);
 		secondrow.addView(tv);
 		 mainLayout.addView(secondrow);
-		//A button which generates a text view from which user can write custome queries
+		//A button which generates a text view from which user can write customer queries
 		final EditText customquerytext = new EditText(this);
 		customquerytext.setVisibility(View.GONE);
-		customquerytext.setHint("Enter Your Query here and Click on Submit Query Button .Results will be displayed below");
-		 mainLayout.addView(customquerytext);
-		
+		customquerytext.setHint("Enter Your Query here and Click on Submit Query Button. Results will be displayed below");
+		mainLayout.addView(customquerytext);
+			 
+		 //the submit button....
 		final Button submitQuery = new Button(AndroidDatabaseManager.this);
 		submitQuery.setVisibility(View.GONE);
 		submitQuery.setText("Submit Query");
@@ -150,6 +154,8 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 		hsv.setScrollbarFadingEnabled(false);
 		hsv.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_INSET);
 		 mainLayout.addView(hsv);
+		 
+		 
 		//the third layout which has buttons for the pagination of content from database
 		final LinearLayout thirdrow = new LinearLayout(AndroidDatabaseManager.this);
 		previous = new Button(AndroidDatabaseManager.this);
@@ -191,12 +197,97 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 				spinnertable.setVisibility(View.GONE);
 				help.setVisibility(View.GONE);
 				customquerytext.setVisibility(View.VISIBLE);
+				//submit query
 				submitQuery.setVisibility(View.VISIBLE);
-				select_table.setSelection(0);
+				//export query....
+				
 				customQuery.setVisibility(View.GONE);
+				//dBexport_labels.setVisibility(View.GONE);
 			}
 		});
 		
+		//Label Export business....
+		final Button dBexport_labels = new Button(AndroidDatabaseManager.this);
+		dBexport_labels.setText("export labels");
+		dBexport_labels.setBackgroundColor(Color.parseColor("#ffffdc00"));
+       mainLayout.addView(dBexport_labels);
+       dBexport_labels.setOnClickListener(new OnClickListener() 
+       {         
+         @Override
+         public void onClick(View v) {
+            //set drop down to custom Query 
+            //indexInfo.isCustomQuery=true;
+            dbm.exportLabels();
+            secondrow.setVisibility(View.GONE);
+            spinnertable.setVisibility(View.GONE);
+            help.setVisibility(View.GONE);
+            customquerytext.setVisibility(View.GONE);
+            //submit query
+            submitQuery.setVisibility(View.GONE);
+            //custom query....            
+            customQuery.setVisibility(View.GONE);            
+            //export query....            
+            dBexport_labels.setVisibility(View.GONE);           
+         }
+      });
+       
+       //XYZ Export business....
+       final Button dBexport_xyz = new Button(AndroidDatabaseManager.this);
+       dBexport_xyz.setText("export xyz");
+       dBexport_xyz.setBackgroundColor(Color.parseColor("#aad450"));
+        mainLayout.addView(dBexport_xyz);
+        dBexport_xyz.setOnClickListener(new OnClickListener() 
+        
+        {         
+          @Override
+          public void onClick(View v) {
+             //set drop down to custom Query 
+             //indexInfo.isCustomQuery=true;
+             dbm.export_xyz();
+             secondrow.setVisibility(View.GONE);
+             spinnertable.setVisibility(View.GONE);
+             help.setVisibility(View.GONE);
+             customquerytext.setVisibility(View.GONE);
+             //submit query
+             submitQuery.setVisibility(View.GONE);
+             //custom query....            
+             customQuery.setVisibility(View.GONE);            
+             //export query....            
+             dBexport_labels.setVisibility(View.GONE);
+             dBexport_xyz.setVisibility(View.GONE); 
+          }
+       });
+        
+        
+        //XYZ Export business....
+        final Button dBexport_waypoints = new Button(AndroidDatabaseManager.this);
+        dBexport_waypoints.setText("export waypoints");
+        dBexport_waypoints.setBackgroundColor(Color.parseColor("#ff0084"));
+         mainLayout.addView(dBexport_waypoints);
+         dBexport_waypoints.setOnClickListener(new OnClickListener() 
+         
+         {         
+           @Override
+           public void onClick(View v) {
+              //set drop down to custom Query 
+              //indexInfo.isCustomQuery=true;
+              dbm.export_waypoints();
+              secondrow.setVisibility(View.GONE);
+              spinnertable.setVisibility(View.GONE);
+              help.setVisibility(View.GONE);
+              customquerytext.setVisibility(View.GONE);
+              //submit query
+              submitQuery.setVisibility(View.GONE);
+              //custom query....            
+              customQuery.setVisibility(View.GONE);            
+              //export query....            
+              dBexport_labels.setVisibility(View.GONE);
+              dBexport_xyz.setVisibility(View.GONE); 
+              dBexport_waypoints.setVisibility(View.GONE);
+           }
+           
+        });
+     
 		
 		//when user enter a custom query in text view and clicks on submit query button
 		//display results in tablelayout
@@ -232,8 +323,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 					}else{
 				 	  	tvmessage.setText("Queru Executed successfully");
 					  	refreshTable(1);		
-					}
-					
+					}					
 				}
 				else
 				{
@@ -244,7 +334,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 				}
 			}
 		});
-		
+	
 		//layout parameters for each row in the table
        tableRowParams = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
        tableRowParams.setMargins(0, 0, 2, 0);
@@ -269,16 +359,20 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 		
 		c.moveToFirst();
 		tablenames.add("click here");
-		do{
+		do
+		{
 			//add names of the table to tablenames array list
 			tablenames.add(c.getString(0));
-		}while(c.moveToNext());
+		}
+		
+		while(c.moveToNext());
 		}
 			//an array adapter with above created arraylist
 			ArrayAdapter<String> tablenamesadapter = new ArrayAdapter<String>(AndroidDatabaseManager.this,
             		android.R.layout.simple_spinner_item, tablenames) {
 
-                public View getView(int position, View convertView, ViewGroup parent) {
+                public View getView(int position, View convertView, ViewGroup parent) 
+                {
                         View v = super.getView(position, convertView, parent);
 
                         v.setBackgroundColor(Color.WHITE);
@@ -879,11 +973,11 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 						.setView(updaterowsv)
 						.setCancelable(false)
 						.setPositiveButton("Ok", 
-  							new DialogInterface.OnClickListener() {
-  							
+  							new DialogInterface.OnClickListener() 
+						{  							
   							//this code will be executed when user changes values of edit text or spinner and clicks on ok button	
-							public void onClick(DialogInterface dialog, int which) {
-
+							public void onClick(DialogInterface dialog, int which) 
+							{
 								//get spinner value
 								String spinner_value = crud_dropdown.getSelectedItem().toString();
 
@@ -910,10 +1004,9 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 										Query3=Query3+"'"+etc.getText().toString()+"'";
 
 									}
-									else{
-
+									else
+									{
 										Query3=Query3+"'"+etc.getText().toString()+"' , ";
-
 									}
 									}
 
@@ -1048,7 +1141,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 		{
 		c3=indexInfo.maincursor;
 		}
-    	// if the cursor returened form tha database is not null we display the data in table layout
+    	// if the cursor returned form the database is not null we display the data in table layout
     	if(c3!=null)
     	{
     	int counts = c3.getCount();

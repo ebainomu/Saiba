@@ -10,7 +10,7 @@
         android:showAsAction="always">
         
         <menu>
-            <item android:id="@+id/subItem1" android:title="Share" />
+            <item android:id="@+id/subItem1" android:title="Control" />
             <item android:id="@+id/subItem2" android:title="DBMS" />           
         </menu>
         

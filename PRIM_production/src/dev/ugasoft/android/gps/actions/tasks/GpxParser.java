@@ -118,7 +118,7 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
    }
 
    /**
-    * Read a stream containing GPX XML into the OGT content provider 
+    * Read a stream containing GPX XML into the PRIM content provider 
     * 
     * @param fis opened stream the read from, will be closed after this call
     * @param trackName
@@ -143,12 +143,10 @@ public class GpxParser extends AsyncTask<Uri, Void, Uri>
          factory.setNamespaceAware(true);
          XmlPullParser xmlParser = factory.newPullParser();
 
-
          ProgressFilterInputStream pfis = new ProgressFilterInputStream(fis, mProgressAdmin);
          BufferedInputStream bis = new BufferedInputStream(pfis);
          UnicodeReader ur = new UnicodeReader(bis, "UTF-8");
          xmlParser.setInput(ur);
-
 
          eventType = xmlParser.getEventType();
 

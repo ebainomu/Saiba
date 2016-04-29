@@ -11,7 +11,11 @@ import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
 
+import com.prim.MainActivity;
+import com.prim.ui.MainFragment;
+
 import dev.baalmart.gps.R;
+import dev.ugasoft.android.gps.db.DatabaseHelper;
 import dev.ugasoft.android.gps.db.Prim.Labels;
 import dev.ugasoft.android.gps.db.Prim.Locations;
 import dev.ugasoft.android.gps.db.Prim.Media;
@@ -76,8 +80,11 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
    long lastTime;
    Uri mXyzUri;   
    private SensorManager sensorManager;
+   DatabaseHelper mDbHelper;    
+   MainActivity mActivity;
    
    private SensorEvent mLastRecordedEvent;
+   private SensorEvent lastEvent;
    private Location mLastRecordedLocation; 
    
    private static final float FINE_DISTANCE = 5F;
@@ -111,7 +118,7 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
 
    private static final Boolean DEBUG = false;
    private static final boolean VERBOSE = false;
-   private static final String TAG = "OGT.GPSLoggerService";
+   private static final String TAG = "PRIM.GPSLoggerService";
 
    private static final String SERVICESTATE_DISTANCE = "SERVICESTATE_DISTANCE";
    private static final String SERVICESTATE_STATE = "SERVICESTATE_STATE";
@@ -191,6 +198,8 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
     * Should the GPS Status monitor update the notification bar
     */
    private boolean mStatusMonitor;
+   
+   //private float accelationSquareRoot;
 
    /**
     * Time thread to runs tasks that check whether the GPS listener has received
@@ -242,12 +251,29 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
    @Override
    public void onLocationChanged(Location location)
    {
+      
+      try 
+      {         
+         double lat = getmLastRecordedLocation().getLatitude();
+         double lon = getmLastRecordedLocation().getLongitude();
+         
+      Log.d("latitude:","" +lat);
+      Log.d("longitude:","" + lon);
+      }
+      
+      catch(Exception i)
+      {
+         Log.d(TAG, "exception noticed inside onLocationChanged" +i.getMessage());          
+      }
+         
       if (VERBOSE)
       {
          Log.v(TAG, "onLocationChanged( Location " + location + " )");
       }
       
-      // Might be claiming GPS disabled but when we were paused this changed and this location proves so
+      // Might be claiming GPS disabled but when we were paused this changed and 
+      //this location proves so
+      
       if (mShowingGpsDisabled)
       {
          notifyOnEnabledProviderNotification(R.string.service_gpsenabled);
@@ -276,24 +302,7 @@ public class GPSLoggerService extends Service implements LocationListener, Senso
          broadcastLocation(filteredLocation);
          mPreviousLocation = location;
          setmLastRecordedLocation(location);
-         
-         try 
-         {
-            
-         double lat = mLastRecordedLocation.getLatitude();
-         double lon = mLastRecordedLocation.getLongitude();
-         
-         Log.d("latitude:","" +lat);
-         Log.d("longitude:","" + lon);
-         }
-         
-         catch(Exception i)
-         {
-            Log.d(TAG, "exception noticed inside onLocationChanged" +i.getMessage()); 
-            
-         }
-         
-         
+       
       }
    }
    @Override
@@ -394,7 +403,6 @@ methods the client can call
 Return this instance of Binder from the onBind() callback method.
 In the client, receive the Binder from the onServiceConnected() callback 
 method and make calls to the bound service using the methods provided.
-
 My onServiceConnected() is in the GPSLoggerServiceManager Class.
 
    * 
@@ -413,6 +421,7 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
       {
          GPSLoggerService.this.startLogging();
          return mTrackId;
+         //I am going to add the logging service for the xyz also here
          //return mLabelId;
       }
 
@@ -420,12 +429,14 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
       public void pauseLogging() throws RemoteException
       {
          GPSLoggerService.this.pauseLogging();
+       //I am going to add the logging service for the xyz also her
       }
 
       @Override
       public long resumeLogging() throws RemoteException
       {
          GPSLoggerService.this.resumeLogging();
+       //I am going to add the logging service for the xyz also her
          return mSegmentId;
       }
 
@@ -433,6 +444,7 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
       public void stopLogging() throws RemoteException
       {
          GPSLoggerService.this.stopLogging();
+       //I am going to add the logging service for the xyz also her
       }
 
       @Override
@@ -493,6 +505,7 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
          if (isLogging())
          {
             // Collect the last location from the last logged location or a more recent from the last weak location
+            
             Location checkLocation = mPreviousLocation;
             synchronized (mWeakLocations)
             {
@@ -509,6 +522,8 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
                   }
                }
             }
+            
+            
             // Is the last known GPS location something nearby we are not told?
             Location managerLocation = mLocationManager.getLastKnownLocation(mProvider);
             if (managerLocation != null && checkLocation != null)
@@ -542,13 +557,8 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
     */
    
    private long mCheckPeriod;
-
    private float mBroadcastDistance;
-
-   private long mLastTimeBroadcast;
-
-
-   
+   private long mLastTimeBroadcast;   
 
    private class GPSLoggerServiceThread extends Thread
    {
@@ -575,6 +585,35 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
          Looper.loop();
       }
    }
+   
+   
+   // collecting the accelerometer values...
+   private class AccLoggerServiceThread extends Thread
+   {
+      public Semaphore ready = new Semaphore(0);
+
+      AccLoggerServiceThread()
+      {
+         this.setName("AccLoggerServiceThread");
+      }
+
+      @Override
+      public void run()
+      {
+         Looper.prepare();
+         mHandler = new Handler()
+         {
+            @Override
+            public void handleMessage(Message msg)
+            {
+               _handleMessage(msg);
+            }
+         };
+         ready.release(); // Signal the looper and handler are created 
+         Looper.loop();
+      }
+   }
+   
 
    /**
     * Called by the system when the service is first created. Do not call this
@@ -636,6 +675,7 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
          values.put(Tracks.NAME, "Recorded at startup");
          getContentResolver().update(ContentUris.withAppendedId(Tracks.CONTENT_URI, mTrackId), values, null, null);
       }
+      
       else
       {
          broadCastLoggingState();
@@ -692,7 +732,6 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
          }
       }
    }
-
    /**
     * (non-Javadoc)
     * 
@@ -725,8 +764,6 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
       mLocationManager.removeGpsStatusListener(mStatusListener);
       stopListening();
       mNoticationManager.cancel(R.layout.map_widgets);
-      
-     
 
       Message msg = Message.obtain();
       msg.what = STOPLOOPER;
@@ -852,13 +889,16 @@ My onServiceConnected() is in the GPSLoggerServiceManager Class.
 Second, when a synchronized method exits, it automatically establishes a happens-before 
 relationship with any subsequent invocation of a synchronized method for the same object. 
 This guarantees that changes to the state of the object are visible to all threads.
-    * 
-    * 
-    * 
+  
     * 
     */
    public synchronized void startLogging()
    {
+      //mLastRecordedEvent = mActivity.getmLastRecordedEvent();
+      
+      //getmLastRecordedEvent();
+      //MainFragment mFragment = new MainFragment();
+      
       if (DEBUG)
       {
          Log.d(TAG, "startLogging()");
@@ -874,15 +914,36 @@ This guarantees that changes to the state of the object are visible to all threa
          updateWakeLock();
          startNotification();
          crashProtectState();
-         broadCastLoggingState();
-         
+         broadCastLoggingState();   
+         //mFragment.callAsynchronousTask();
          
          //resume the accelerometer sensor
          sensorManager.registerListener(this, sensorManager.getDefaultSensor
                (Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-                 lastTime = System.currentTimeMillis();
+                 lastTime = System.currentTimeMillis();         
          
+                 //lastEvent = mActivity.getmLastRecordedEvent();
+
+         //for the acceleration values collection...
+         
+         try
+               {       
+                 if (mLastRecordedEvent != null)
+                 {
+                  //storeAllAccelerationValues(mLastRecordedEvent);
+                 }
+                                          
+               }
+         
+       catch (NullPointerException e)
+               {
+                  Log.e(TAG, "NullPointerException", e);             
+               }
+         
+      
       }
+      
+      
    }
 
    public synchronized void pauseLogging()
@@ -935,6 +996,22 @@ This guarantees that changes to the state of the object are visible to all threa
          updateNotification();
          crashProtectState();
          broadCastLoggingState();
+         
+         try
+         {       
+           if (lastEvent != null)
+           {
+            storeAllAccelerationValues(lastEvent);
+           }
+                                    
+         }
+   
+ catch (NullPointerException e)
+         {
+            Log.e(TAG, "NullPointerException", e);             
+         }
+         
+         
       }
    }
 
@@ -966,6 +1043,8 @@ This guarantees that changes to the state of the object are visible to all threa
       broadCastLoggingState();
    }
 
+   
+   //check period stuff...
    private void startListening(String provider, long intervaltime, float distance)
    {
       mLocationManager.removeUpdates(this);
@@ -1571,21 +1650,23 @@ This guarantees that changes to the state of the object are visible to all threa
       {
          Log.e(TAG, String.format("Not logging but storing location %s, prepare to fail", location.toString()));
       }
+      
       ContentValues args = new ContentValues();
-
       args.put(Waypoints.LATITUDE, Double.valueOf(location.getLatitude()));
       args.put(Waypoints.LONGITUDE, Double.valueOf(location.getLongitude()));
       args.put(Waypoints.SPEED, Float.valueOf(location.getSpeed()));
       args.put(Waypoints.TIME, Long.valueOf(System.currentTimeMillis()));
+      
       if (location.hasAccuracy())
       {
          args.put(Waypoints.ACCURACY, Float.valueOf(location.getAccuracy()));
       }
+      
       if (location.hasAltitude())
       {
          args.put(Waypoints.ALTITUDE, Double.valueOf(location.getAltitude()));
-
       }
+      
       if (location.hasBearing())
       {
          args.put(Waypoints.BEARING, Float.valueOf(location.getBearing()));
@@ -1817,20 +1898,8 @@ This guarantees that changes to the state of the object are visible to all threa
       {
          
       if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-      {         
-         /*SensorEvent filteredEvent = accelerometerValueFilter(event);         
-         storeAccelerometerValues(filteredEvent); */
-         
-         setmLastRecordedEvent(event);
-         
-         float x = event.values[0];
-         float y = event.values[1];
-         float z = event.values[2];
-         
-         Log.d("x:", "" + x );
-         Log.d("y:", "" + y );
-         Log.d("z:", "" + z );
-         
+      {    
+         setmLastRecordedEvent(event);    
       }
       }
       
@@ -1838,14 +1907,7 @@ This guarantees that changes to the state of the object are visible to all threa
       {
          Log.d(TAG, "exception noticed inside onSensorChanged"); 
          Log.d(TAG, "" + e);
-       /*  
-         float x = event.values[0];
-         float y = event.values[1];
-         float z = event.values[2];
-         
-         Log.d("x:", "" + x );
-         Log.d("y:", "" + y );
-         Log.d("z:", "" + z );*/
+    
       }
    }
       
@@ -1908,7 +1970,7 @@ This guarantees that changes to the state of the object are visible to all threa
         }   
    }*/
    
-   private void storeAccelerometerValues(SensorEvent event) 
+   /*private void storeAccelerometerValues(SensorEvent event) 
    {   
  
     float[] value = event.values;
@@ -1938,8 +2000,51 @@ This guarantees that changes to the state of the object are visible to all threa
              
              Uri accValueInsertUri = Uri.withAppendedPath(Labels.CONTENT_URI, mLabelId + "/locations/" + mLocationId + "/xyz");
              Uri inserted = this.getContentResolver().insert(accValueInsertUri, accValues);
-             mXyzId = Long.parseLong(inserted.getLastPathSegment());      
+             mXyzId = Long.parseLong(inserted.getLastPathSegment());    
 
+   }*/
+   
+   //the method for collecting the xyz data
+   
+   public void storeAllAccelerationValues(SensorEvent event) 
+   { 
+      float[] value = event.values;
+      
+      float xVal = value[0];
+      float yVal = value[1];
+      float zVal = value[2];
+            
+      float accelationSquareRoot = (xVal*xVal + yVal*yVal + zVal*zVal) 
+            / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+      long actualTime = System.currentTimeMillis();
+      
+      /*if (accelationSquareRoot >= 1.2) 
+      {
+      
+         //the time interval is 2x10 power 9
+         if(actualTime -lastTime < 2000000000) 
+         {*/
+    String queryStoreAccelerationValues ="Insert into "+Xyz.TABLE+" (";
+    
+    queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.X+",";
+    queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.Y+",";
+    queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.Z+","; 
+    queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.SPEED+",";
+    queryStoreAccelerationValues=queryStoreAccelerationValues+Xyz.TIME;
+     
+    queryStoreAccelerationValues=queryStoreAccelerationValues+" ) VALUES ( ";
+    
+    queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[0])+"' , ";
+    queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[1])+"' , ";
+    queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Float.valueOf(event.values[2])+"', ";  
+    queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+accelationSquareRoot+"', ";
+    queryStoreAccelerationValues=queryStoreAccelerationValues+"'"+Long.valueOf(System.currentTimeMillis()) +"' ) "; 
+    Log.d("Insert Query", queryStoreAccelerationValues);
+       
+       mDbHelper.getData(queryStoreAccelerationValues);
+  /*       }
+      }
+*/
    }
    
    @Override

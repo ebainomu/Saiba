@@ -232,9 +232,14 @@
             android:name="dev.ugasoft.android.gps.logger.GPSLoggerService"
             android:enabled="true"
             android:permission="android.permission.ACCESS_FINE_LOCATION" >
+            
             <intent-filter android:label="GPS logger" >
                 <action android:name="nl.sogeti.android.gpstracker.intent.action.GPSLoggerService" >
                 </action>
+                
+                <!-- nl.sogeti.android.gpstracker.intent.action.GPSLoggerService -->
+                
+                <!-- dev.baalmart.gps.intent.action.GPSLoggerService -->
             </intent-filter>
         </service>
         <service android:name="dev.ugasoft.android.gps.breadcrumbs.BreadcrumbsService" />

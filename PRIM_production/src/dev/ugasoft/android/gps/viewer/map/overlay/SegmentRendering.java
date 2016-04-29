@@ -4,8 +4,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
-
-import dev.baalmart.gps.BuildConfig;
+/*
+import dev.baalmart.gps.BuildConfig;*/
 import dev.baalmart.gps.R;
 import dev.ugasoft.android.gps.db.Prim;
 import dev.ugasoft.android.gps.db.Prim.Media;

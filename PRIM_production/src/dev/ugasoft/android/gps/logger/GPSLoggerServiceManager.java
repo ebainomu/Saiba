@@ -1,6 +1,5 @@
 package dev.ugasoft.android.gps.logger;
 
-import dev.ugasoft.android.gps.logger.IGPSLoggerServiceRemote;
 import dev.ugasoft.android.gps.util.Constants;
 import android.content.ComponentName;
 import android.content.Context;
