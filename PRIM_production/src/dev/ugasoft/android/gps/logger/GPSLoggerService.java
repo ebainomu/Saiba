@@ -938,8 +938,7 @@ This guarantees that changes to the state of the object are visible to all threa
        catch (NullPointerException e)
                {
                   Log.e(TAG, "NullPointerException", e);             
-               }
-         
+               }        
       
       }
       

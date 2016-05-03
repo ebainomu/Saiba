@@ -21,12 +21,10 @@ public class ApplicationPreferenceActivity extends PreferenceActivity
    public static final String CUSTOMPRECISIONTIME_PREFERENCE = "customprecisiontime";
    public static final String PRECISION_PREFERENCE = "precision";
    public static final String CUSTOMUPLOAD_BACKLOG = "CUSTOMUPLOAD_BACKLOG";
-   public static final String CUSTOMUPLOAD_URL = "CUSTOMUPLOAD_URL";
-   
+   public static final String CUSTOMUPLOAD_URL = "CUSTOMUPLOAD_URL";   
    private EditTextPreference time;
    private EditTextPreference distance;
    private EditTextPreference implentWidth;
-
    private EditTextPreference streambroadcast_distance;
    private EditTextPreference custumupload_backlog;
 

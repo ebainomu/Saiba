@@ -848,6 +848,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     * 
     * @return
     */
+   
    long toNextSegment(long trackId)
    {
       SQLiteDatabase sqldb = getWritableDatabase();
@@ -860,8 +861,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
       resolver.notifyChange(Uri.withAppendedPath(Tracks.CONTENT_URI, trackId + "/segments"), null);
 
       return segmentId;
-   }
-   
+   }   
    
    /*
     * Exporting the database....

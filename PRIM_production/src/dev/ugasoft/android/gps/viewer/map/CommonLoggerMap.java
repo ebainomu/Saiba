@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class CommonLoggerMap extends Activity
 {
-   private static final String TAG = "PRIM.CommonLoggerMap";
+   private static final String TAG = "pspot.CommonLoggerMap";
 
    @Override
    protected void onCreate(Bundle savedInstanceState)
@@ -20,7 +20,7 @@ public class CommonLoggerMap extends Activity
       Intent realIntent;
 
       Class<?> mapClass = GoogleLoggerMap.class;
-      int provider = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.MAPPROVIDER, "" + Constants.GOOGLE)).intValue();
+      int provider = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.MAPPROVIDER, "" + Constants.OSM)).intValue();
       switch (provider)
       {
          case Constants.GOOGLE:

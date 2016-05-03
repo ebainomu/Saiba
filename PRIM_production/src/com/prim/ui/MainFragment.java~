@@ -547,20 +547,20 @@ public void onStop()
 
 public void storeAllValues(SensorEvent event) 
 { 
-    //return;
+   
  String queryStoreValues ="Insert into "+Labels.TABLE+" (";
  
  queryStoreValues=queryStoreValues+Labels.X+",";
  queryStoreValues=queryStoreValues+Labels.Y+",";
  queryStoreValues=queryStoreValues+Labels.Z+",";
  queryStoreValues=queryStoreValues+Labels.NAME+",";
- queryStoreValues=queryStoreValues+Labels.LATITUDE+","; ////return;
+ queryStoreValues=queryStoreValues+Labels.LATITUDE+",";
  queryStoreValues=queryStoreValues+Labels.LONGITUDE+",";
  queryStoreValues=queryStoreValues+Labels.SPEED+",";
  queryStoreValues=queryStoreValues+Labels.CREATION_TIME;
   
  queryStoreValues=queryStoreValues+" ) VALUES ( ";
-  //return;
+ 
  queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[0])+"' , ";
  queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[1])+"' , ";
  queryStoreValues=queryStoreValues+"'"+Float.valueOf(event.values[2])+"', ";
@@ -773,7 +773,9 @@ private class Storing_xyz extends AsyncTask<String, Void, String>
 {
    @Override
    protected String doInBackground(String... params) 
-   { 
+   {
+      
+          
               /*storeAllAccelerationValues(mLastRecordedEvent);*/              
               SensorEvent mLastContinousEvent = ((MainActivity)getActivity()).getmLastRecordedEvent();
               storeAllAccelerationValues(mLastContinousEvent);

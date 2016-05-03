@@ -268,7 +268,8 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
          
          {         
            @Override
-           public void onClick(View v) {
+           public void onClick(View v) 
+           {
               //set drop down to custom Query 
               //indexInfo.isCustomQuery=true;
               dbm.export_waypoints();
@@ -287,8 +288,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
            }
            
         });
-     
-		
+     		
 		//when user enter a custom query in text view and clicks on submit query button
 		//display results in tablelayout
 		submitQuery.setOnClickListener(new OnClickListener() 
@@ -381,7 +381,6 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
                         
                         return adap;
                 }
-
 
                 public View getDropDownView(int position,  View convertView,  ViewGroup parent) {
                          View v =super.getDropDownView(position, convertView, parent);
